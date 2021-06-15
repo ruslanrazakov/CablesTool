@@ -14,8 +14,8 @@ namespace CablesTool.Shared
         [Inject]
         public FileManager FileManager { get; set; }
         [Inject]
-        public NavigationManager NavigationManager { get; set; }
-        public List <CableProject> CableProjects { get; set; }
+        public ProjectContent<string> ProjectContent { get; set; }
+        public List<CableProject> CableProjects { get; set; }
         protected override async Task OnInitializedAsync()
         {
             CableProjects = new();
@@ -23,9 +23,9 @@ namespace CablesTool.Shared
             await Task.Delay(20);
         }
 
-        private void OnFileClicked(string projectNameRouteParam)
+        private void OnFileClicked(string projectContent)
         {
-            NavigationManager.NavigateTo($"/{projectNameRouteParam}");
+            ProjectContent.Set(projectContent);
         }
     }
 }

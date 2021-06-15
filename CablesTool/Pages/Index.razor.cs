@@ -11,29 +11,20 @@ namespace CablesTool.Pages
     {
         [Inject]
         public FileManager FileManager { get; set; }
+        [Inject]
+        public ProjectContent<string> ProjectContent { get; set; }
         public string FileContent { get; set; }
-        [Parameter]
-        public string ProjectNameRouteParam { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            InitContent();
-            await Task.Delay(100);
-
-        }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            InitContent();
+            ProjectContent.OnChange += ChangeContent;
             await Task.Delay(100);
         }
 
-        private void InitContent()
+        private void ChangeContent(string content)
         {
-            if (ProjectNameRouteParam == null)
-                FileContent = FileManager.CableProjects.First().Content;
-            else
-                FileContent = FileManager.CableProjects.FirstOrDefault(p => p.Name == ProjectNameRouteParam).Content;
+            FileContent = content;
+            StateHasChanged();
         }
     }
 }

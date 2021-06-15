@@ -12,13 +12,12 @@ namespace CablesTool.Services
         public string FileContent { get; set; }
         public string _projectsDirPath;
         public Dictionary<string, string> FilesHierarchy { get; set; }
-        public List <CableProject> CableProjects { get; set; }
+        public List<CableProject> CableProjects { get; set; }
         public FileManager()
         {
             FilesHierarchy = new();
         }
 
-        private string GetFileName() => "test.txt";
 
         public List<CableProject> Upload()
         {
@@ -26,7 +25,7 @@ namespace CablesTool.Services
 
             _projectsDirPath = AppDomain.CurrentDomain.BaseDirectory + "wwwroot/Projects/";
             var projects = new DirectoryInfo(_projectsDirPath).GetDirectories();
-            foreach(var project in projects)
+            foreach (var project in projects)
             {
                 //FilesHierarchy.Add(project.Name, GetExecutableFileName(project.GetFiles()));
                 var files = project.GetFiles();

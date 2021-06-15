@@ -30,6 +30,7 @@ namespace CablesTool
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddTransient<WeatherForecastService>();
+            services.AddScoped<ProjectContent<string>>();
             services.AddSingleton<FileManager>();
         }
 
