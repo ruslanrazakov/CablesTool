@@ -1,0 +1,25 @@
+﻿@page "/alert"
+
+<div class="alert alert-warning alert-dismissible fade show">
+    <strong>Variable @Header</strong> does not exists in your cables!
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+@code {
+    [Parameter]
+    public string Header { get; set; }
+    [Parameter]
+    public int DisposeTime { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Task.Delay(DisposeTime);
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+    }
+}

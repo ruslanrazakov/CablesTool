@@ -30,7 +30,7 @@
             <li>
                 <label for="@project.FolderName">@project.FolderName</label> <input type="checkbox" id="@project.FolderName">
                 <ol>
-                    <li class="file"><a @onclick="@(()=>OnFileClicked(project.Content))">@project.Name</a></li>
+                    <li class="file"><a @onclick="@(()=>OnFileClicked(project.Path, "", ""))">@project.FolderName</a></li>
                 </ol>
             </li>
         }

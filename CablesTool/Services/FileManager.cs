@@ -33,12 +33,17 @@ namespace CablesTool.Services
                 {
                     FolderName = project.Name,
                     Name = GetExecutableFileName(files),
-                    Path = project.FullName,
+                    Path = GetServerPathToFile(project.FullName) + @"\index.html",
                     Content = GetDirContent(files)
                 });
             }
             return CableProjects;
             //FileContent = await File.ReadAllTextAsync(_projectsDirPath);
+        }
+
+        private string GetServerPathToFile(string fullName)
+        {
+            return fullName.Split("wwwroot").Last();
         }
 
         private string GetDirContent(FileInfo[] files)

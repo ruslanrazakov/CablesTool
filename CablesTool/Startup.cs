@@ -29,9 +29,9 @@ namespace CablesTool
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddTransient<WeatherForecastService>();
             services.AddScoped<ProjectContent<string>>();
             services.AddSingleton<FileManager>();
+            services.AddScoped<ToastService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,22 +1,39 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+@if (ProjectContent.Path != null && ProjectContent.Path != String.Empty)
+{
+<p>@FileContent</p>
+<iframe id="patchFrame" class="video-control" @onmouseover="IFrameMouseMove" @onmouseout="IFrameMouseOut" src="@ProjectPath"></iframe>
 
-<div class="player">
-    <video controls>
-        <source src="UserFiles/test.mp4" type="video/mp4">
-    </video>
-    <div class="controls">
-        <button class="play" data-icon="P" aria-label="play pause toggle"></button>
-        <button class="stop" data-icon="S" aria-label="stop"></button>
-        <div class="timer">
-            <div></div>
-            <span aria-label="timer">00:00</span>
-        </div>
-        <button class="rwd" data-icon="B" aria-label="rewind"></button>
-        <button class="fwd" data-icon="F" aria-label="fast forward"></button>
+<div class="input-group mb-3">
+    <div class="input-group-prepend">
+        <button class="btn btn-outline-secondary" type="button" @onclick="SetVariable">Set variable</button>
     </div>
+    <input type="text" class="form-control" @bind="@VariableSetName" placeholder="variable name" aria-label="" aria-describedby="basic-addon1">
+    <input type="text" class="form-control" @bind="@VariableSetValue" placeholder="value" aria-label="" aria-describedby="basic-addon1">
 </div>
 
-<p>@FileContent</p>
+<div class="input-group mb-3">
+    <div class="input-group-prepend">
+        <button class="btn btn-outline-secondary" type="button" @onclick="GetVariable">Get variable</button>
+    </div>
+    <input type="text" class="form-control" @bind="@VariableGetName" placeholder="variable name" aria-label="" aria-describedby="basic-addon1">
+
+    <input class="form-control" id="disabledInput" type="text" placeholder="value" @bind="@VariableGetValue" disabled>
+    <div style="margin-left: 1%"></div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" @bind="@VariableIsBinded" type="checkbox" id="inlineCheckbox1" value="option1">
+        <label class="form-check-label" for="inlineCheckbox1">Bind value</label>
+    </div>
+</div>
+}
+
+@if (DebugVariable != null && DebugVariable != String.Empty)
+{
+    ToastService.ShowToast(DebugVariable + " does not exists", CablesTool.Services.ToastLevel.Info);
+    DebugVariable = String.Empty;
+}
+
+
+
 

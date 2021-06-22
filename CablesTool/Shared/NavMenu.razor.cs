@@ -23,9 +23,9 @@ namespace CablesTool.Shared
             await Task.Delay(20);
         }
 
-        private void OnFileClicked(string projectContent)
+        private void OnFileClicked(string projectPath, string projectName, string comments)
         {
-            ProjectContent.Set(projectContent);
+            ProjectContent.Set(projectPath, projectName, comments);
         }
     }
 }
