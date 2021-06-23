@@ -22,8 +22,7 @@ namespace CablesTool.Services
         {
             SetCountdown();
 
-                Countdown.Start();
-            
+            Countdown.Start();
         }
 
         private void SetCountdown()

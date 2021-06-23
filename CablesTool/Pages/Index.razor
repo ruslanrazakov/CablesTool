@@ -2,38 +2,44 @@
 
 @if (ProjectContent.Path != null && ProjectContent.Path != String.Empty)
 {
-<p>@FileContent</p>
-<iframe id="patchFrame" class="video-control" @onmouseover="IFrameMouseMove" @onmouseout="IFrameMouseOut" src="@ProjectPath"></iframe>
+    <iframe id="patchFrame" class="video-control" @onmouseover="IFrameMouseMove" @onmouseout="IFrameMouseOut" src="@ProjectPath"></iframe>
 
-<div class="input-group mb-3">
-    <div class="input-group-prepend">
-        <button class="btn btn-outline-secondary" type="button" @onclick="SetVariable">Set variable</button>
+    <div style="margin-bottom: 1%">
+        <button class="btn btn-secondary" type="button" @onclick="Play"><span class="oi oi-media-play"></span></button>
+        <button class="btn btn-secondary" type="button" @onclick="Stop"><span class="oi oi-media-stop"></span></button>
+        <input class="slider" type="range" min="1" max="100" step="1" value="@VideoTime"  @oninput="@((args)=>VideoSliderChanged(args.Value.ToString() ))">
     </div>
-    <input type="text" class="form-control" @bind="@VariableSetName" placeholder="variable name" aria-label="" aria-describedby="basic-addon1">
-    <input type="text" class="form-control" @bind="@VariableSetValue" placeholder="value" aria-label="" aria-describedby="basic-addon1">
-</div>
 
-<div class="input-group mb-3">
-    <div class="input-group-prepend">
-        <button class="btn btn-outline-secondary" type="button" @onclick="GetVariable">Get variable</button>
-    </div>
-    <input type="text" class="form-control" @bind="@VariableGetName" placeholder="variable name" aria-label="" aria-describedby="basic-addon1">
+    @for (int i = 0; i < SetAccessorsAmount; i++)
+    {
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <button class="btn btn-outline-secondary" type="button" @onclick="SetVariable">Set variable</button>
+            </div>
+            <input type="text" class="form-control" @bind="@VariableSetName" placeholder="variable name" aria-label="" aria-describedby="basic-addon1">
+            <input type="text" class="form-control" @bind="@VariableSetValue" placeholder="value" aria-label="" aria-describedby="basic-addon1">
+        </div>
+    }
 
-    <input class="form-control" id="disabledInput" type="text" placeholder="value" @bind="@VariableGetValue" disabled>
-    <div style="margin-left: 1%"></div>
-    <div class="form-check form-check-inline">
-        <input class="form-check-input" @bind="@VariableIsBinded" type="checkbox" id="inlineCheckbox1" value="option1">
-        <label class="form-check-label" for="inlineCheckbox1">Bind value</label>
-    </div>
-</div>
+    @for (int i = 0; i < GetAccessorsAmount; i++)
+    {
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <button class="btn btn-outline-secondary" type="button" @onclick="GetVariable">Get variable</button>
+            </div>
+            <input type="text" class="form-control" @bind="@VariableGetName" placeholder="variable name" aria-label="" aria-describedby="basic-addon1">
+            <input class="form-control" id="disabledInput" type="text" placeholder="value" @bind="@VariableGetValue" disabled>
+            <div style="margin-left: 1%"></div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" @bind="@VariableIsBinded" type="checkbox" id="inlineCheckbox1" value="option1">
+                <label class="form-check-label" for="inlineCheckbox1">Bind value</label>
+            </div>
+        </div>
+    }
 }
 
-@if (DebugVariable != null && DebugVariable != String.Empty)
-{
-    ToastService.ShowToast(DebugVariable + " does not exists", CablesTool.Services.ToastLevel.Info);
-    DebugVariable = String.Empty;
-}
-
-
-
-
+    @if (DebugVariable != null && DebugVariable != String.Empty)
+    {
+        ToastService.ShowToast(DebugVariable + " does not exists", CablesTool.Services.ToastLevel.Info);
+        DebugVariable = String.Empty;
+    }

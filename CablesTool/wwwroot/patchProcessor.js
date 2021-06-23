@@ -1,8 +1,5 @@
-﻿var patch;
-
-function setVariable(varName, varContent) {
+﻿function setVariable(varName, varContent) {
     return document.getElementById('patchFrame').contentWindow.CABLES.patch.setVariable(varName, varContent);
-    
 }
 
 function getVariable(varName) {

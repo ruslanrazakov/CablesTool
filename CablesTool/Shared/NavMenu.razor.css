@@ -61,7 +61,6 @@
     }
 }
 
-
 ol .tree {
     padding: 0 0 0 30px;
     width: 300px;
@@ -75,7 +74,6 @@ li label {
     padding-left: 2rem;
 }
 
-
 li input {
     position: absolute;
     left: 0;
@@ -86,14 +84,6 @@ li input {
     height: 1em;
     width: 1em;
     top: 0;
-}
-
-li input:checked + ol {
-    background: url(file.png) 2.5rem no-repeat;
-    background-size: contain;
-    /*margin: -1.25em 0 0 -44px;*/
-    padding: 0 0 0 80px;
-    height: auto;
 }
 
 li input:checked + ol > li {
@@ -112,4 +102,12 @@ li {
     position: relative;
     margin-left: -15px;
     list-style: none;
+}
+
+.icon {
+	width: 1.3rem;
+}
+
+a {
+    cursor: pointer;
 }

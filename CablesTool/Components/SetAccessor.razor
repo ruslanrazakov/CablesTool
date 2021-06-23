@@ -1,0 +1,44 @@
+﻿<h3>SetAccessor</h3>
+
+@for (int i = 0; i < SetAccessorsAmount; i++)
+{
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <button class="btn btn-outline-secondary" type="button" @onclick="SetVariable">Set variable</button>
+        </div>
+        <input type="text" class="form-control" @bind="@VariableSetName" placeholder="variable name" aria-label="" aria-describedby="basic-addon1">
+        <input type="text" class="form-control" @bind="@VariableSetValue" placeholder="value" aria-label="" aria-describedby="basic-addon1">
+    </div>
+}
+
+@code {
+    [Inject]
+    public IJSRuntime JS { get; set; }
+    int _getAccessorsAmount;
+    public int GetAccessorsAmount
+    {
+        get => _getAccessorsAmount;
+        set
+        {
+            _getAccessorsAmount = value;
+            StateHasChanged();
+        }
+    }
+    int _setAccessorsAmount;
+    public int SetAccessorsAmount
+    {
+        get => _setAccessorsAmount;
+        set
+        {
+            _setAccessorsAmount = value;
+            StateHasChanged();
+        }
+    }
+    public string VariableSetName { get; set; }
+    public string VariableSetValue { get; set; }
+
+    private async Task SetVariable()
+    {
+        await JS.InvokeAsync<string>("setVariable", VariableSetName, VariableSetValue);
+    }
+}

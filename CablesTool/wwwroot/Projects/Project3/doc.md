@@ -1,7 +1,9 @@
 ## Patch Variables:
 
-* __myOrbitInt__ ```Number```
-* __myRotXInt__ ```Number```
-* __myRotYint__ ```Number```
-* __myVideoStr__ ```String```
+* __i_orbit__ ```Number```
+* __i_rotX__ ```Number```
+* __i_rotY__ ```Number```
+* __i_videoSetTime__ ```Number``` (default Value: `0.46`)
+* __i_videoSpeed__ ```Number``` (default Value: `6.1`)
+* __s_videoPath__ ```String```
 

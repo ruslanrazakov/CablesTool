@@ -5563,7 +5563,7 @@ var CABLES = function (t) {
 	  return 'assets/'
 	},
 	Ct.prototype.getFilePath = function (t) {
-	  return false,
+	  return this._isLocal && !this.config.allowLocalFileAccess && this.exitError('localAccess', 'Browser security forbids loading files directly without a webserver. Upload files to a server to work. use allowLocalFileAccess:true to ignore this.'),
 	  t ? 0 === (t = String(t)).indexOf('https:') || 0 === t.indexOf('http:') ? t : (t = t.replace('//', '/'), this.config.prefixAssetPath + t + (this.config.suffixAssetPath || '')) : t
 	},
 	Ct.prototype.clear = function () {
@@ -10923,7 +10923,14 @@ var CABLES = function (t) {
 		  },
 		  {
 			name: 'speed',
-			value: 1
+			links: [
+			  {
+				portIn: 'speed',
+				portOut: 'Value',
+				objIn: 'f6b44978-879a-4538-a1b5-a25f20e4cb64',
+				objOut: 'a388f7b5-6ddf-412e-b82b-bafe13756d39'
+			  }
+			]
 		  },
 		  {
 			name: 'filter index',
@@ -10951,7 +10958,14 @@ var CABLES = function (t) {
 		  },
 		  {
 			name: 'set time',
-			value: 0
+			links: [
+			  {
+				portIn: 'set time',
+				portOut: 'Value',
+				objIn: 'f6b44978-879a-4538-a1b5-a25f20e4cb64',
+				objOut: '584d7981-0b74-4ba5-acb3-b091c792a087'
+			  }
+			]
 		  },
 		  {
 			name: 'rewind',
@@ -10972,19 +10986,19 @@ var CABLES = function (t) {
 		  },
 		  {
 			name: 'progress',
-			value: 1
+			value: 0.5820343264248705
 		  },
 		  {
 			name: 'CurrentTime',
-			value: 49.408
+			value: 28.757152
 		  },
 		  {
 			name: 'Loading',
-			value: !1
+			value: !0
 		  },
 		  {
 			name: 'Can Play Through',
-			value: !0
+			value: !1
 		  },
 		  {
 			name: 'Width',
@@ -11000,11 +11014,11 @@ var CABLES = function (t) {
 		  },
 		  {
 			name: 'Has Error',
-			value: !1
+			value: !0
 		  },
 		  {
 			name: 'Error Message',
-			value: ''
+			value: 'Error 4/404: Not Found'
 		  }
 		]
 	  },
@@ -11013,7 +11027,7 @@ var CABLES = function (t) {
 		objName: 'Ops.Vars.VarGetString',
 		id: '9c68b2ae-8f4a-4ae1-b817-ef070123fea1',
 		uiAttribs: {
-		  title: '#myVideoStr',
+		  title: '#s_videoPath',
 		  createdLocally: !0,
 		  subPatch: 0,
 		  selected: !1,
@@ -11022,7 +11036,7 @@ var CABLES = function (t) {
 		portsIn: [
 		  {
 			name: 'Variable',
-			value: 'myVideoStr'
+			value: 's_videoPath'
 		  }
 		],
 		portsOut: [
@@ -11032,34 +11046,11 @@ var CABLES = function (t) {
 		]
 	  },
 	  {
-		opId: 'd697ff82-74fd-4f31-8f54-295bc64e713d',
-		objName: 'Ops.String.String_v2',
-		id: '1072b372-dc7c-4507-a579-c9d979e2ac5d',
-		uiAttribs: {
-		  title: 'videoStr',
-		  createdLocally: !0,
-		  subPatch: 0,
-		  selected: !1,
-		  notWorkingMsg: null
-		},
-		portsIn: [
-		  {
-			name: 'value',
-			value: '/assets/library/videos/clouds.mp4'
-		  }
-		],
-		portsOut: [
-		  {
-			name: 'String'
-		  }
-		]
-	  },
-	  {
 		opId: '0b4d9229-8024-4a30-9cc0-f6653942c2e4',
 		objName: 'Ops.Vars.VarSetString_v2',
 		id: '46462d93-dab8-4998-be0f-ad31a5050e0f',
 		uiAttribs: {
-		  title: 'set #myVideoStr',
+		  title: 'set #s_videoPath',
 		  createdLocally: !0,
 		  subPatch: 0,
 		  selected: !1,
@@ -11071,15 +11062,15 @@ var CABLES = function (t) {
 			links: [
 			  {
 				portIn: 'Value',
-				portOut: 'String',
+				portOut: 'Value',
 				objIn: '46462d93-dab8-4998-be0f-ad31a5050e0f',
-				objOut: '1072b372-dc7c-4507-a579-c9d979e2ac5d'
+				objOut: '0172d3d1-66e0-443b-9cd8-e030c73414e9'
 			  }
 			]
 		  },
 		  {
 			name: 'Variable',
-			value: 'myVideoStr'
+			value: 's_videoPath'
 		  },
 		  {
 			name: 'Create new variable',
@@ -11190,7 +11181,7 @@ var CABLES = function (t) {
 		objName: 'Ops.Vars.VarSetNumber_v2',
 		id: 'e9dbe890-2e62-4e07-a9f4-b97dff6f3104',
 		uiAttribs: {
-		  title: 'set #myOrbitInt',
+		  title: 'set #i_orbit',
 		  createdLocally: !0,
 		  subPatch: 0,
 		  selected: !1,
@@ -11210,7 +11201,7 @@ var CABLES = function (t) {
 		  },
 		  {
 			name: 'Variable',
-			value: 'myOrbitInt'
+			value: 'i_orbit'
 		  },
 		  {
 			name: 'Create new variable',
@@ -11231,7 +11222,7 @@ var CABLES = function (t) {
 		objName: 'Ops.Vars.VarSetNumber_v2',
 		id: '1bb8db0b-4b2a-4efe-8112-ddf606442093',
 		uiAttribs: {
-		  title: 'set #myRotXInt',
+		  title: 'set #i_rotX',
 		  createdLocally: !0,
 		  subPatch: 0,
 		  selected: !1,
@@ -11251,7 +11242,7 @@ var CABLES = function (t) {
 		  },
 		  {
 			name: 'Variable',
-			value: 'myRotXInt'
+			value: 'i_rotX'
 		  },
 		  {
 			name: 'Create new variable',
@@ -11272,10 +11263,10 @@ var CABLES = function (t) {
 		objName: 'Ops.Vars.VarSetNumber_v2',
 		id: 'd54178ac-04dc-4c0f-a877-9c806cbb3dc6',
 		uiAttribs: {
-		  title: 'set #myRotYint',
+		  title: 'set #i_rotY',
 		  createdLocally: !0,
 		  subPatch: 0,
-		  selected: !0,
+		  selected: !1,
 		  notWorkingMsg: null
 		},
 		portsIn: [
@@ -11292,7 +11283,7 @@ var CABLES = function (t) {
 		  },
 		  {
 			name: 'Variable',
-			value: 'myRotYint'
+			value: 'i_rotY'
 		  },
 		  {
 			name: 'Create new variable',
@@ -11307,6 +11298,143 @@ var CABLES = function (t) {
 		],
 		portsOut: [
 		]
+	  },
+	  {
+		opId: '421f5b52-c0fa-47c4-8b7a-012b9e1c864a',
+		objName: 'Ops.Vars.VarGetNumber_v2',
+		id: 'a388f7b5-6ddf-412e-b82b-bafe13756d39',
+		uiAttribs: {
+		  title: '#i_videoSpeed',
+		  createdLocally: !0,
+		  subPatch: 0,
+		  selected: !1,
+		  notWorkingMsg: null
+		},
+		portsIn: [
+		  {
+			name: 'Variable',
+			value: 'i_videoSpeed'
+		  }
+		],
+		portsOut: [
+		  {
+			name: 'Value'
+		  }
+		]
+	  },
+	  {
+		opId: 'b5249226-6095-4828-8a1c-080654e192fa',
+		objName: 'Ops.Vars.VarSetNumber_v2',
+		id: '10c612d5-1576-4b36-8921-d79d0e92c5a7',
+		uiAttribs: {
+		  title: 'set #i_videoSpeed',
+		  createdLocally: !0,
+		  subPatch: 0,
+		  selected: !1,
+		  notWorkingMsg: null
+		},
+		portsIn: [
+		  {
+			name: 'Value',
+			value: 6.1
+		  },
+		  {
+			name: 'Variable',
+			value: 'i_videoSpeed'
+		  },
+		  {
+			name: 'Create new variable',
+			value: 0
+		  },
+		  {
+			name: '',
+			value: [
+			  'Rename'
+			]
+		  }
+		],
+		portsOut: [
+		]
+	  },
+	  {
+		opId: '421f5b52-c0fa-47c4-8b7a-012b9e1c864a',
+		objName: 'Ops.Vars.VarGetNumber_v2',
+		id: '584d7981-0b74-4ba5-acb3-b091c792a087',
+		uiAttribs: {
+		  title: '#i_videoSetTime',
+		  createdLocally: !0,
+		  subPatch: 0,
+		  selected: !1,
+		  notWorkingMsg: null
+		},
+		portsIn: [
+		  {
+			name: 'Variable',
+			value: 'i_videoSetTime'
+		  }
+		],
+		portsOut: [
+		  {
+			name: 'Value'
+		  }
+		]
+	  },
+	  {
+		opId: 'b5249226-6095-4828-8a1c-080654e192fa',
+		objName: 'Ops.Vars.VarSetNumber_v2',
+		id: '4b656a71-28f3-4d4d-8fd2-599ac9c4af9c',
+		uiAttribs: {
+		  title: 'set #i_videoSetTime',
+		  createdLocally: !0,
+		  subPatch: 0,
+		  selected: !1,
+		  notWorkingMsg: null
+		},
+		portsIn: [
+		  {
+			name: 'Value',
+			value: 0.46
+		  },
+		  {
+			name: 'Variable',
+			value: 'i_videoSetTime'
+		  },
+		  {
+			name: 'Create new variable',
+			value: 0
+		  },
+		  {
+			name: '',
+			value: [
+			  'Rename'
+			]
+		  }
+		],
+		portsOut: [
+		]
+	  },
+	  {
+		opId: '3ad08cfc-bce6-4175-9746-fef2817a3b12',
+		objName: 'Ops.Vars.VarGetString',
+		id: '0172d3d1-66e0-443b-9cd8-e030c73414e9',
+		uiAttribs: {
+		  title: '#s_videoPath',
+		  createdLocally: !0,
+		  subPatch: 0,
+		  selected: !0,
+		  notWorkingMsg: null
+		},
+		portsIn: [
+		  {
+			name: 'Variable',
+			value: 's_videoPath'
+		  }
+		],
+		portsOut: [
+		  {
+			name: 'Value'
+		  }
+		]
 	  }
 	],
 	users: [
@@ -11320,7 +11448,7 @@ var CABLES = function (t) {
 	userId: '60c86610e098427302b28b21',
 	created: '2021-06-16T10:02:50.444Z',
 	cloneOf: '5f7d4c126359fb6a055ce98c',
-	updated: '2021-06-21T15:41:33.768Z',
+	updated: '2021-06-23T12:38:18.174Z',
 	log: [
 	  {
 		_id: '60c9cc4a8535707db2b4afa8',
@@ -11328,7 +11456,7 @@ var CABLES = function (t) {
 		text: 'initial list of collaborators:'
 	  }
 	],
-	__v: 11,
+	__v: 15,
 	shortId: 'ebwhkE',
 	buildInfo: {
 	  core: {
@@ -11360,11 +11488,11 @@ var CABLES = function (t) {
 		}
 	  }
 	},
-	opsHash: 'aa9942818229f20ce8cd4feac88c683025158a04',
+	opsHash: '713956d7c899f42f52ba7f79e4c5b506c4f7f2a6',
 	ui: {
 	  viewBox: {
-		x: - 564.9762878417965,
-		y: - 20.58169460296625,
+		x: - 252.5293121337886,
+		y: - 27.386342525482007,
 		w: 976.5624999999995,
 		h: 727.0812988281247
 	  },
@@ -11380,7 +11508,7 @@ var CABLES = function (t) {
 	  }
 	},
 	updatedByUser: 'koobalack',
-	exports: 5,
+	exports: 7,
 	views: 0,
 	cachedNumComments: 0,
 	cachedNumFavs: 0,
@@ -11427,8 +11555,6 @@ var CABLES = function (t) {
   },
   Ops.Value = Ops.Value || {
   },
-  Ops.String = Ops.String || {
-  },
   Ops.Gl.Matrix = Ops.Gl.Matrix || {
   },
   Ops.Gl.Meshes = Ops.Gl.Meshes || {
@@ -11465,8 +11591,8 @@ var CABLES = function (t) {
 		extendTitle: 'Inactive'
 	  })
 	};
-	const f = e.patch.cgl;
-	let p = 0,
+	const p = e.patch.cgl;
+	let f = 0,
 	m = 0;
 	e.patch.cgl || e.uiAttr({
 	  error: 'No webgl cgl context'
@@ -11475,12 +11601,12 @@ var CABLES = function (t) {
 	vec3.set(g, 0, 0, 0);
 	const v = vec3.create();
 	vec3.set(v, 0, 0, - 2),
-	u.onChange = x,
-	setTimeout(x, 100);
+	u.onChange = O,
+	setTimeout(O, 100);
 	let b = null,
 	h = !0,
 	_ = !0;
-	function x() {
+	function O() {
 	  function t() {
 		b && (b.style.display = 'block')
 	  }
@@ -11493,7 +11619,7 @@ var CABLES = function (t) {
 		  n && n.appendChild(b),
 		  b.addEventListener('mouseenter', t),
 		  b.addEventListener('click', function (e) {
-			CABLES.UI && !e.shiftKey ? gui.cycleRendererSize() : f.fullScreen()
+			CABLES.UI && !e.shiftKey ? gui.cycleRendererSize() : p.fullScreen()
 		  })
 		}
 		b.style.padding = '10px',
@@ -11512,7 +11638,7 @@ var CABLES = function (t) {
 	}
 	function A(u) {
 	  if (!c.get()) return;
-	  if (f.aborted || 0 === f.canvas.clientWidth || 0 === f.canvas.clientHeight) return;
+	  if (p.aborted || 0 === p.canvas.clientWidth || 0 === p.canvas.clientHeight) return;
 	  const d = performance.now();
 	  e.patch.config.fpsLimit = function () {
 		if (i.get() && e.patch.loading.getProgress() < 1) return 5;
@@ -11522,9 +11648,9 @@ var CABLES = function (t) {
 		}
 		return t.get()
 	  }(),
-	  - 1 != f.canvasWidth ? (f.canvasWidth == a.get() && f.canvasHeight == r.get() || (a.set(f.canvasWidth), r.set(f.canvasHeight)), CABLES.now() - m > 1000 && (CGL.fpsReport = CGL.fpsReport || [
-	  ], e.patch.loading.getProgress() >= 1 && 0 !== m && CGL.fpsReport.push(p), p = 0, m = CABLES.now()), CGL.MESH.lastShader = null, CGL.MESH.lastMesh = null, f.renderStart(f, g, v), s.get() && (f.gl.clearColor(0, 0, 0, 1), f.gl.clear(f.gl.COLOR_BUFFER_BIT | f.gl.DEPTH_BUFFER_BIT)), n.trigger(), CGL.MESH.lastMesh && CGL.MESH.lastMesh.unBind(), CGL.Texture.previewTexture && (CGL.Texture.texturePreviewer || (CGL.Texture.texturePreviewer = new CGL.Texture.texturePreview(f)), CGL.Texture.texturePreviewer.render(CGL.Texture.previewTexture)), f.renderEnd(f), l.get() && (f.gl.clearColor(1, 1, 1, 1), f.gl.colorMask(!1, !1, !1, !0), f.gl.clear(f.gl.COLOR_BUFFER_BIT), f.gl.colorMask(!0, !0, !0, !0)), f.frameStore.phong || (f.frameStore.phong = {
-	  }), p++, CGL.profileData.profileMainloopMs = performance.now() - d) : f.setCanvas(e.patch.config.glCanvasId)
+	  - 1 != p.canvasWidth ? (p.canvasWidth == a.get() && p.canvasHeight == r.get() || (a.set(p.canvasWidth), r.set(p.canvasHeight)), CABLES.now() - m > 1000 && (CGL.fpsReport = CGL.fpsReport || [
+	  ], e.patch.loading.getProgress() >= 1 && 0 !== m && CGL.fpsReport.push(f), f = 0, m = CABLES.now()), CGL.MESH.lastShader = null, CGL.MESH.lastMesh = null, p.renderStart(p, g, v), s.get() && (p.gl.clearColor(0, 0, 0, 1), p.gl.clear(p.gl.COLOR_BUFFER_BIT | p.gl.DEPTH_BUFFER_BIT)), n.trigger(), CGL.MESH.lastMesh && CGL.MESH.lastMesh.unBind(), CGL.Texture.previewTexture && (CGL.Texture.texturePreviewer || (CGL.Texture.texturePreviewer = new CGL.Texture.texturePreview(p)), CGL.Texture.texturePreviewer.render(CGL.Texture.previewTexture)), p.renderEnd(p), l.get() && (p.gl.clearColor(1, 1, 1, 1), p.gl.colorMask(!1, !1, !1, !0), p.gl.clear(p.gl.COLOR_BUFFER_BIT), p.gl.colorMask(!0, !0, !0, !0)), p.frameStore.phong || (p.frameStore.phong = {
+	  }), f++, CGL.profileData.profileMainloopMs = performance.now() - d) : p.setCanvas(e.patch.config.glCanvasId)
 	}
 	window.addEventListener('blur', () =>{
 	  h = !1
@@ -11536,8 +11662,8 @@ var CABLES = function (t) {
 	  _ = !document.hidden
 	}),
 	e.onDelete = function () {
-	  f.gl.clearColor(0, 0, 0, 0),
-	  f.gl.clear(f.gl.COLOR_BUFFER_BIT | f.gl.DEPTH_BUFFER_BIT)
+	  p.gl.clearColor(0, 0, 0, 0),
+	  p.gl.clear(p.gl.COLOR_BUFFER_BIT | p.gl.DEPTH_BUFFER_BIT)
 	}
   },
   Ops.Gl.MainLoop.prototype = new CABLES.Op,
@@ -11568,53 +11694,29 @@ var CABLES = function (t) {
 	  r
 	]);
 	var d = null,
-	f = null;
-	function p() {
+	p = null;
+	function f() {
 	  d || (d = new CGL.Geometry('cubemesh')),
 	  d.clear();
 	  var e = n.get(),
 	  t = - 1 * n.get(),
 	  i = r.get(),
 	  l = - 1 * r.get(),
-	  p = a.get(),
+	  f = a.get(),
 	  m = - 1 * a.get();
-	  if (o.get() ? (e *= 0.5, t *= 0.5, i *= 0.5, l *= 0.5, p *= 0.5, m *= 0.5) : (t = 0, l = 0, m = 0), 'Cube' == s.get() || 'Cube Biased' == s.get() ? d.vertices = [
+	  if (o.get() ? (e *= 0.5, t *= 0.5, i *= 0.5, l *= 0.5, f *= 0.5, m *= 0.5) : (t = 0, l = 0, m = 0), 'Cube' == s.get() || 'Cube Biased' == s.get() ? d.vertices = [
 		t,
 		l,
-		p,
+		f,
 		e,
 		l,
-		p,
+		f,
 		e,
 		i,
-		p,
+		f,
 		t,
 		i,
-		p,
-		t,
-		l,
-		m,
-		e,
-		l,
-		m,
-		e,
-		i,
-		m,
-		t,
-		i,
-		m,
-		t,
-		i,
-		m,
-		e,
-		i,
-		m,
-		e,
-		i,
-		p,
-		t,
-		i,
-		p,
+		f,
 		t,
 		l,
 		m,
@@ -11622,20 +11724,44 @@ var CABLES = function (t) {
 		l,
 		m,
 		e,
-		l,
-		p,
+		i,
+		m,
+		t,
+		i,
+		m,
+		t,
+		i,
+		m,
+		e,
+		i,
+		m,
+		e,
+		i,
+		f,
+		t,
+		i,
+		f,
 		t,
 		l,
-		p,
+		m,
 		e,
 		l,
 		m,
 		e,
 		l,
-		p,
+		f,
+		t,
+		l,
+		f,
+		e,
+		l,
+		m,
+		e,
+		l,
+		f,
 		e,
 		i,
-		p,
+		f,
 		e,
 		i,
 		m,
@@ -11644,83 +11770,83 @@ var CABLES = function (t) {
 		m,
 		t,
 		l,
-		p,
+		f,
 		t,
 		i,
-		p,
+		f,
 		t,
 		i,
 		m
 	  ] : d.vertices = [
 		t,
 		l,
-		p,
+		f,
 		e,
 		l,
-		p,
+		f,
 		e,
 		i,
-		p,
+		f,
 		t,
 		i,
-		p,
-		t,
-		l,
-		m,
-		t,
-		i,
-		m,
-		e,
-		i,
-		m,
-		e,
-		l,
-		m,
-		t,
-		i,
-		m,
-		t,
-		i,
-		p,
-		e,
-		i,
-		p,
-		e,
-		i,
-		m,
-		t,
-		l,
-		m,
-		e,
-		l,
-		m,
-		e,
-		l,
-		p,
-		t,
-		l,
-		p,
-		e,
-		l,
-		m,
-		e,
-		i,
-		m,
-		e,
-		i,
-		p,
-		e,
-		l,
-		p,
+		f,
 		t,
 		l,
 		m,
 		t,
+		i,
+		m,
+		e,
+		i,
+		m,
+		e,
 		l,
-		p,
+		m,
 		t,
 		i,
-		p,
+		m,
+		t,
+		i,
+		f,
+		e,
+		i,
+		f,
+		e,
+		i,
+		m,
+		t,
+		l,
+		m,
+		e,
+		l,
+		m,
+		e,
+		l,
+		f,
+		t,
+		l,
+		f,
+		e,
+		l,
+		m,
+		e,
+		i,
+		m,
+		e,
+		i,
+		f,
+		e,
+		l,
+		f,
+		t,
+		l,
+		m,
+		t,
+		l,
+		f,
+		t,
+		i,
+		f,
 		t,
 		i,
 		m
@@ -12085,27 +12211,27 @@ var CABLES = function (t) {
 		22,
 		23
 	  ],
-	  f && f.dispose(),
-	  f = new CGL.Mesh(c, d),
+	  p && p.dispose(),
+	  p = new CGL.Mesh(c, d),
 	  u.set(null),
 	  u.set(d)
 	}
-	s.onChange = p,
-	n.onChange = p,
-	a.onChange = p,
-	r.onChange = p,
-	o.onChange = p,
-	p(),
+	s.onChange = f,
+	n.onChange = f,
+	a.onChange = f,
+	r.onChange = f,
+	o.onChange = f,
+	f(),
 	t.onTriggered = function () {
-	  i.get() && f && f.render(c.getShader()),
+	  i.get() && p && p.render(c.getShader()),
 	  l.trigger()
 	},
 	e.preRender = function () {
-	  p(),
-	  f.render(c.getShader())
+	  f(),
+	  p.render(c.getShader())
 	},
 	e.onDelete = function () {
-	  f && f.dispose()
+	  p && p.dispose()
 	}
   },
   Ops.Gl.Meshes.Cube.prototype = new CABLES.Op,
@@ -12141,21 +12267,21 @@ var CABLES = function (t) {
 	e.setUiAxisPorts(n, a, r);
 	const c = e.patch.cgl,
 	d = vec3.create(),
-	f = vec3.create(),
-	p = mat4.create();
-	mat4.identity(p);
+	p = vec3.create(),
+	f = mat4.create();
+	mat4.identity(f);
 	let m = !1,
 	g = !1,
 	v = !0,
 	b = !0,
 	h = !0;
 	function _() {
-	  mat4.identity(p),
-	  g && mat4.translate(p, p, d),
-	  0 !== i.get() && mat4.rotateX(p, p, i.get() * CGL.DEG2RAD),
-	  0 !== s.get() && mat4.rotateY(p, p, s.get() * CGL.DEG2RAD),
-	  0 !== l.get() && mat4.rotateZ(p, p, l.get() * CGL.DEG2RAD),
-	  m && mat4.scale(p, p, f),
+	  mat4.identity(f),
+	  g && mat4.translate(f, f, d),
+	  0 !== i.get() && mat4.rotateX(f, f, i.get() * CGL.DEG2RAD),
+	  0 !== s.get() && mat4.rotateY(f, f, s.get() * CGL.DEG2RAD),
+	  0 !== l.get() && mat4.rotateZ(f, f, l.get() * CGL.DEG2RAD),
+	  m && mat4.scale(f, f, p),
 	  h = !1
 	}
 	i.onChange = s.onChange = l.onChange = function () {
@@ -12175,11 +12301,11 @@ var CABLES = function (t) {
 		vec3.set(d, n.get(), a.get(), r.get()),
 		v = !1
 	  }(), t = !0),
-	  b && (m = !0, vec3.set(f, o.get(), o.get(), o.get()), b = !1, t = !0),
+	  b && (m = !0, vec3.set(p, o.get(), o.get(), o.get()), b = !1, t = !0),
 	  h && (t = !0),
 	  t && _(),
 	  c.pushModelMatrix(),
-	  mat4.multiply(c.mMatrix, c.mMatrix, p),
+	  mat4.multiply(c.mMatrix, c.mMatrix, f),
 	  u.trigger(),
 	  c.popModelMatrix(),
 	  CABLES.UI && CABLES.UI.showCanvasTransforms && gui.setTransform(e.id, n.get(), a.get(), r.get()),
@@ -12274,17 +12400,17 @@ var CABLES = function (t) {
 	u = e.inValueFloat('mul'),
 	c = e.inValueSlider('Smoothness', 1),
 	d = e.inValue('Speed X', 1),
-	f = e.inValue('Speed Y', 1),
-	p = e.inValueBool('Active', !0),
+	p = e.inValue('Speed Y', 1),
+	f = e.inValueBool('Active', !0),
 	m = e.inValueBool('Allow Panning', !0),
 	g = e.inValueBool('Allow Zooming', !0),
 	v = e.inValueBool('Allow Rotation', !0),
 	b = e.inValueBool('restricted', !0),
 	h = e.inValueBool('Pointerlock', !1),
 	_ = e.outTrigger('trigger'),
-	x = e.outValue('radius'),
+	O = e.outValue('radius'),
 	A = e.outValue('Rot X'),
-	O = e.outValue('Rot Y'),
+	x = e.outValue('Rot Y'),
 	S = e.inTriggerButton('Reset');
 	e.setPortGroup('Initial Values', [
 	  s,
@@ -12295,7 +12421,7 @@ var CABLES = function (t) {
 	  u,
 	  c,
 	  d,
-	  f
+	  p
 	]),
 	e.setPortGroup('Boundaries', [
 	  r,
@@ -12309,25 +12435,25 @@ var CABLES = function (t) {
 	S.onTriggered = W;
 	const C = e.patch.cgl;
 	let T = vec3.create();
-	const E = vec3.create(),
-	L = vec3.create(),
+	const L = vec3.create(),
+	E = vec3.create(),
 	M = mat4.create(),
-	y = (mat4.create(), vec3.create());
+	I = (mat4.create(), vec3.create());
 	vec3.create();
 	s.set(0.5);
-	let I = !1,
-	P = 5;
-	x.set(P);
-	let U = 0,
-	V = 0,
-	R = 0,
-	N = 0;
-	vec3.set(L, 0, 0, 0),
-	vec3.set(E, 0, 1, 0);
+	let P = !1,
+	V = 5;
+	O.set(V);
+	let y = 0,
+	N = 0,
+	U = 0,
+	R = 0;
+	vec3.set(E, 0, 0, 0),
+	vec3.set(L, 0, 1, 0);
 	const w = vec3.create(),
 	B = vec3.create(),
-	D = vec3.create(),
-	G = vec3.create();
+	G = vec3.create(),
+	D = vec3.create();
 	let k = 0,
 	j = 0,
 	H = 1,
@@ -12345,13 +12471,13 @@ var CABLES = function (t) {
 	  let e = 0;
 	  k % Y < - z ? (e = - Y, k %= - Y) : k % Y > z ? (e = Y, k %= Y) : k %= Y,
 	  j %= Math.PI,
-	  vec3.set(y, 0, 0, 0),
-	  vec3.set(L, 0, 0, 0),
-	  vec3.set(E, 0, 1, 0),
-	  R = l.get() * Math.PI * 2 + e,
-	  N = s.get() - 0.5,
-	  P = i.get(),
-	  T = Q(N)
+	  vec3.set(I, 0, 0, 0),
+	  vec3.set(E, 0, 0, 0),
+	  vec3.set(L, 0, 1, 0),
+	  U = l.get() * Math.PI * 2 + e,
+	  R = s.get() - 0.5,
+	  V = i.get(),
+	  T = Q(R)
 	}
 	function K() {
 	  H = 10 * c.get() + 1
@@ -12364,32 +12490,32 @@ var CABLES = function (t) {
 	let J = 0;
 	function Q(e) {
 	  const t = u.get();
-	  P < n.get() * t && (P = n.get() * t),
-	  P > a.get() * t && (P = a.get() * t),
-	  x.set(P * t);
+	  V < n.get() * t && (V = n.get() * t),
+	  V > a.get() * t && (V = a.get() * t),
+	  O.set(V * t);
 	  let r = 0;
 	  const o = vec3.create();
 	  return r = 360 * e / 2 * CGL.DEG2RAD,
-	  vec3.set(o, Math.cos(r) * P * t, Math.sin(r) * P * t, 0),
+	  vec3.set(o, Math.cos(r) * V * t, Math.sin(r) * V * t, 0),
 	  o
 	}
 	function $(e) {
-	  if (!I) return;
+	  if (!P) return;
 	  const t = e.clientX,
 	  n = e.clientY;
-	  let a = t - U,
-	  r = n - V;
+	  let a = t - y,
+	  r = n - N;
 	  X && (a = e.movementX * u.get(), r = e.movementY * u.get()),
 	  a *= d.get(),
-	  r *= f.get(),
-	  2 == e.buttons && m.get() ? (y[2] += 0.01 * a * u.get(), y[1] += 0.01 * r * u.get()) : 4 == e.buttons && g.get() ? (P += 0.05 * r, T = Q(N)) : v.get() && (R += 0.003 * a, N += 0.002 * r, b.get() && (N > 0.5 && (N = 0.5), N < - 0.5 && (N = - 0.5))),
-	  U = t,
-	  V = n
+	  r *= p.get(),
+	  2 == e.buttons && m.get() ? (I[2] += 0.01 * a * u.get(), I[1] += 0.01 * r * u.get()) : 4 == e.buttons && g.get() ? (V += 0.05 * r, T = Q(R)) : v.get() && (U += 0.003 * a, R += 0.002 * r, b.get() && (R > 0.5 && (R = 0.5), R < - 0.5 && (R = - 0.5))),
+	  y = t,
+	  N = n
 	}
 	function ee(t) {
-	  U = t.clientX,
-	  V = t.clientY,
-	  I = !0;
+	  y = t.clientX,
+	  N = t.clientY,
+	  P = !0;
 	  try {
 		F.setPointerCapture(t.pointerId)
 	  } catch (e) {
@@ -12404,7 +12530,7 @@ var CABLES = function (t) {
 	  }
 	}
 	function te(e) {
-	  I = !1;
+	  P = !1;
 	  try {
 		F.releasePointerCapture(e.pointerId)
 	  } catch (e) {
@@ -12419,53 +12545,53 @@ var CABLES = function (t) {
 	}
 	t.onTriggered = function () {
 	  C.pushViewMatrix(),
-	  k = q(k, R);
-	  let e = 180 * ((j = q(j, N)) + 0.5);
+	  k = q(k, U);
+	  let e = 180 * ((j = q(j, R)) + 0.5);
 	  0 !== r.get() && e < r.get() ? (e = r.get(), j = J) : 0 !== o.get() && e > o.get() ? (e = o.get(), j = J) : J = j;
 	  const t = k * CGL.RAD2DEG;
-	  O.set(e),
+	  x.set(e),
 	  A.set(t),
 	  function (e, t) {
 		const r = u.get();
-		P < n.get() * r && (P = n.get() * r);
-		P > a.get() * r && (P = a.get() * r);
-		x.set(P * r);
+		V < n.get() * r && (V = n.get() * r);
+		V > a.get() * r && (V = a.get() * r);
+		O.set(V * r);
 		let o = 0;
 		o = 360 * t / 2 * CGL.DEG2RAD,
-		vec3.set(e, Math.cos(o) * P * r, Math.sin(o) * P * r, 0)
+		vec3.set(e, Math.cos(o) * V * r, Math.sin(o) * V * r, 0)
 	  }(T, j),
-	  vec3.add(w, T, y),
-	  vec3.add(D, L, y),
+	  vec3.add(w, T, I),
+	  vec3.add(G, E, I),
 	  B[0] = q(B[0], w[0]),
 	  B[1] = q(B[1], w[1]),
 	  B[2] = q(B[2], w[2]),
-	  G[0] = q(G[0], D[0]),
-	  G[1] = q(G[1], D[1]),
-	  G[2] = q(G[2], D[2]);
+	  D[0] = q(D[0], G[0]),
+	  D[1] = q(D[1], G[1]),
+	  D[2] = q(D[2], G[2]);
 	  vec3.create();
-	  mat4.lookAt(M, B, G, E),
-	  mat4.rotate(M, M, k, E),
+	  mat4.lookAt(M, B, D, L),
+	  mat4.rotate(M, M, k, L),
 	  mat4.multiply(C.vMatrix, C.vMatrix, M),
 	  _.trigger(),
 	  C.popViewMatrix(),
 	  Z = !1
 	},
 	i.onChange = function () {
-	  P = i.get(),
+	  V = i.get(),
 	  W()
 	},
 	l.onChange = function () {
-	  k = R = l.get() * Math.PI * 2
+	  k = U = l.get() * Math.PI * 2
 	},
 	s.onChange = function () {
-	  j = N = s.get() - 0.5,
-	  T = Q(N)
+	  j = R = s.get() - 0.5,
+	  T = Q(R)
 	};
 	const re = function (e) {
 	  if (g.get()) {
 		const t = 0.06 * CGL.getWheelSpeed(e);
-		P += 1.2 * parseFloat(t),
-		T = Q(N)
+		V += 1.2 * parseFloat(t),
+		T = Q(R)
 	  }
 	};
 	function oe() {
@@ -12485,8 +12611,8 @@ var CABLES = function (t) {
 	  F && (F.removeEventListener('pointermove', $), F.removeEventListener('pointerdown', ee), F.removeEventListener('pointerup', te), F.removeEventListener('pointerleave', te), F.removeEventListener('pointerenter', te), F.removeEventListener('wheel', re))
 	}
 	var se;
-	p.onChange = function () {
-	  p.get() ? oe() : ie()
+	f.onChange = function () {
+	  f.get() ? oe() : ie()
 	},
 	T = Q(0),
 	se = C.canvas,
@@ -12515,7 +12641,7 @@ var CABLES = function (t) {
 	e.toWorkPortsNeedToBeLinked(a);
 	const s = new CGL.Shader(i, 'basicmaterialnew');
 	function l() {
-	  s && (i.pushShader(s), s.popTextures(), m && p.get() && s.pushTexture(m, p.get().tex), h && b.get() && s.pushTexture(h, b.get().tex), r.trigger(), i.popShader())
+	  s && (i.pushShader(s), s.popTextures(), m && f.get() && s.pushTexture(m, f.get().tex), h && b.get() && s.pushTexture(h, b.get().tex), r.trigger(), i.popShader())
 	}
 	s.setModules(['MODULE_VERTEX_POSITION',
 	'MODULE_COLOR',
@@ -12530,27 +12656,27 @@ var CABLES = function (t) {
 	const u = e.inValueSlider('r', Math.random()),
 	c = e.inValueSlider('g', Math.random()),
 	d = e.inValueSlider('b', Math.random()),
-	f = e.inValueSlider('a', 1);
+	p = e.inValueSlider('a', 1);
 	u.setUiAttribs({
 	  colorPick: !0
 	});
-	new CGL.Uniform(s, '4f', 'color', u, c, d, f);
+	new CGL.Uniform(s, '4f', 'color', u, c, d, p);
 	e.setPortGroup('Color', [
 	  u,
 	  c,
 	  d,
-	  f
+	  p
 	]);
-	var p = e.inTexture('texture'),
+	var f = e.inTexture('texture'),
 	m = null;
 	function g() {
-	  p.get() ? (s.hasDefine('HAS_TEXTURE_DIFFUSE') || s.define('HAS_TEXTURE_DIFFUSE'), m || (m = new CGL.Uniform(s, 't', 'texDiffuse', 0)), S.setUiAttribs({
+	  f.get() ? (s.hasDefine('HAS_TEXTURE_DIFFUSE') || s.define('HAS_TEXTURE_DIFFUSE'), m || (m = new CGL.Uniform(s, 't', 'texDiffuse', 0)), S.setUiAttribs({
 		greyout: !1
 	  }), C.setUiAttribs({
 		greyout: !1
 	  }), T.setUiAttribs({
 		greyout: !1
-	  }), E.setUiAttribs({
+	  }), L.setUiAttribs({
 		greyout: !1
 	  }), v.setUiAttribs({
 		greyout: !1
@@ -12560,16 +12686,16 @@ var CABLES = function (t) {
 		greyout: !0
 	  }), T.setUiAttribs({
 		greyout: !0
-	  }), E.setUiAttribs({
+	  }), L.setUiAttribs({
 		greyout: !0
 	  }), v.setUiAttribs({
 		greyout: !0
 	  }))
 	}
-	p.onChange = g;
+	f.onChange = g;
 	const v = e.inValueBool('colorizeTexture', !1);
 	e.setPortGroup('Color Texture', [
-	  p,
+	  f,
 	  v
 	]);
 	var b = e.inTexture('textureOpacity'),
@@ -12581,7 +12707,7 @@ var CABLES = function (t) {
 	  'G' == e.alphaMaskSource.get() ? s.define('ALPHA_MASK_G') : s.removeDefine('ALPHA_MASK_G'),
 	  'B' == e.alphaMaskSource.get() ? s.define('ALPHA_MASK_B') : s.removeDefine('ALPHA_MASK_B')
 	}
-	function x() {
+	function O() {
 	  if (b.get()) {
 		if (null !== h) return;
 		s.removeUniform('texOpacity'),
@@ -12590,7 +12716,7 @@ var CABLES = function (t) {
 		e.alphaMaskSource.setUiAttribs({
 		  greyout: !1
 		}),
-		O.setUiAttribs({
+		x.setUiAttribs({
 		  greyout: !1
 		}),
 		A.setUiAttribs({
@@ -12602,7 +12728,7 @@ var CABLES = function (t) {
 	  e.alphaMaskSource.setUiAttribs({
 		greyout: !0
 	  }),
-	  O.setUiAttribs({
+	  x.setUiAttribs({
 		greyout: !0
 	  }),
 	  A.setUiAttribs({
@@ -12621,11 +12747,11 @@ var CABLES = function (t) {
 	e.alphaMaskSource.setUiAttribs({
 	  greyout: !0
 	}),
-	b.onChange = x;
+	b.onChange = O;
 	var A = e.inValueBool('Opacity TexCoords Transform', !1);
-	const O = e.inValueBool('Discard Transparent Pixels');
-	O.onChange = function () {
-	  O.get() ? s.define('DISCARDTRANS') : s.removeDefine('DISCARDTRANS')
+	const x = e.inValueBool('Discard Transparent Pixels');
+	x.onChange = function () {
+	  x.get() ? s.define('DISCARDTRANS') : s.removeDefine('DISCARDTRANS')
 	},
 	A.onChange = function () {
 	  A.get() ? s.define('TRANSFORMALPHATEXCOORDS') : s.removeDefine('TRANSFORMALPHATEXCOORDS')
@@ -12633,7 +12759,7 @@ var CABLES = function (t) {
 	e.setPortGroup('Opacity', [
 	  b,
 	  e.alphaMaskSource,
-	  O,
+	  x,
 	  A
 	]),
 	v.onChange = function () {
@@ -12642,22 +12768,22 @@ var CABLES = function (t) {
 	const S = e.inValue('diffuseRepeatX', 1),
 	C = e.inValue('diffuseRepeatY', 1),
 	T = e.inValue('Tex Offset X', 0),
-	E = e.inValue('Tex Offset Y', 0);
+	L = e.inValue('Tex Offset Y', 0);
 	new CGL.Uniform(s, 'f', 'diffuseRepeatX', S),
 	new CGL.Uniform(s, 'f', 'diffuseRepeatY', C),
 	new CGL.Uniform(s, 'f', 'texOffsetX', T),
-	new CGL.Uniform(s, 'f', 'texOffsetY', E);
+	new CGL.Uniform(s, 'f', 'texOffsetY', L);
 	e.setPortGroup('Texture Transform', [
 	  S,
 	  C,
 	  T,
-	  E
+	  L
 	]);
-	const L = e.inValueBool('billboard', !1);
-	L.onChange = function () {
-	  L.get() ? s.define('BILLBOARD') : s.removeDefine('BILLBOARD')
+	const E = e.inValueBool('billboard', !1);
+	E.onChange = function () {
+	  E.get() ? s.define('BILLBOARD') : s.removeDefine('BILLBOARD')
 	},
-	x(),
+	O(),
 	g()
   },
   Ops.Gl.Shader.BasicMaterial_v2.prototype = new CABLES.Op,
@@ -12736,22 +12862,22 @@ var CABLES = function (t) {
 	u = e.inTexture('AO Texture'),
 	c = e.inTexture('Opacity Texture'),
 	d = e.inValueSlider('r', 1),
-	f = e.inValueSlider('g', 1),
-	p = e.inValueSlider('b', 1),
+	p = e.inValueSlider('g', 1),
+	f = e.inValueSlider('b', 1),
 	m = e.inValueSlider('Opacity', 1),
 	g = e.inValueSlider('AO Intensity', 1),
 	v = e.inValue('Repeat X', 1),
 	b = e.inValue('Repeat Y', 1),
 	h = e.inValue('Offset X', 0),
 	_ = e.inValue('Offset Y', 0),
-	x = e.inValueBool('calc normal tangents', !0),
+	O = e.inValueBool('calc normal tangents', !0),
 	A = e.inValueSelect('projectCoords', [
 	  'no',
 	  'xy',
 	  'yz',
 	  'xz'
 	], 'no'),
-	O = e.inValueBool('Screen Space Normals'),
+	x = e.inValueBool('Screen Space Normals'),
 	S = e.outTrigger('trigger'),
 	C = e.outObject('Shader');
 	d.setUiAttribs({
@@ -12767,12 +12893,12 @@ var CABLES = function (t) {
 	T.setUiAttribs({
 	  greyout: !0
 	});
-	const E = e.inValueBool('Opacity TexCoords Transform', !1),
-	L = e.inValueBool('Discard Transparent Pixels');
+	const L = e.inValueBool('Opacity TexCoords Transform', !1),
+	E = e.inValueBool('Discard Transparent Pixels');
 	e.setPortGroup('Texture Opacity', [
 	  T,
-	  E,
-	  L
+	  L,
+	  E
 	]),
 	e.setPortGroup('Texture maps', [
 	  o,
@@ -12784,29 +12910,29 @@ var CABLES = function (t) {
 	]),
 	e.setPortGroup('Color', [
 	  d,
-	  f,
 	  p,
+	  f,
 	  m
 	]);
 	const M = e.patch.cgl,
-	y = new CGL.Shader(M, 'MatCapMaterialNew');
-	new CGL.Uniform(y, 'f', 'opacity', m);
-	y.setModules(['MODULE_VERTEX_POSITION',
+	I = new CGL.Shader(M, 'MatCapMaterialNew');
+	new CGL.Uniform(I, 'f', 'opacity', m);
+	I.setModules(['MODULE_VERTEX_POSITION',
 	'MODULE_COLOR',
 	'MODULE_BEGIN_FRAG']),
-	y.setSource(n, t),
-	C.set(y);
-	const I = new CGL.Uniform(y, 't', 'texMatcap');
-	let P = null,
+	I.setSource(n, t),
+	C.set(I);
+	const P = new CGL.Uniform(I, 't', 'texMatcap');
+	let V = null,
+	y = null,
+	N = null,
 	U = null,
-	V = null,
-	R = null,
-	N = null;
-	new CGL.Uniform(y, '2f', 'texOffset', h, _),
-	new CGL.Uniform(y, '2f', 'texRepeat', v, b),
-	new CGL.Uniform(y, 'f', 'aoIntensity', g);
+	R = null;
+	new CGL.Uniform(I, '2f', 'texOffset', h, _),
+	new CGL.Uniform(I, '2f', 'texRepeat', v, b),
+	new CGL.Uniform(I, 'f', 'aoIntensity', g);
 	function w() {
-	  x.get() ? y.define('CALC_TANGENT') : y.removeDefine('CALC_TANGENT')
+	  O.get() ? I.define('CALC_TANGENT') : I.removeDefine('CALC_TANGENT')
 	}
 	function B() {
 	  if (!M.defaultMatcapTex) {
@@ -12821,125 +12947,125 @@ var CABLES = function (t) {
 		M.defaultMatcapTex.initFromData(e, 16, 16, CGL.Texture.FILTER_LINEAR, CGL.Texture.WRAP_REPEAT)
 	  }
 	}
-	function D() {
-	  'Alpha Channel' == T.get() ? y.define('ALPHA_MASK_ALPHA') : y.removeDefine('ALPHA_MASK_ALPHA'),
-	  'Luminance' == T.get() ? y.define('ALPHA_MASK_LUMI') : y.removeDefine('ALPHA_MASK_LUMI'),
-	  'R' == T.get() ? y.define('ALPHA_MASK_R') : y.removeDefine('ALPHA_MASK_R'),
-	  'G' == T.get() ? y.define('ALPHA_MASK_G') : y.removeDefine('ALPHA_MASK_G'),
-	  'B' == T.get() ? y.define('ALPHA_MASK_B') : y.removeDefine('ALPHA_MASK_B')
+	function G() {
+	  'Alpha Channel' == T.get() ? I.define('ALPHA_MASK_ALPHA') : I.removeDefine('ALPHA_MASK_ALPHA'),
+	  'Luminance' == T.get() ? I.define('ALPHA_MASK_LUMI') : I.removeDefine('ALPHA_MASK_LUMI'),
+	  'R' == T.get() ? I.define('ALPHA_MASK_R') : I.removeDefine('ALPHA_MASK_R'),
+	  'G' == T.get() ? I.define('ALPHA_MASK_G') : I.removeDefine('ALPHA_MASK_G'),
+	  'B' == T.get() ? I.define('ALPHA_MASK_B') : I.removeDefine('ALPHA_MASK_B')
 	}
-	p.uniform = new CGL.Uniform(y, 'f', 'b', p),
-	f.uniform = new CGL.Uniform(y, 'f', 'g', f),
-	d.uniform = new CGL.Uniform(y, 'f', 'r', d),
-	x.onChange = w,
+	f.uniform = new CGL.Uniform(I, 'f', 'b', f),
+	p.uniform = new CGL.Uniform(I, 'f', 'g', p),
+	d.uniform = new CGL.Uniform(I, 'f', 'r', d),
+	O.onChange = w,
 	w(),
-	O.onChange = function () {
-	  O.get() ? (M.glVersion < 2 && (M.gl.getExtension('OES_standard_derivatives'), y.enableExtension('GL_OES_standard_derivatives')), y.define('CALC_SSNORMALS')) : y.removeDefine('CALC_SSNORMALS')
+	x.onChange = function () {
+	  x.get() ? (M.glVersion < 2 && (M.gl.getExtension('OES_standard_derivatives'), I.enableExtension('GL_OES_standard_derivatives')), I.define('CALC_SSNORMALS')) : I.removeDefine('CALC_SSNORMALS')
 	},
 	A.onChange = function () {
-	  y.toggleDefine('DO_PROJECT_COORDS_XY', 'xy' == A.get()),
-	  y.toggleDefine('DO_PROJECT_COORDS_YZ', 'yz' == A.get()),
-	  y.toggleDefine('DO_PROJECT_COORDS_XZ', 'xz' == A.get())
+	  I.toggleDefine('DO_PROJECT_COORDS_XY', 'xy' == A.get()),
+	  I.toggleDefine('DO_PROJECT_COORDS_YZ', 'yz' == A.get()),
+	  I.toggleDefine('DO_PROJECT_COORDS_XZ', 'xz' == A.get())
 	},
 	r.onChange = B,
 	o.onChange = function () {
 	  if (o.get()) {
-		if (null !== P) return;
-		y.define('HAS_DIFFUSE_TEXTURE'),
-		y.removeUniform('texDiffuse'),
-		P = new CGL.Uniform(y, 't', 'texDiffuse')
-	  } else y.removeDefine('HAS_DIFFUSE_TEXTURE'),
-	  y.removeUniform('texDiffuse'),
-	  P = null
+		if (null !== V) return;
+		I.define('HAS_DIFFUSE_TEXTURE'),
+		I.removeUniform('texDiffuse'),
+		V = new CGL.Uniform(I, 't', 'texDiffuse')
+	  } else I.removeDefine('HAS_DIFFUSE_TEXTURE'),
+	  I.removeUniform('texDiffuse'),
+	  V = null
 	},
 	i.onChange = function () {
 	  if (i.get()) {
-		if (null !== U) return;
-		y.define('HAS_NORMAL_TEXTURE'),
-		y.removeUniform('texNormal'),
-		U = new CGL.Uniform(y, 't', 'texNormal')
-	  } else y.removeDefine('HAS_NORMAL_TEXTURE'),
-	  y.removeUniform('texNormal'),
-	  U = null
+		if (null !== y) return;
+		I.define('HAS_NORMAL_TEXTURE'),
+		I.removeUniform('texNormal'),
+		y = new CGL.Uniform(I, 't', 'texNormal')
+	  } else I.removeDefine('HAS_NORMAL_TEXTURE'),
+	  I.removeUniform('texNormal'),
+	  y = null
 	},
 	u.onChange = function () {
 	  if (u.get()) {
-		if (null !== N) return;
-		y.define('HAS_AO_TEXTURE'),
-		y.removeUniform('texAo'),
-		N = new CGL.Uniform(y, 't', 'texAo')
-	  } else y.removeDefine('HAS_AO_TEXTURE'),
-	  y.removeUniform('texAo'),
-	  N = null
+		if (null !== R) return;
+		I.define('HAS_AO_TEXTURE'),
+		I.removeUniform('texAo'),
+		R = new CGL.Uniform(I, 't', 'texAo')
+	  } else I.removeDefine('HAS_AO_TEXTURE'),
+	  I.removeUniform('texAo'),
+	  R = null
 	},
 	s.onChange = l.onChange = function () {
 	  if (s.get() && l.get()) {
-		if (null !== V) return;
-		y.define('USE_SPECULAR_TEXTURE'),
-		y.removeUniform('texSpec'),
-		y.removeUniform('texSpecMatCap'),
-		V = new CGL.Uniform(y, 't', 'texSpec'),
-		R = new CGL.Uniform(y, 't', 'texSpecMatCap')
-	  } else y.removeDefine('USE_SPECULAR_TEXTURE'),
-	  y.removeUniform('texSpec'),
-	  y.removeUniform('texSpecMatCap'),
-	  V = null,
-	  R = null
+		if (null !== N) return;
+		I.define('USE_SPECULAR_TEXTURE'),
+		I.removeUniform('texSpec'),
+		I.removeUniform('texSpecMatCap'),
+		N = new CGL.Uniform(I, 't', 'texSpec'),
+		U = new CGL.Uniform(I, 't', 'texSpecMatCap')
+	  } else I.removeDefine('USE_SPECULAR_TEXTURE'),
+	  I.removeUniform('texSpec'),
+	  I.removeUniform('texSpecMatCap'),
+	  N = null,
+	  U = null
 	},
-	T.onChange = D,
+	T.onChange = G,
 	c.onChange = function () {
 	  if (c.get()) {
-		if (null !== G) return;
-		y.removeUniform('texOpacity'),
-		y.define('HAS_TEXTURE_OPACITY'),
-		G || (G = new CGL.Uniform(y, 't', 'texOpacity')),
+		if (null !== D) return;
+		I.removeUniform('texOpacity'),
+		I.define('HAS_TEXTURE_OPACITY'),
+		D || (D = new CGL.Uniform(I, 't', 'texOpacity')),
 		T.setUiAttribs({
-		  greyout: !1
-		}),
-		L.setUiAttribs({
 		  greyout: !1
 		}),
 		E.setUiAttribs({
 		  greyout: !1
+		}),
+		L.setUiAttribs({
+		  greyout: !1
 		})
-	  } else y.removeUniform('texOpacity'),
-	  y.removeDefine('HAS_TEXTURE_OPACITY'),
-	  G = null,
+	  } else I.removeUniform('texOpacity'),
+	  I.removeDefine('HAS_TEXTURE_OPACITY'),
+	  D = null,
 	  T.setUiAttribs({
-		greyout: !0
-	  }),
-	  L.setUiAttribs({
 		greyout: !0
 	  }),
 	  E.setUiAttribs({
 		greyout: !0
+	  }),
+	  L.setUiAttribs({
+		greyout: !0
 	  });
-	  D()
+	  G()
 	};
-	let G = null;
-	L.onChange = function () {
-	  L.get() ? y.define('DISCARDTRANS') : y.removeDefine('DISCARDTRANS')
-	},
+	let D = null;
 	E.onChange = function () {
-	  E.get() ? y.define('TRANSFORMALPHATEXCOORDS') : y.removeDefine('TRANSFORMALPHATEXCOORDS')
+	  E.get() ? I.define('DISCARDTRANS') : I.removeDefine('DISCARDTRANS')
+	},
+	L.onChange = function () {
+	  L.get() ? I.define('TRANSFORMALPHATEXCOORDS') : I.removeDefine('TRANSFORMALPHATEXCOORDS')
 	},
 	e.onDelete = function () {
 	},
 	e.preRender = function () {
-	  y.bind()
+	  I.bind()
 	},
 	a.onTriggered = function () {
 	  M.defaultMatcapTex || B(),
-	  y.popTextures();
+	  I.popTextures();
 	  const e = r.get() || M.defaultMatcapTex;
-	  y.pushTexture(I, e.tex),
-	  o.get() && P && y.pushTexture(P, o.get().tex),
-	  i.get() && U && y.pushTexture(U, i.get().tex),
-	  s.get() && V && y.pushTexture(V, s.get().tex),
-	  l.get() && R && y.pushTexture(R, l.get().tex),
-	  u.get() && N && y.pushTexture(N, u.get().tex),
-	  c.get() && G && y.pushTexture(G, c.get().tex),
-	  M.pushShader(y),
+	  I.pushTexture(P, e.tex),
+	  o.get() && V && I.pushTexture(V, o.get().tex),
+	  i.get() && y && I.pushTexture(y, i.get().tex),
+	  s.get() && N && I.pushTexture(N, s.get().tex),
+	  l.get() && U && I.pushTexture(U, l.get().tex),
+	  u.get() && R && I.pushTexture(R, u.get().tex),
+	  c.get() && D && I.pushTexture(D, c.get().tex),
+	  M.pushShader(I),
 	  S.trigger(),
 	  M.popShader()
 	}
@@ -12970,153 +13096,153 @@ var CABLES = function (t) {
 	], 'clamp to edge'),
 	c = e.inValueBool('flip', !0),
 	d = e.inValueFloat('fps', 25),
-	f = e.inValueFloat('set time'),
-	p = e.inTriggerButton('rewind'),
+	p = e.inValueFloat('set time'),
+	f = e.inTriggerButton('rewind'),
 	m = e.inValueBool('Preload', !0),
 	g = e.outTexture('texture'),
 	v = e.outValue('duration'),
 	b = e.outValue('progress'),
 	h = e.outValue('CurrentTime'),
 	_ = e.outValue('Loading'),
-	x = e.outValueBool('Can Play Through', !1),
+	O = e.outValueBool('Can Play Through', !1),
 	A = e.outNumber('Width'),
-	O = e.outNumber('Height'),
+	x = e.outNumber('Height'),
 	S = e.outNumber('Aspect Ratio'),
 	C = e.outBool('Has Error'),
 	T = e.outString('Error Message');
-	let E = !1,
-	L = !1;
+	let L = !1,
+	E = !1;
 	const M = e.patch.cgl,
-	y = document.createElement('video');
-	y.setAttribute('playsinline', ''),
-	y.setAttribute('webkit-playsinline', '');
-	let I = 0,
-	P = 0;
-	const U = CGL.Texture.getEmptyTexture(M);
-	let V = null;
-	g.set(V);
-	let R = null,
-	N = !0;
+	I = document.createElement('video');
+	I.setAttribute('playsinline', ''),
+	I.setAttribute('webkit-playsinline', '');
+	let P = 0,
+	V = 0;
+	const y = CGL.Texture.getEmptyTexture(M);
+	let N = null;
+	g.set(N);
+	let U = null,
+	R = !0;
 	function w() {
-	  V && V.delete(),
-	  V = new CGL.Texture(M, {
-		wrap: P,
-		filter: I
+	  N && N.delete(),
+	  N = new CGL.Texture(M, {
+		wrap: V,
+		filter: P
 	  })
 	}
 	function B(a) {
-	  if (!t.get()) return void g.set(U);
+	  if (!t.get()) return void g.set(y);
 	  if (!a) {
 		if (!n.get()) return;
-		clearTimeout(R),
-		R = setTimeout(B, 1000 / d.get())
+		clearTimeout(U),
+		U = setTimeout(B, 1000 / d.get())
 	  }
-	  if (V || w(), !E) return;
-	  if (V.height = y.videoHeight, V.width = y.videoWidth, A.set(V.width), O.set(V.height), S.set(V.width / V.height), V || w(), !x.get()) return;
-	  if (!E) return;
-	  if (!y) return;
-	  if (y.videoHeight <= 0) return e.setUiError('videosize', 'video width is 0!'),
-	  void e.log(y);
-	  if (y.videoWidth <= 0) return e.setUiError('videosize', 'video height is 0!'),
-	  void e.log(y);
-	  const r = y.currentTime / y.duration;
+	  if (N || w(), !L) return;
+	  if (N.height = I.videoHeight, N.width = I.videoWidth, A.set(N.width), x.set(N.height), S.set(N.width / N.height), N || w(), !O.get()) return;
+	  if (!L) return;
+	  if (!I) return;
+	  if (I.videoHeight <= 0) return e.setUiError('videosize', 'video width is 0!'),
+	  void e.log(I);
+	  if (I.videoWidth <= 0) return e.setUiError('videosize', 'video height is 0!'),
+	  void e.log(I);
+	  const r = I.currentTime / I.duration;
 	  isNaN(r) || b.set(r),
-	  h.set(y.currentTime),
-	  M.gl.bindTexture(M.gl.TEXTURE_2D, V.tex),
-	  N ? (M.gl.texImage2D(M.gl.TEXTURE_2D, 0, M.gl.RGBA, M.gl.RGBA, M.gl.UNSIGNED_BYTE, y), M.gl.pixelStorei(M.gl.UNPACK_FLIP_Y_WEBGL, c.get()), V._setFilter()) : (M.gl.pixelStorei(M.gl.UNPACK_FLIP_Y_WEBGL, c.get()), M.gl.texSubImage2D(M.gl.TEXTURE_2D, 0, 0, 0, M.gl.RGBA, M.gl.UNSIGNED_BYTE, y)),
-	  N = !1,
-	  g.set(V),
+	  h.set(I.currentTime),
+	  M.gl.bindTexture(M.gl.TEXTURE_2D, N.tex),
+	  R ? (M.gl.texImage2D(M.gl.TEXTURE_2D, 0, M.gl.RGBA, M.gl.RGBA, M.gl.UNSIGNED_BYTE, I), M.gl.pixelStorei(M.gl.UNPACK_FLIP_Y_WEBGL, c.get()), N._setFilter()) : (M.gl.pixelStorei(M.gl.UNPACK_FLIP_Y_WEBGL, c.get()), M.gl.texSubImage2D(M.gl.TEXTURE_2D, 0, 0, 0, M.gl.RGBA, M.gl.UNSIGNED_BYTE, I)),
+	  R = !1,
+	  g.set(N),
 	  CGL.profileData.profileVideosPlaying++,
-	  y.readyState,
+	  I.readyState,
 	  _.set(!1)
 	}
-	function D() {
-	  y.controls = !1,
-	  y.muted = i.get(),
-	  y.loop = a.get(),
-	  n.get() && y.play(),
-	  B(),
-	  x.set(!0)
-	}
 	function G() {
-	  y.volume = (o.get() || 0) * e.patch.config.masterVolume
+	  I.controls = !1,
+	  I.muted = i.get(),
+	  I.loop = a.get(),
+	  n.get() && I.play(),
+	  B(),
+	  O.set(!0)
+	}
+	function D() {
+	  I.volume = (o.get() || 0) * e.patch.config.masterVolume
 	}
 	function k() {
-	  v.set(y.duration)
+	  v.set(I.duration)
 	}
 	g.set(CGL.Texture.getEmptyTexture(M)),
 	r.onChange = function () {
-	  y && (r.get() ? y.setAttribute('autoplay', '') : y.removeAttribute('autoplay'))
+	  I && (r.get() ? I.setAttribute('autoplay', '') : I.removeAttribute('autoplay'))
 	},
-	p.onTriggered = function () {
-	  y.currentTime = 0,
-	  g.set(U)
+	f.onTriggered = function () {
+	  I.currentTime = 0,
+	  g.set(y)
 	},
-	f.onChange = function () {
-	  y.currentTime = f.get() || 0,
+	p.onChange = function () {
+	  I.currentTime = p.get() || 0,
 	  B(!0)
 	},
 	d.onChange = function () {
 	  d.get() < 0.1 && d.set(1),
-	  clearTimeout(R),
-	  R = setTimeout(B, 1000 / d.get())
+	  clearTimeout(U),
+	  U = setTimeout(B, 1000 / d.get())
 	},
 	n.onChange = function () {
-	  if (L || H(!0), n.get()) {
-		y.currentTime = f.get() || 0;
-		const t = y.play();
+	  if (E || H(!0), n.get()) {
+		I.currentTime = p.get() || 0;
+		const t = I.play();
 		t && t.then(function () {
 		}).catch(function (t) {
 		  e.warn('exc', t)
 		}),
 		B(),
-		y.playbackRate = s.get()
-	  } else y.pause()
+		I.playbackRate = s.get()
+	  } else I.pause()
 	},
 	s.onChange = function () {
-	  y.playbackRate = s.get()
+	  I.playbackRate = s.get()
 	},
 	a.onChange = function () {
-	  y.loop = a.get()
+	  I.loop = a.get()
 	},
 	i.onChange = function () {
-	  y.muted = i.get()
+	  I.muted = i.get()
 	},
 	l.onChange = function () {
-	  'nearest' == l.get() && (I = CGL.Texture.FILTER_NEAREST),
-	  'linear' == l.get() && (I = CGL.Texture.FILTER_LINEAR),
+	  'nearest' == l.get() && (P = CGL.Texture.FILTER_NEAREST),
+	  'linear' == l.get() && (P = CGL.Texture.FILTER_LINEAR),
 	  F(),
-	  V = null
+	  N = null
 	},
 	u.onChange = function () {
-	  'repeat' == u.get() && (P = CGL.Texture.WRAP_REPEAT),
-	  'mirrored repeat' == u.get() && (P = CGL.Texture.WRAP_MIRRORED_REPEAT),
-	  'clamp to edge' == u.get() && (P = CGL.Texture.WRAP_CLAMP_TO_EDGE),
+	  'repeat' == u.get() && (V = CGL.Texture.WRAP_REPEAT),
+	  'mirrored repeat' == u.get() && (V = CGL.Texture.WRAP_MIRRORED_REPEAT),
+	  'clamp to edge' == u.get() && (V = CGL.Texture.WRAP_CLAMP_TO_EDGE),
 	  F(),
-	  V = null
+	  N = null
 	},
-	o.onChange = G,
-	e.onMasterVolumeChanged = G;
+	o.onChange = D,
+	e.onMasterVolumeChanged = D;
 	let j = !1;
 	function H(n) {
-	  if (C.set(!1), T.set(''), x.set(!1), t.get() && String(t.get()).length > 1 && (N = !0), t.get() || T.set(!0), m.get() || n) {
-		clearTimeout(R),
+	  if (C.set(!1), T.set(''), O.set(!1), t.get() && String(t.get()).length > 1 && (R = !0), t.get() || T.set(!0), m.get() || n) {
+		clearTimeout(U),
 		_.set(!0),
-		y.preload = 'true';
+		I.preload = 'true';
 		let n = e.patch.getFilePath(t.get());
 		if (0 == String(t.get()).indexOf('data:') && (n = t.get()), !n) return;
 		e.setUiError('onerror', null),
-		y.style.display = 'none',
-		y.setAttribute('src', n),
-		y.setAttribute('crossOrigin', 'anonymous'),
-		y.playbackRate = s.get(),
-		j || (j = !0, y.addEventListener('canplaythrough', D, !0), y.addEventListener('loadedmetadata', k), y.addEventListener('playing', function () {
-		  E = !0
-		}, !0), y.onerror = function () {
+		I.style.display = 'none',
+		I.setAttribute('src', n),
+		I.setAttribute('crossOrigin', 'anonymous'),
+		I.playbackRate = s.get(),
+		j || (j = !0, I.addEventListener('canplaythrough', G, !0), I.addEventListener('loadedmetadata', k), I.addEventListener('playing', function () {
+		  L = !0
+		}, !0), I.onerror = function () {
 		  C.set(!0),
-		  y && (T.set('Error ' + y.error.code + '/' + y.error.message), e.setUiError('onerror', 'Could not load video / ' + y.error.message, 2))
+		  I && (T.set('Error ' + I.error.code + '/' + I.error.message), e.setUiError('onerror', 'Could not load video / ' + I.error.message, 2))
 		}),
-		L = !0
+		E = !0
 	  }
 	}
 	function F() {
@@ -13143,19 +13269,6 @@ var CABLES = function (t) {
   CABLES.OPS['3ad08cfc-bce6-4175-9746-fef2817a3b12'] = {
 	f: Ops.Vars.VarGetString,
 	objName: 'Ops.Vars.VarGetString'
-  },
-  Ops.String.String_v2 = function () {
-	CABLES.Op.apply(this, arguments);
-	const e = this.inString('value', ''),
-	t = this.outString('String');
-	e.onChange = function () {
-	  t.set(e.get())
-	}
-  },
-  Ops.String.String_v2.prototype = new CABLES.Op,
-  CABLES.OPS['d697ff82-74fd-4f31-8f54-295bc64e713d'] = {
-	f: Ops.String.String_v2,
-	objName: 'Ops.String.String_v2'
   },
   Ops.Vars.VarSetString_v2 = function () {
 	CABLES.Op.apply(this, arguments);
@@ -13195,6 +13308,19 @@ var CABLES = function (t) {
   CABLES.OPS['b5249226-6095-4828-8a1c-080654e192fa'] = {
 	f: Ops.Vars.VarSetNumber_v2,
 	objName: 'Ops.Vars.VarSetNumber_v2'
+  },
+  Ops.Vars.VarGetNumber_v2 = function () {
+	CABLES.Op.apply(this, arguments);
+	const e = this;
+	var t = e.outValue('Value');
+	e.varName = e.inValueSelect('Variable', [
+	], '', !0),
+	new CABLES.VarGetOpWrapper(e, 'number', e.varName, t)
+  },
+  Ops.Vars.VarGetNumber_v2.prototype = new CABLES.Op,
+  CABLES.OPS['421f5b52-c0fa-47c4-8b7a-012b9e1c864a'] = {
+	f: Ops.Vars.VarGetNumber_v2,
+	objName: 'Ops.Vars.VarGetNumber_v2'
   },
   window.addEventListener('load', function (e) {
 	CABLES.jsLoaded = new Event('CABLES.jsLoaded'),
