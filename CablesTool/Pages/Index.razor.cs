@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
@@ -50,8 +51,8 @@ namespace CablesTool.Pages
                 StateHasChanged();
             }
         }
-        int _videoTime;
-        public int VideoTime
+        double _videoTime;
+        public double VideoTime
         {
             get
             {
@@ -60,12 +61,13 @@ namespace CablesTool.Pages
             set
             {
                 _videoTime = value;
-                JS.InvokeAsync<string>("setVariable", "i_videoSetTime", VideoTime);
+               // JS.InvokeAsync<string>("setVariable", "i_videoSetTime", VideoTime);
                 Logger.Log(LogLevel.Information, VideoTime.ToString()); 
             }
         }
+        private Timer videoTimer;
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
             ProjectContent.OnChange += ChangeContent;
             VariableSetName = "s_videoPath";
@@ -73,6 +75,12 @@ namespace CablesTool.Pages
             VariableGetName = "i_rotY";
             GetAccessorsAmount = 1;
             SetAccessorsAmount = 1;
+
+            videoTimer = new Timer()
+            {
+                Interval = 100
+            };
+
         }
 
         private void ChangeContent(string content, string i, string d)
@@ -117,17 +125,30 @@ namespace CablesTool.Pages
 
         private async Task Play()
         {
+            videoTimer.Elapsed += VideoTimer_Elapsed;
+            videoTimer.Start();
+
             await JS.InvokeAsync<string>("setVariable", "i_videoSpeed", "1");
+        }
+
+        private async void VideoTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            var time = await JS.InvokeAsync<object>("getVariable", "i_getTime");
+            var i = time.ToString();
+            VideoTime = Convert.ToDouble(i, CultureInfo.InvariantCulture);
+            await InvokeAsync(StateHasChanged);
         }
 
         private async Task Stop()
         {
+            videoTimer.Elapsed -= VideoTimer_Elapsed;
+            videoTimer.Stop();
             await JS.InvokeAsync<string>("setVariable", "i_videoSpeed", "0");
         }
 
         private async Task VideoSliderChanged(string step)
         {
-            await JS.InvokeAsync<string>("setVariable", "i_videoSetTime", step);
+            await JS.InvokeAsync<string>("setVariable", "i_videoTime", step);
             await JS.InvokeAsync<string>("setVariable", "i_videoSpeed", "0");
 
             Logger.Log(LogLevel.Information, step);

@@ -10907,7 +10907,7 @@ var CABLES = function (t) {
 		  },
 		  {
 			name: 'loop',
-			value: !1
+			value: !0
 		  },
 		  {
 			name: 'auto play',
@@ -10982,43 +10982,42 @@ var CABLES = function (t) {
 		  },
 		  {
 			name: 'duration',
-			value: 49.408
+			value: 13.034666
 		  },
 		  {
 			name: 'progress',
-			value: 0.5820343264248705
+			value: 0.7279626497525905
 		  },
 		  {
-			name: 'CurrentTime',
-			value: 28.757152
+			name: 'CurrentTime'
 		  },
 		  {
 			name: 'Loading',
-			value: !0
-		  },
-		  {
-			name: 'Can Play Through',
 			value: !1
 		  },
 		  {
-			name: 'Width',
-			value: 640
-		  },
-		  {
-			name: 'Height',
-			value: 360
-		  },
-		  {
-			name: 'Aspect Ratio',
-			value: 1.7777777777777777
-		  },
-		  {
-			name: 'Has Error',
+			name: 'Can Play Through',
 			value: !0
 		  },
 		  {
+			name: 'Width',
+			value: 1024
+		  },
+		  {
+			name: 'Height',
+			value: 1024
+		  },
+		  {
+			name: 'Aspect Ratio',
+			value: 1
+		  },
+		  {
+			name: 'Has Error',
+			value: !1
+		  },
+		  {
 			name: 'Error Message',
-			value: 'Error 4/404: Not Found'
+			value: ''
 		  }
 		]
 	  },
@@ -11043,47 +11042,6 @@ var CABLES = function (t) {
 		  {
 			name: 'Value'
 		  }
-		]
-	  },
-	  {
-		opId: '0b4d9229-8024-4a30-9cc0-f6653942c2e4',
-		objName: 'Ops.Vars.VarSetString_v2',
-		id: '46462d93-dab8-4998-be0f-ad31a5050e0f',
-		uiAttribs: {
-		  title: 'set #s_videoPath',
-		  createdLocally: !0,
-		  subPatch: 0,
-		  selected: !1,
-		  notWorkingMsg: null
-		},
-		portsIn: [
-		  {
-			name: 'Value',
-			links: [
-			  {
-				portIn: 'Value',
-				portOut: 'Value',
-				objIn: '46462d93-dab8-4998-be0f-ad31a5050e0f',
-				objOut: '0172d3d1-66e0-443b-9cd8-e030c73414e9'
-			  }
-			]
-		  },
-		  {
-			name: 'Variable',
-			value: 's_videoPath'
-		  },
-		  {
-			name: 'Create new variable',
-			value: 0
-		  },
-		  {
-			name: '',
-			value: [
-			  'Rename'
-			]
-		  }
-		],
-		portsOut: [
 		]
 	  },
 	  {
@@ -11323,9 +11281,66 @@ var CABLES = function (t) {
 		]
 	  },
 	  {
+		opId: '421f5b52-c0fa-47c4-8b7a-012b9e1c864a',
+		objName: 'Ops.Vars.VarGetNumber_v2',
+		id: '584d7981-0b74-4ba5-acb3-b091c792a087',
+		uiAttribs: {
+		  title: '#i_videoTime',
+		  createdLocally: !0,
+		  subPatch: 0,
+		  selected: !1,
+		  notWorkingMsg: null
+		},
+		portsIn: [
+		  {
+			name: 'Variable',
+			value: 'i_videoTime'
+		  }
+		],
+		portsOut: [
+		  {
+			name: 'Value'
+		  }
+		]
+	  },
+	  {
+		opId: '0b4d9229-8024-4a30-9cc0-f6653942c2e4',
+		objName: 'Ops.Vars.VarSetString_v2',
+		id: '266dab71-4e11-4874-ba57-aa4141730d73',
+		uiAttribs: {
+		  title: 'set #s_videoPath',
+		  createdLocally: !0,
+		  subPatch: 0,
+		  selected: !1,
+		  notWorkingMsg: null
+		},
+		portsIn: [
+		  {
+			name: 'Value',
+			value: 'https://sandbox.cables.gl/assets/library/videos/M10.mp4'
+		  },
+		  {
+			name: 'Variable',
+			value: 's_videoPath'
+		  },
+		  {
+			name: 'Create new variable',
+			value: 0
+		  },
+		  {
+			name: '',
+			value: [
+			  'Rename'
+			]
+		  }
+		],
+		portsOut: [
+		]
+	  },
+	  {
 		opId: 'b5249226-6095-4828-8a1c-080654e192fa',
 		objName: 'Ops.Vars.VarSetNumber_v2',
-		id: '10c612d5-1576-4b36-8921-d79d0e92c5a7',
+		id: 'a603e66d-b976-4b4b-87e5-3fe4d23a5e32',
 		uiAttribs: {
 		  title: 'set #i_videoSpeed',
 		  createdLocally: !0,
@@ -11336,7 +11351,7 @@ var CABLES = function (t) {
 		portsIn: [
 		  {
 			name: 'Value',
-			value: 6.1
+			value: 0
 		  },
 		  {
 			name: 'Variable',
@@ -11357,34 +11372,11 @@ var CABLES = function (t) {
 		]
 	  },
 	  {
-		opId: '421f5b52-c0fa-47c4-8b7a-012b9e1c864a',
-		objName: 'Ops.Vars.VarGetNumber_v2',
-		id: '584d7981-0b74-4ba5-acb3-b091c792a087',
-		uiAttribs: {
-		  title: '#i_videoSetTime',
-		  createdLocally: !0,
-		  subPatch: 0,
-		  selected: !1,
-		  notWorkingMsg: null
-		},
-		portsIn: [
-		  {
-			name: 'Variable',
-			value: 'i_videoSetTime'
-		  }
-		],
-		portsOut: [
-		  {
-			name: 'Value'
-		  }
-		]
-	  },
-	  {
 		opId: 'b5249226-6095-4828-8a1c-080654e192fa',
 		objName: 'Ops.Vars.VarSetNumber_v2',
-		id: '4b656a71-28f3-4d4d-8fd2-599ac9c4af9c',
+		id: '48568953-551c-4db3-b5f8-307d3e5c59b4',
 		uiAttribs: {
-		  title: 'set #i_videoSetTime',
+		  title: 'set #i_videoTime',
 		  createdLocally: !0,
 		  subPatch: 0,
 		  selected: !1,
@@ -11393,11 +11385,11 @@ var CABLES = function (t) {
 		portsIn: [
 		  {
 			name: 'Value',
-			value: 0.46
+			value: 1
 		  },
 		  {
 			name: 'Variable',
-			value: 'i_videoSetTime'
+			value: 'i_videoTime'
 		  },
 		  {
 			name: 'Create new variable',
@@ -11414,26 +11406,44 @@ var CABLES = function (t) {
 		]
 	  },
 	  {
-		opId: '3ad08cfc-bce6-4175-9746-fef2817a3b12',
-		objName: 'Ops.Vars.VarGetString',
-		id: '0172d3d1-66e0-443b-9cd8-e030c73414e9',
+		opId: 'b5249226-6095-4828-8a1c-080654e192fa',
+		objName: 'Ops.Vars.VarSetNumber_v2',
+		id: '6cc94878-d3b5-463f-8ecf-6641f888abcd',
 		uiAttribs: {
-		  title: '#s_videoPath',
+		  title: 'set #i_getTime',
 		  createdLocally: !0,
 		  subPatch: 0,
-		  selected: !0,
+		  selected: !1,
 		  notWorkingMsg: null
 		},
 		portsIn: [
 		  {
+			name: 'Value',
+			links: [
+			  {
+				portIn: 'Value',
+				portOut: 'CurrentTime',
+				objIn: '6cc94878-d3b5-463f-8ecf-6641f888abcd',
+				objOut: 'f6b44978-879a-4538-a1b5-a25f20e4cb64'
+			  }
+			]
+		  },
+		  {
 			name: 'Variable',
-			value: 's_videoPath'
+			value: 'i_getTime'
+		  },
+		  {
+			name: 'Create new variable',
+			value: 0
+		  },
+		  {
+			name: '',
+			value: [
+			  'Rename'
+			]
 		  }
 		],
 		portsOut: [
-		  {
-			name: 'Value'
-		  }
 		]
 	  }
 	],
@@ -11448,7 +11458,7 @@ var CABLES = function (t) {
 	userId: '60c86610e098427302b28b21',
 	created: '2021-06-16T10:02:50.444Z',
 	cloneOf: '5f7d4c126359fb6a055ce98c',
-	updated: '2021-06-23T12:38:18.174Z',
+	updated: '2021-06-24T08:30:05.515Z',
 	log: [
 	  {
 		_id: '60c9cc4a8535707db2b4afa8',
@@ -11456,7 +11466,7 @@ var CABLES = function (t) {
 		text: 'initial list of collaborators:'
 	  }
 	],
-	__v: 15,
+	__v: 19,
 	shortId: 'ebwhkE',
 	buildInfo: {
 	  core: {
@@ -11488,13 +11498,13 @@ var CABLES = function (t) {
 		}
 	  }
 	},
-	opsHash: '713956d7c899f42f52ba7f79e4c5b506c4f7f2a6',
+	opsHash: '711caf687d55157e24f13f2b48b3fa7dd1dda957',
 	ui: {
 	  viewBox: {
-		x: - 252.5293121337886,
-		y: - 27.386342525482007,
-		w: 976.5624999999995,
-		h: 727.0812988281247
+		x: - 217.2947845458982,
+		y: 137.37255477905285,
+		w: 781.2499999999998,
+		h: 581.6650390624998
 	  },
 	  timeLineLength: 20,
 	  bookmarks: [
@@ -11508,7 +11518,7 @@ var CABLES = function (t) {
 	  }
 	},
 	updatedByUser: 'koobalack',
-	exports: 7,
+	exports: 10,
 	views: 0,
 	cachedNumComments: 0,
 	cachedNumFavs: 0,
@@ -11591,9 +11601,9 @@ var CABLES = function (t) {
 		extendTitle: 'Inactive'
 	  })
 	};
-	const p = e.patch.cgl;
-	let f = 0,
-	m = 0;
+	const m = e.patch.cgl;
+	let p = 0,
+	f = 0;
 	e.patch.cgl || e.uiAttr({
 	  error: 'No webgl cgl context'
 	});
@@ -11619,7 +11629,7 @@ var CABLES = function (t) {
 		  n && n.appendChild(b),
 		  b.addEventListener('mouseenter', t),
 		  b.addEventListener('click', function (e) {
-			CABLES.UI && !e.shiftKey ? gui.cycleRendererSize() : p.fullScreen()
+			CABLES.UI && !e.shiftKey ? gui.cycleRendererSize() : m.fullScreen()
 		  })
 		}
 		b.style.padding = '10px',
@@ -11638,7 +11648,7 @@ var CABLES = function (t) {
 	}
 	function A(u) {
 	  if (!c.get()) return;
-	  if (p.aborted || 0 === p.canvas.clientWidth || 0 === p.canvas.clientHeight) return;
+	  if (m.aborted || 0 === m.canvas.clientWidth || 0 === m.canvas.clientHeight) return;
 	  const d = performance.now();
 	  e.patch.config.fpsLimit = function () {
 		if (i.get() && e.patch.loading.getProgress() < 1) return 5;
@@ -11648,9 +11658,9 @@ var CABLES = function (t) {
 		}
 		return t.get()
 	  }(),
-	  - 1 != p.canvasWidth ? (p.canvasWidth == a.get() && p.canvasHeight == r.get() || (a.set(p.canvasWidth), r.set(p.canvasHeight)), CABLES.now() - m > 1000 && (CGL.fpsReport = CGL.fpsReport || [
-	  ], e.patch.loading.getProgress() >= 1 && 0 !== m && CGL.fpsReport.push(f), f = 0, m = CABLES.now()), CGL.MESH.lastShader = null, CGL.MESH.lastMesh = null, p.renderStart(p, g, v), s.get() && (p.gl.clearColor(0, 0, 0, 1), p.gl.clear(p.gl.COLOR_BUFFER_BIT | p.gl.DEPTH_BUFFER_BIT)), n.trigger(), CGL.MESH.lastMesh && CGL.MESH.lastMesh.unBind(), CGL.Texture.previewTexture && (CGL.Texture.texturePreviewer || (CGL.Texture.texturePreviewer = new CGL.Texture.texturePreview(p)), CGL.Texture.texturePreviewer.render(CGL.Texture.previewTexture)), p.renderEnd(p), l.get() && (p.gl.clearColor(1, 1, 1, 1), p.gl.colorMask(!1, !1, !1, !0), p.gl.clear(p.gl.COLOR_BUFFER_BIT), p.gl.colorMask(!0, !0, !0, !0)), p.frameStore.phong || (p.frameStore.phong = {
-	  }), f++, CGL.profileData.profileMainloopMs = performance.now() - d) : p.setCanvas(e.patch.config.glCanvasId)
+	  - 1 != m.canvasWidth ? (m.canvasWidth == a.get() && m.canvasHeight == r.get() || (a.set(m.canvasWidth), r.set(m.canvasHeight)), CABLES.now() - f > 1000 && (CGL.fpsReport = CGL.fpsReport || [
+	  ], e.patch.loading.getProgress() >= 1 && 0 !== f && CGL.fpsReport.push(p), p = 0, f = CABLES.now()), CGL.MESH.lastShader = null, CGL.MESH.lastMesh = null, m.renderStart(m, g, v), s.get() && (m.gl.clearColor(0, 0, 0, 1), m.gl.clear(m.gl.COLOR_BUFFER_BIT | m.gl.DEPTH_BUFFER_BIT)), n.trigger(), CGL.MESH.lastMesh && CGL.MESH.lastMesh.unBind(), CGL.Texture.previewTexture && (CGL.Texture.texturePreviewer || (CGL.Texture.texturePreviewer = new CGL.Texture.texturePreview(m)), CGL.Texture.texturePreviewer.render(CGL.Texture.previewTexture)), m.renderEnd(m), l.get() && (m.gl.clearColor(1, 1, 1, 1), m.gl.colorMask(!1, !1, !1, !0), m.gl.clear(m.gl.COLOR_BUFFER_BIT), m.gl.colorMask(!0, !0, !0, !0)), m.frameStore.phong || (m.frameStore.phong = {
+	  }), p++, CGL.profileData.profileMainloopMs = performance.now() - d) : m.setCanvas(e.patch.config.glCanvasId)
 	}
 	window.addEventListener('blur', () =>{
 	  h = !1
@@ -11662,8 +11672,8 @@ var CABLES = function (t) {
 	  _ = !document.hidden
 	}),
 	e.onDelete = function () {
-	  p.gl.clearColor(0, 0, 0, 0),
-	  p.gl.clear(p.gl.COLOR_BUFFER_BIT | p.gl.DEPTH_BUFFER_BIT)
+	  m.gl.clearColor(0, 0, 0, 0),
+	  m.gl.clear(m.gl.COLOR_BUFFER_BIT | m.gl.DEPTH_BUFFER_BIT)
 	}
   },
   Ops.Gl.MainLoop.prototype = new CABLES.Op,
@@ -11694,17 +11704,29 @@ var CABLES = function (t) {
 	  r
 	]);
 	var d = null,
-	p = null;
-	function f() {
+	m = null;
+	function p() {
 	  d || (d = new CGL.Geometry('cubemesh')),
 	  d.clear();
 	  var e = n.get(),
 	  t = - 1 * n.get(),
 	  i = r.get(),
 	  l = - 1 * r.get(),
-	  f = a.get(),
-	  m = - 1 * a.get();
-	  if (o.get() ? (e *= 0.5, t *= 0.5, i *= 0.5, l *= 0.5, f *= 0.5, m *= 0.5) : (t = 0, l = 0, m = 0), 'Cube' == s.get() || 'Cube Biased' == s.get() ? d.vertices = [
+	  p = a.get(),
+	  f = - 1 * a.get();
+	  if (o.get() ? (e *= 0.5, t *= 0.5, i *= 0.5, l *= 0.5, p *= 0.5, f *= 0.5) : (t = 0, l = 0, f = 0), 'Cube' == s.get() || 'Cube Biased' == s.get() ? d.vertices = [
+		t,
+		l,
+		p,
+		e,
+		l,
+		p,
+		e,
+		i,
+		p,
+		t,
+		i,
+		p,
 		t,
 		l,
 		f,
@@ -11718,120 +11740,72 @@ var CABLES = function (t) {
 		i,
 		f,
 		t,
-		l,
-		m,
-		e,
-		l,
-		m,
-		e,
 		i,
-		m,
-		t,
-		i,
-		m,
-		t,
-		i,
-		m,
-		e,
-		i,
-		m,
-		e,
-		i,
-		f,
-		t,
-		i,
-		f,
-		t,
-		l,
-		m,
-		e,
-		l,
-		m,
-		e,
-		l,
-		f,
-		t,
-		l,
-		f,
-		e,
-		l,
-		m,
-		e,
-		l,
 		f,
 		e,
 		i,
 		f,
 		e,
 		i,
-		m,
+		p,
+		t,
+		i,
+		p,
 		t,
 		l,
-		m,
+		f,
+		e,
+		l,
+		f,
+		e,
+		l,
+		p,
+		t,
+		l,
+		p,
+		e,
+		l,
+		f,
+		e,
+		l,
+		p,
+		e,
+		i,
+		p,
+		e,
+		i,
+		f,
 		t,
 		l,
 		f,
 		t,
-		i,
-		f,
+		l,
+		p,
 		t,
 		i,
-		m
+		p,
+		t,
+		i,
+		f
 	  ] : d.vertices = [
 		t,
 		l,
-		f,
+		p,
 		e,
 		l,
-		f,
+		p,
 		e,
 		i,
+		p,
+		t,
+		i,
+		p,
+		t,
+		l,
 		f,
 		t,
 		i,
 		f,
-		t,
-		l,
-		m,
-		t,
-		i,
-		m,
-		e,
-		i,
-		m,
-		e,
-		l,
-		m,
-		t,
-		i,
-		m,
-		t,
-		i,
-		f,
-		e,
-		i,
-		f,
-		e,
-		i,
-		m,
-		t,
-		l,
-		m,
-		e,
-		l,
-		m,
-		e,
-		l,
-		f,
-		t,
-		l,
-		f,
-		e,
-		l,
-		m,
-		e,
-		i,
-		m,
 		e,
 		i,
 		f,
@@ -11839,17 +11813,53 @@ var CABLES = function (t) {
 		l,
 		f,
 		t,
-		l,
-		m,
-		t,
-		l,
-		f,
-		t,
 		i,
 		f,
 		t,
 		i,
-		m
+		p,
+		e,
+		i,
+		p,
+		e,
+		i,
+		f,
+		t,
+		l,
+		f,
+		e,
+		l,
+		f,
+		e,
+		l,
+		p,
+		t,
+		l,
+		p,
+		e,
+		l,
+		f,
+		e,
+		i,
+		f,
+		e,
+		i,
+		p,
+		e,
+		l,
+		p,
+		t,
+		l,
+		f,
+		t,
+		l,
+		p,
+		t,
+		i,
+		p,
+		t,
+		i,
+		f
 	  ], 'Cube' == s.get() || 'Cube Biased' == s.get()) {
 		const e = 0.25,
 		t = 1 / 3;
@@ -12211,27 +12221,27 @@ var CABLES = function (t) {
 		22,
 		23
 	  ],
-	  p && p.dispose(),
-	  p = new CGL.Mesh(c, d),
+	  m && m.dispose(),
+	  m = new CGL.Mesh(c, d),
 	  u.set(null),
 	  u.set(d)
 	}
-	s.onChange = f,
-	n.onChange = f,
-	a.onChange = f,
-	r.onChange = f,
-	o.onChange = f,
-	f(),
+	s.onChange = p,
+	n.onChange = p,
+	a.onChange = p,
+	r.onChange = p,
+	o.onChange = p,
+	p(),
 	t.onTriggered = function () {
-	  i.get() && p && p.render(c.getShader()),
+	  i.get() && m && m.render(c.getShader()),
 	  l.trigger()
 	},
 	e.preRender = function () {
-	  f(),
-	  p.render(c.getShader())
+	  p(),
+	  m.render(c.getShader())
 	},
 	e.onDelete = function () {
-	  p && p.dispose()
+	  m && m.dispose()
 	}
   },
   Ops.Gl.Meshes.Cube.prototype = new CABLES.Op,
@@ -12267,21 +12277,21 @@ var CABLES = function (t) {
 	e.setUiAxisPorts(n, a, r);
 	const c = e.patch.cgl,
 	d = vec3.create(),
-	p = vec3.create(),
-	f = mat4.create();
-	mat4.identity(f);
-	let m = !1,
+	m = vec3.create(),
+	p = mat4.create();
+	mat4.identity(p);
+	let f = !1,
 	g = !1,
 	v = !0,
 	b = !0,
 	h = !0;
 	function _() {
-	  mat4.identity(f),
-	  g && mat4.translate(f, f, d),
-	  0 !== i.get() && mat4.rotateX(f, f, i.get() * CGL.DEG2RAD),
-	  0 !== s.get() && mat4.rotateY(f, f, s.get() * CGL.DEG2RAD),
-	  0 !== l.get() && mat4.rotateZ(f, f, l.get() * CGL.DEG2RAD),
-	  m && mat4.scale(f, f, p),
+	  mat4.identity(p),
+	  g && mat4.translate(p, p, d),
+	  0 !== i.get() && mat4.rotateX(p, p, i.get() * CGL.DEG2RAD),
+	  0 !== s.get() && mat4.rotateY(p, p, s.get() * CGL.DEG2RAD),
+	  0 !== l.get() && mat4.rotateZ(p, p, l.get() * CGL.DEG2RAD),
+	  f && mat4.scale(p, p, m),
 	  h = !1
 	}
 	i.onChange = s.onChange = l.onChange = function () {
@@ -12301,11 +12311,11 @@ var CABLES = function (t) {
 		vec3.set(d, n.get(), a.get(), r.get()),
 		v = !1
 	  }(), t = !0),
-	  b && (m = !0, vec3.set(p, o.get(), o.get(), o.get()), b = !1, t = !0),
+	  b && (f = !0, vec3.set(m, o.get(), o.get(), o.get()), b = !1, t = !0),
 	  h && (t = !0),
 	  t && _(),
 	  c.pushModelMatrix(),
-	  mat4.multiply(c.mMatrix, c.mMatrix, f),
+	  mat4.multiply(c.mMatrix, c.mMatrix, p),
 	  u.trigger(),
 	  c.popModelMatrix(),
 	  CABLES.UI && CABLES.UI.showCanvasTransforms && gui.setTransform(e.id, n.get(), a.get(), r.get()),
@@ -12400,9 +12410,9 @@ var CABLES = function (t) {
 	u = e.inValueFloat('mul'),
 	c = e.inValueSlider('Smoothness', 1),
 	d = e.inValue('Speed X', 1),
-	p = e.inValue('Speed Y', 1),
-	f = e.inValueBool('Active', !0),
-	m = e.inValueBool('Allow Panning', !0),
+	m = e.inValue('Speed Y', 1),
+	p = e.inValueBool('Active', !0),
+	f = e.inValueBool('Allow Panning', !0),
 	g = e.inValueBool('Allow Zooming', !0),
 	v = e.inValueBool('Allow Rotation', !0),
 	b = e.inValueBool('restricted', !0),
@@ -12411,7 +12421,7 @@ var CABLES = function (t) {
 	O = e.outValue('radius'),
 	A = e.outValue('Rot X'),
 	x = e.outValue('Rot Y'),
-	S = e.inTriggerButton('Reset');
+	C = e.inTriggerButton('Reset');
 	e.setPortGroup('Initial Values', [
 	  s,
 	  l,
@@ -12421,7 +12431,7 @@ var CABLES = function (t) {
 	  u,
 	  c,
 	  d,
-	  p
+	  m
 	]),
 	e.setPortGroup('Boundaries', [
 	  r,
@@ -12432,8 +12442,8 @@ var CABLES = function (t) {
 	u.set(1),
 	n.set(0.05),
 	a.set(99999),
-	S.onTriggered = W;
-	const C = e.patch.cgl;
+	C.onTriggered = W;
+	const S = e.patch.cgl;
 	let T = vec3.create();
 	const L = vec3.create(),
 	E = vec3.create(),
@@ -12507,8 +12517,8 @@ var CABLES = function (t) {
 	  r = n - N;
 	  X && (a = e.movementX * u.get(), r = e.movementY * u.get()),
 	  a *= d.get(),
-	  r *= p.get(),
-	  2 == e.buttons && m.get() ? (I[2] += 0.01 * a * u.get(), I[1] += 0.01 * r * u.get()) : 4 == e.buttons && g.get() ? (V += 0.05 * r, T = Q(R)) : v.get() && (U += 0.003 * a, R += 0.002 * r, b.get() && (R > 0.5 && (R = 0.5), R < - 0.5 && (R = - 0.5))),
+	  r *= m.get(),
+	  2 == e.buttons && f.get() ? (I[2] += 0.01 * a * u.get(), I[1] += 0.01 * r * u.get()) : 4 == e.buttons && g.get() ? (V += 0.05 * r, T = Q(R)) : v.get() && (U += 0.003 * a, R += 0.002 * r, b.get() && (R > 0.5 && (R = 0.5), R < - 0.5 && (R = - 0.5))),
 	  y = t,
 	  N = n
 	}
@@ -12544,7 +12554,7 @@ var CABLES = function (t) {
 	function ae(e) {
 	}
 	t.onTriggered = function () {
-	  C.pushViewMatrix(),
+	  S.pushViewMatrix(),
 	  k = q(k, U);
 	  let e = 180 * ((j = q(j, R)) + 0.5);
 	  0 !== r.get() && e < r.get() ? (e = r.get(), j = J) : 0 !== o.get() && e > o.get() ? (e = o.get(), j = J) : J = j;
@@ -12571,9 +12581,9 @@ var CABLES = function (t) {
 	  vec3.create();
 	  mat4.lookAt(M, B, D, L),
 	  mat4.rotate(M, M, k, L),
-	  mat4.multiply(C.vMatrix, C.vMatrix, M),
+	  mat4.multiply(S.vMatrix, S.vMatrix, M),
 	  _.trigger(),
-	  C.popViewMatrix(),
+	  S.popViewMatrix(),
 	  Z = !1
 	},
 	i.onChange = function () {
@@ -12611,11 +12621,11 @@ var CABLES = function (t) {
 	  F && (F.removeEventListener('pointermove', $), F.removeEventListener('pointerdown', ee), F.removeEventListener('pointerup', te), F.removeEventListener('pointerleave', te), F.removeEventListener('pointerenter', te), F.removeEventListener('wheel', re))
 	}
 	var se;
-	f.onChange = function () {
-	  f.get() ? oe() : ie()
+	p.onChange = function () {
+	  p.get() ? oe() : ie()
 	},
 	T = Q(0),
-	se = C.canvas,
+	se = S.canvas,
 	ie(),
 	F = se,
 	oe(),
@@ -12641,7 +12651,7 @@ var CABLES = function (t) {
 	e.toWorkPortsNeedToBeLinked(a);
 	const s = new CGL.Shader(i, 'basicmaterialnew');
 	function l() {
-	  s && (i.pushShader(s), s.popTextures(), m && f.get() && s.pushTexture(m, f.get().tex), h && b.get() && s.pushTexture(h, b.get().tex), r.trigger(), i.popShader())
+	  s && (i.pushShader(s), s.popTextures(), f && p.get() && s.pushTexture(f, p.get().tex), h && b.get() && s.pushTexture(h, b.get().tex), r.trigger(), i.popShader())
 	}
 	s.setModules(['MODULE_VERTEX_POSITION',
 	'MODULE_COLOR',
@@ -12656,23 +12666,23 @@ var CABLES = function (t) {
 	const u = e.inValueSlider('r', Math.random()),
 	c = e.inValueSlider('g', Math.random()),
 	d = e.inValueSlider('b', Math.random()),
-	p = e.inValueSlider('a', 1);
+	m = e.inValueSlider('a', 1);
 	u.setUiAttribs({
 	  colorPick: !0
 	});
-	new CGL.Uniform(s, '4f', 'color', u, c, d, p);
+	new CGL.Uniform(s, '4f', 'color', u, c, d, m);
 	e.setPortGroup('Color', [
 	  u,
 	  c,
 	  d,
-	  p
+	  m
 	]);
-	var f = e.inTexture('texture'),
-	m = null;
+	var p = e.inTexture('texture'),
+	f = null;
 	function g() {
-	  f.get() ? (s.hasDefine('HAS_TEXTURE_DIFFUSE') || s.define('HAS_TEXTURE_DIFFUSE'), m || (m = new CGL.Uniform(s, 't', 'texDiffuse', 0)), S.setUiAttribs({
+	  p.get() ? (s.hasDefine('HAS_TEXTURE_DIFFUSE') || s.define('HAS_TEXTURE_DIFFUSE'), f || (f = new CGL.Uniform(s, 't', 'texDiffuse', 0)), C.setUiAttribs({
 		greyout: !1
-	  }), C.setUiAttribs({
+	  }), S.setUiAttribs({
 		greyout: !1
 	  }), T.setUiAttribs({
 		greyout: !1
@@ -12680,9 +12690,9 @@ var CABLES = function (t) {
 		greyout: !1
 	  }), v.setUiAttribs({
 		greyout: !1
-	  })) : (s.removeUniform('texDiffuse'), s.removeDefine('HAS_TEXTURE_DIFFUSE'), m = null, S.setUiAttribs({
+	  })) : (s.removeUniform('texDiffuse'), s.removeDefine('HAS_TEXTURE_DIFFUSE'), f = null, C.setUiAttribs({
 		greyout: !0
-	  }), C.setUiAttribs({
+	  }), S.setUiAttribs({
 		greyout: !0
 	  }), T.setUiAttribs({
 		greyout: !0
@@ -12692,10 +12702,10 @@ var CABLES = function (t) {
 		greyout: !0
 	  }))
 	}
-	f.onChange = g;
+	p.onChange = g;
 	const v = e.inValueBool('colorizeTexture', !1);
 	e.setPortGroup('Color Texture', [
-	  f,
+	  p,
 	  v
 	]);
 	var b = e.inTexture('textureOpacity'),
@@ -12765,17 +12775,17 @@ var CABLES = function (t) {
 	v.onChange = function () {
 	  v.get() ? s.define('COLORIZE_TEXTURE') : s.removeDefine('COLORIZE_TEXTURE')
 	};
-	const S = e.inValue('diffuseRepeatX', 1),
-	C = e.inValue('diffuseRepeatY', 1),
+	const C = e.inValue('diffuseRepeatX', 1),
+	S = e.inValue('diffuseRepeatY', 1),
 	T = e.inValue('Tex Offset X', 0),
 	L = e.inValue('Tex Offset Y', 0);
-	new CGL.Uniform(s, 'f', 'diffuseRepeatX', S),
-	new CGL.Uniform(s, 'f', 'diffuseRepeatY', C),
+	new CGL.Uniform(s, 'f', 'diffuseRepeatX', C),
+	new CGL.Uniform(s, 'f', 'diffuseRepeatY', S),
 	new CGL.Uniform(s, 'f', 'texOffsetX', T),
 	new CGL.Uniform(s, 'f', 'texOffsetY', L);
 	e.setPortGroup('Texture Transform', [
-	  S,
 	  C,
+	  S,
 	  T,
 	  L
 	]);
@@ -12862,9 +12872,9 @@ var CABLES = function (t) {
 	u = e.inTexture('AO Texture'),
 	c = e.inTexture('Opacity Texture'),
 	d = e.inValueSlider('r', 1),
-	p = e.inValueSlider('g', 1),
-	f = e.inValueSlider('b', 1),
-	m = e.inValueSlider('Opacity', 1),
+	m = e.inValueSlider('g', 1),
+	p = e.inValueSlider('b', 1),
+	f = e.inValueSlider('Opacity', 1),
 	g = e.inValueSlider('AO Intensity', 1),
 	v = e.inValue('Repeat X', 1),
 	b = e.inValue('Repeat Y', 1),
@@ -12878,8 +12888,8 @@ var CABLES = function (t) {
 	  'xz'
 	], 'no'),
 	x = e.inValueBool('Screen Space Normals'),
-	S = e.outTrigger('trigger'),
-	C = e.outObject('Shader');
+	C = e.outTrigger('trigger'),
+	S = e.outObject('Shader');
 	d.setUiAttribs({
 	  colorPick: !0
 	});
@@ -12910,18 +12920,18 @@ var CABLES = function (t) {
 	]),
 	e.setPortGroup('Color', [
 	  d,
+	  m,
 	  p,
-	  f,
-	  m
+	  f
 	]);
 	const M = e.patch.cgl,
 	I = new CGL.Shader(M, 'MatCapMaterialNew');
-	new CGL.Uniform(I, 'f', 'opacity', m);
+	new CGL.Uniform(I, 'f', 'opacity', f);
 	I.setModules(['MODULE_VERTEX_POSITION',
 	'MODULE_COLOR',
 	'MODULE_BEGIN_FRAG']),
 	I.setSource(n, t),
-	C.set(I);
+	S.set(I);
 	const P = new CGL.Uniform(I, 't', 'texMatcap');
 	let V = null,
 	y = null,
@@ -12954,8 +12964,8 @@ var CABLES = function (t) {
 	  'G' == T.get() ? I.define('ALPHA_MASK_G') : I.removeDefine('ALPHA_MASK_G'),
 	  'B' == T.get() ? I.define('ALPHA_MASK_B') : I.removeDefine('ALPHA_MASK_B')
 	}
-	f.uniform = new CGL.Uniform(I, 'f', 'b', f),
-	p.uniform = new CGL.Uniform(I, 'f', 'g', p),
+	p.uniform = new CGL.Uniform(I, 'f', 'b', p),
+	m.uniform = new CGL.Uniform(I, 'f', 'g', m),
 	d.uniform = new CGL.Uniform(I, 'f', 'r', d),
 	O.onChange = w,
 	w(),
@@ -13066,7 +13076,7 @@ var CABLES = function (t) {
 	  u.get() && R && I.pushTexture(R, u.get().tex),
 	  c.get() && D && I.pushTexture(D, c.get().tex),
 	  M.pushShader(I),
-	  S.trigger(),
+	  C.trigger(),
 	  M.popShader()
 	}
   },
@@ -13096,9 +13106,9 @@ var CABLES = function (t) {
 	], 'clamp to edge'),
 	c = e.inValueBool('flip', !0),
 	d = e.inValueFloat('fps', 25),
-	p = e.inValueFloat('set time'),
-	f = e.inTriggerButton('rewind'),
-	m = e.inValueBool('Preload', !0),
+	m = e.inValueFloat('set time'),
+	p = e.inTriggerButton('rewind'),
+	f = e.inValueBool('Preload', !0),
 	g = e.outTexture('texture'),
 	v = e.outValue('duration'),
 	b = e.outValue('progress'),
@@ -13107,8 +13117,8 @@ var CABLES = function (t) {
 	O = e.outValueBool('Can Play Through', !1),
 	A = e.outNumber('Width'),
 	x = e.outNumber('Height'),
-	S = e.outNumber('Aspect Ratio'),
-	C = e.outBool('Has Error'),
+	C = e.outNumber('Aspect Ratio'),
+	S = e.outBool('Has Error'),
 	T = e.outString('Error Message');
 	let L = !1,
 	E = !1;
@@ -13138,7 +13148,7 @@ var CABLES = function (t) {
 		U = setTimeout(B, 1000 / d.get())
 	  }
 	  if (N || w(), !L) return;
-	  if (N.height = I.videoHeight, N.width = I.videoWidth, A.set(N.width), x.set(N.height), S.set(N.width / N.height), N || w(), !O.get()) return;
+	  if (N.height = I.videoHeight, N.width = I.videoWidth, A.set(N.width), x.set(N.height), C.set(N.width / N.height), N || w(), !O.get()) return;
 	  if (!L) return;
 	  if (!I) return;
 	  if (I.videoHeight <= 0) return e.setUiError('videosize', 'video width is 0!'),
@@ -13174,12 +13184,12 @@ var CABLES = function (t) {
 	r.onChange = function () {
 	  I && (r.get() ? I.setAttribute('autoplay', '') : I.removeAttribute('autoplay'))
 	},
-	f.onTriggered = function () {
+	p.onTriggered = function () {
 	  I.currentTime = 0,
 	  g.set(y)
 	},
-	p.onChange = function () {
-	  I.currentTime = p.get() || 0,
+	m.onChange = function () {
+	  I.currentTime = m.get() || 0,
 	  B(!0)
 	},
 	d.onChange = function () {
@@ -13189,7 +13199,7 @@ var CABLES = function (t) {
 	},
 	n.onChange = function () {
 	  if (E || H(!0), n.get()) {
-		I.currentTime = p.get() || 0;
+		I.currentTime = m.get() || 0;
 		const t = I.play();
 		t && t.then(function () {
 		}).catch(function (t) {
@@ -13225,7 +13235,7 @@ var CABLES = function (t) {
 	e.onMasterVolumeChanged = D;
 	let j = !1;
 	function H(n) {
-	  if (C.set(!1), T.set(''), O.set(!1), t.get() && String(t.get()).length > 1 && (R = !0), t.get() || T.set(!0), m.get() || n) {
+	  if (S.set(!1), T.set(''), O.set(!1), t.get() && String(t.get()).length > 1 && (R = !0), t.get() || T.set(!0), f.get() || n) {
 		clearTimeout(U),
 		_.set(!0),
 		I.preload = 'true';
@@ -13239,7 +13249,7 @@ var CABLES = function (t) {
 		j || (j = !0, I.addEventListener('canplaythrough', G, !0), I.addEventListener('loadedmetadata', k), I.addEventListener('playing', function () {
 		  L = !0
 		}, !0), I.onerror = function () {
-		  C.set(!0),
+		  S.set(!0),
 		  I && (T.set('Error ' + I.error.code + '/' + I.error.message), e.setUiError('onerror', 'Could not load video / ' + I.error.message, 2))
 		}),
 		E = !0
@@ -13269,19 +13279,6 @@ var CABLES = function (t) {
   CABLES.OPS['3ad08cfc-bce6-4175-9746-fef2817a3b12'] = {
 	f: Ops.Vars.VarGetString,
 	objName: 'Ops.Vars.VarGetString'
-  },
-  Ops.Vars.VarSetString_v2 = function () {
-	CABLES.Op.apply(this, arguments);
-	const e = this,
-	t = e.inString('Value', 'New String');
-	e.varName = e.inDropDown('Variable', [
-	], '', !0),
-	new CABLES.VarSetOpWrapper(e, 'string', t, e.varName)
-  },
-  Ops.Vars.VarSetString_v2.prototype = new CABLES.Op,
-  CABLES.OPS['0b4d9229-8024-4a30-9cc0-f6653942c2e4'] = {
-	f: Ops.Vars.VarSetString_v2,
-	objName: 'Ops.Vars.VarSetString_v2'
   },
   Ops.Value.Integer = function () {
 	CABLES.Op.apply(this, arguments);
@@ -13321,6 +13318,19 @@ var CABLES = function (t) {
   CABLES.OPS['421f5b52-c0fa-47c4-8b7a-012b9e1c864a'] = {
 	f: Ops.Vars.VarGetNumber_v2,
 	objName: 'Ops.Vars.VarGetNumber_v2'
+  },
+  Ops.Vars.VarSetString_v2 = function () {
+	CABLES.Op.apply(this, arguments);
+	const e = this,
+	t = e.inString('Value', 'New String');
+	e.varName = e.inDropDown('Variable', [
+	], '', !0),
+	new CABLES.VarSetOpWrapper(e, 'string', t, e.varName)
+  },
+  Ops.Vars.VarSetString_v2.prototype = new CABLES.Op,
+  CABLES.OPS['0b4d9229-8024-4a30-9cc0-f6653942c2e4'] = {
+	f: Ops.Vars.VarSetString_v2,
+	objName: 'Ops.Vars.VarSetString_v2'
   },
   window.addEventListener('load', function (e) {
 	CABLES.jsLoaded = new Event('CABLES.jsLoaded'),
