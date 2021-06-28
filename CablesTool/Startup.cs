@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace CablesTool
@@ -32,6 +33,13 @@ namespace CablesTool
             services.AddScoped<ProjectContent<string>>();
             services.AddSingleton<FileManager>();
             services.AddScoped<ToastService>();
+            services.AddScoped<LoginState>();
+            services.AddScoped(sp =>
+              new HttpClient
+              {
+                 //BaseAddress = new Uri("http://195.43.6.193")
+                  BaseAddress = new Uri("http://127.0.0.1")
+              });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

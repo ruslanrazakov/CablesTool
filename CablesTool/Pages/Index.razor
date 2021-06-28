@@ -7,11 +7,11 @@
     <div style="margin-bottom: 1%">
         <button class="btn btn-secondary" type="button" @onclick="Play"><span class="oi oi-media-play"></span></button>
         <button class="btn btn-secondary" type="button" @onclick="Stop"><span class="oi oi-media-stop"></span></button>
-       <input class="slider" type="range" min="1" max="32" step="1" 
-              @bind-value="@VideoTime"  
-              @oninput="@((args)=>VideoSliderChanged(args.Value.ToString() ))"
-              @onmousedown="InputMouseDown"
-              @onmouseup="InputMouseUp">
+        <input class="slider" type="range" min="1" max="32" step="1"
+               @bind-value="@VideoTime"
+               @oninput="@((args)=>VideoSliderChanged(args.Value.ToString() ))"
+               @onmousedown="InputMouseDown"
+               @onmouseup="InputMouseUp">
     </div>
 
     @for (int i = 0; i < SetAccessorsAmount; i++)
@@ -42,8 +42,9 @@
     }
 }
 
-    @if (DebugVariable != null && DebugVariable != String.Empty)
-    {
-        ToastService.ShowToast(DebugVariable + " does not exists", CablesTool.Services.ToastLevel.Info);
-        DebugVariable = String.Empty;
-    }
+
+@if (DebugVariable != null && DebugVariable != String.Empty)
+{
+    ToastService.ShowToast(DebugVariable + " does not exists", CablesTool.Services.ToastLevel.Info);
+    DebugVariable = String.Empty;
+}

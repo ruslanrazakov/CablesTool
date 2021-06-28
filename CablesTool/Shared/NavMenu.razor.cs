@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace CablesTool.Shared
@@ -15,12 +16,14 @@ namespace CablesTool.Shared
         public FileManager FileManager { get; set; }
         [Inject]
         public ProjectContent<string> ProjectContent { get; set; }
+        [Inject]
+        HttpClient Http { get; set; }
+
         public List<CableProject> CableProjects { get; set; }
         protected override async Task OnInitializedAsync()
         {
             CableProjects = new();
             CableProjects = FileManager.Upload();
-            await Task.Delay(20);
         }
 
         private void OnFileClicked(string projectPath, string projectName, string comments)
