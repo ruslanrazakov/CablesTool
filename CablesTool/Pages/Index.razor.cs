@@ -133,9 +133,8 @@ namespace CablesTool.Pages
 
         private async void VideoTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            var time = await JS.InvokeAsync<object>("getVariable", "i_getTime");
-            var i = time.ToString();
-            VideoTime = Convert.ToDouble(i, CultureInfo.InvariantCulture);
+            var time = await JS.InvokeAsync<double>("getVariable", "i_getTime");
+            VideoTime = Convert.ToInt32(time, CultureInfo.InvariantCulture);
             await InvokeAsync(StateHasChanged);
         }
 
@@ -146,10 +145,21 @@ namespace CablesTool.Pages
             await JS.InvokeAsync<string>("setVariable", "i_videoSpeed", "0");
         }
 
+        private async Task InputMouseDown()
+        {
+            await JS.InvokeAsync<string>("setVariable", "i_videoSpeed", "0");
+
+        }
+
+        private async Task InputMouseUp()
+        {
+            await JS.InvokeAsync<string>("setVariable", "i_videoSpeed", "1");
+
+        }
+
         private async Task VideoSliderChanged(string step)
         {
             await JS.InvokeAsync<string>("setVariable", "i_videoTime", step);
-            await JS.InvokeAsync<string>("setVariable", "i_videoSpeed", "0");
 
             Logger.Log(LogLevel.Information, step);
         }
