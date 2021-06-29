@@ -148,7 +148,6 @@ namespace CablesTool.Pages
         private async Task InputMouseDown()
         {
             await JS.InvokeAsync<string>("setVariable", "i_videoSpeed", "0");
-
         }
 
         private async Task InputMouseUp()

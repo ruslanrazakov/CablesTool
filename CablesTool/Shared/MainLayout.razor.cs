@@ -20,12 +20,7 @@ namespace CablesTool.Shared
 
         protected override async Task OnInitializedAsync()
         {
-            if (!LoginState.IsLoggedIn)
-            {
-                NavigationManager.NavigateTo("https://oauth.yandex.ru/authorize?response_type=token&client_id=30de933f77394525b36f98af1ea3ffd1");
-                Logger.LogWarning("Redirect to Yandex Oauth");
-                LoginState.SetLogin(true, "user");
-            }
+           
         }
     }
 }

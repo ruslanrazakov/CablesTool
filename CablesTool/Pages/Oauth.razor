@@ -1,34 +1,15 @@
-﻿@page "/oauth/{oauthcode}"
+﻿
+@page "/oauth/{backparam}"
 @using Microsoft.Extensions.Logging
-@using System.Net.Http
-@using Data
-@using System.Net.Http.Json
-@inject LoginState LoginState
-@inject HttpClient Http
 
-<h1>OAuth</h1>
+<h3>Oauth</h3>
+<h3>@BackParam</h3>
 
 @code {
+
+    [Inject]
+    public ILogger<Index> Logger { get; set; }
     [Parameter]
-    public string OAuthTokenString { get; set; }
-    [Inject]
-    public ILogger<Oauth> Logger { get; set; }
-    [Inject]
-    NavigationManager NavigationManager { get; set; }
-    private OAuthYandexRequestEntity request;
+    public string BackParam { get; set; }
 
-    protected override void OnInitialized()
-    {
-        Logger.LogWarning(OAuthTokenString);
-        var token = OAuthTokenString.Split("token#access_token=").Last().Split("&expires_in").First();
-        Logger.LogWarning(token);
-        /*int authCode = -1;
-        var success = Int32.TryParse(OAuthCode.Split('=').Last(), out authCode);
-        if (authCode != -1)
-        {
-            request = await Http.PostAsJsonAsync("https://oauth.yandex.ru/authorize?response_type=code&client_id=30de933f77394525b36f98af1ea3ffd1");
-        }*/
-
-
-    }
 }

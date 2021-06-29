@@ -1,9 +1,13 @@
+using CablesTool.Areas.Identity.Data;
 using CablesTool.Data;
 using CablesTool.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,12 +38,15 @@ namespace CablesTool
             services.AddSingleton<FileManager>();
             services.AddScoped<ToastService>();
             services.AddScoped<LoginState>();
-            services.AddScoped(sp =>
-              new HttpClient
-              {
-                 //BaseAddress = new Uri("http://195.43.6.193")
-                  BaseAddress = new Uri("http://127.0.0.1")
-              });
+            /*services.AddDbContext<CablesToolIdentityDbContext>(options =>
+              options.UseSqlite("Data Source=Identity.db"));*/
+            services.AddAuthentication().AddYandex(o =>
+            {
+                o.ClientId = "30de933f77394525b36f98af1ea3ffd1";
+                o.ClientSecret = "49665e77c68146b1b45ebdd8ef37bb9c";
+                o.CallbackPath = "/oauth/";
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,6 +67,8 @@ namespace CablesTool
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

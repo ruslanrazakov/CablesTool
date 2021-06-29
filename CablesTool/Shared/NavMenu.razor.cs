@@ -16,8 +16,6 @@ namespace CablesTool.Shared
         public FileManager FileManager { get; set; }
         [Inject]
         public ProjectContent<string> ProjectContent { get; set; }
-        [Inject]
-        HttpClient Http { get; set; }
 
         public List<CableProject> CableProjects { get; set; }
         protected override async Task OnInitializedAsync()
