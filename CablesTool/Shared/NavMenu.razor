@@ -1,4 +1,6 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@using Microsoft.AspNetCore.Components.Forms
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">CablesTool</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -12,12 +14,20 @@
             <li>
                 <label for="@project.FolderName">@project.FolderName</label> <input type="checkbox" id="@project.FolderName">
                 <ol>
-                    <li class="file"><img src="file.png" class="icon"/><a @onclick="@(()=>OnFileClicked(project.Path, "", ""))">@project.FolderName</a></li>
+                    <li class="file"><img src="file.png" class="icon" /><a @onclick="@(()=>OnFileClicked(project.Path, "", ""))">@project.FolderName</a></li>
                 </ol>
             </li>
         }
     </ol>
 
+    <div style="margin-left: 1%">
+        <button class="btn btn-secondary" type="button" @onclick="ToggleUploadFileMenu">Upload file</button>
+    </div>
+
+    @if (uploadFileMenuOpened)
+    {
+        <Uploader />
+    }
 </div>
 
 @code {

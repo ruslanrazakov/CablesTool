@@ -38,14 +38,7 @@ namespace CablesTool
             services.AddSingleton<FileManager>();
             services.AddScoped<ToastService>();
             services.AddScoped<LoginState>();
-            /*services.AddDbContext<CablesToolIdentityDbContext>(options =>
-              options.UseSqlite("Data Source=Identity.db"));*/
-            services.AddAuthentication().AddYandex(o =>
-            {
-                o.ClientId = "30de933f77394525b36f98af1ea3ffd1";
-                o.ClientSecret = "49665e77c68146b1b45ebdd8ef37bb9c";
-                o.CallbackPath = "/oauth/";
-            });
+            services.AddAuthentication();
 
         }
 

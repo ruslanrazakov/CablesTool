@@ -1,0 +1,19 @@
+﻿
+@page "/signin-yandex"
+@using Microsoft.Extensions.Logging
+
+<h3>Oauth</h3>
+<h3>@BackParam</h3>
+
+@code {
+
+    [Inject]
+    public ILogger<Index> Logger { get; set; }
+    [Parameter]
+    public string BackParam { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Logger.LogWarning("OKOKOKOKKKKKKKKKKKKKKKOKOOOOOOOOOOOO");
+    }
+}
