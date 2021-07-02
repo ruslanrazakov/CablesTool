@@ -1,4 +1,4 @@
-﻿using BlazorInputFile;
+﻿
 using CablesTool.Data;
 using CablesTool.Services;
 using Microsoft.AspNetCore.Components;
@@ -27,21 +27,34 @@ namespace CablesTool.Shared
         public ILogger<NavMenu> Logger { get; set; }
         public List<CableProject> CableProjects { get; set; }
         private bool uploadFileMenuOpened;
+        private string folderNameToUpload;
         protected override async Task OnInitializedAsync()
         {
             CableProjects = new();
             CableProjects = FileManager.Upload();
         }
 
-        private void OnFileClicked(string projectPath, string projectName, string comments)
+        private void OnFileClicked(string fileName)
         {
-            ProjectContent.Set(projectPath, projectName, comments);
+            ProjectContent.SetVideoFile(fileName);
         }
 
-        private void ToggleUploadFileMenu()
+        private void OnFolderClicked(string projectPath)
         {
-            uploadFileMenuOpened = !uploadFileMenuOpened;
-            StateHasChanged();
+            ProjectContent.SetProject(projectPath);
+        }
+
+        private void ToggleUploadFileMenu(string folderName)
+        {
+            if (!uploadFileMenuOpened)
+            {
+                folderNameToUpload = folderName;
+                uploadFileMenuOpened = true;
+            }
+            else if (uploadFileMenuOpened && folderNameToUpload == folderName)
+                uploadFileMenuOpened = false;
+            else
+                folderNameToUpload = folderName;
         }
     }
 }

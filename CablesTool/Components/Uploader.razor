@@ -1,49 +1,47 @@
 ﻿
 @using System.IO
 @using Microsoft.Extensions.Logging
+<div class="border">
+    <p>
+        Upload to @FolderName
+    </p>
+    <div class="in-border">
 
-<!--<p>
-    <label>
-        Max file size:
-        <input type="number" @bind="maxFileSize" />
-    </label>
-</p>
-
-<p>
-    <label>
-        Max allowed files:
-        <input type="number" @bind="maxAllowedFiles" />
-    </label>
-</p>-->
-
-<p>
-    <label>
-        Max file size - @maxFileSize bytes:
-        <Microsoft.AspNetCore.Components.Forms.InputFile OnChange="@LoadFiles" multiple />
-    </label>
-</p>
-
-@if (isLoading)
-{
-    <div class="spinner-border text-primary" role="status">
-        <span class="sr-only">Loading...</span>
+        <p>
+            <label>
+                Max size-@MaxFileSizeKb Kb:
+                <Microsoft.AspNetCore.Components.Forms.InputFile OnChange="@LoadFiles"/>
+            </label>
+        </p>
+        @if (isLoading)
+        {
+            <div class="spinner-border text-primary" role="status"></div>
+            <p>Loading...</p>
+        }
+        else if (loadedFile != null)
+        {
+            <li>Name: @loadedFile.Name</li>
+            <li>Last modified: @loadedFile.LastModified.ToString()</li>
+            <li>Size (bytes): @loadedFile.Size</li>
+            <li>Content type: @loadedFile.ContentType</li>
+        }
     </div>
-}
-else if (loadedFile != null)
-{
-    <li>Name: @loadedFile.Name</li>
-    <li>Last modified: @loadedFile.LastModified.ToString()</li>
-    <li>Size (bytes): @loadedFile.Size</li>
-    <li>Content type: @loadedFile.ContentType</li>
-}
+</div>
 
 @code {
     [Inject]
     public ILogger<NavMenu> Logger { get; set; }
     [Inject]
     public ProjectContent<string> ProjectContent { get; set; }
+    [Parameter]
+    public string FolderName { get; set; }
+
+    private long maxFileSizeBytes = 1024 * 1024 * 1000;
+    public long MaxFileSizeKb
+    {
+        get => maxFileSizeBytes / 1024;
+    }
     private IBrowserFile loadedFile;
-    private long maxFileSize = 1024 * 1024 * 1000;
     private int maxAllowedFiles = 3;
     private bool isLoading = false;
 
@@ -52,15 +50,15 @@ else if (loadedFile != null)
         isLoading = true;
         try
         {
-            await using FileStream fs = new(AppDomain.CurrentDomain.BaseDirectory + "/wwwroot/" + "1.mp4", FileMode.Create);
-            await e.File.OpenReadStream(maxFileSize).CopyToAsync(fs);
+            Logger.LogInformation( e.File.Name);
+            await using FileStream fs = new(AppDomain.CurrentDomain.BaseDirectory + "/wwwroot/Projects/" + FolderName + "/" + e.File.Name, FileMode.Create);
+            await e.File.OpenReadStream(maxFileSizeBytes).CopyToAsync(fs);
         }
         catch (Exception ex)
         {
             Logger.LogError("File: {Filename} Error: {Error}",
                 e.File.Name, ex.Message);
         }
-
 
         isLoading = false;
     }

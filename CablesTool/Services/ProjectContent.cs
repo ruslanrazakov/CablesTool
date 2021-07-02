@@ -5,22 +5,34 @@ namespace CablesTool.Services
     public class ProjectContent<T>
     {
         public T Path { get; set; }
-        public T Name { get; set; }
-        public T Comments { get; set; }
-        public event Action<T, T, T> OnChange;
+        public T fileName { get; set; }
+        public event Action<T> ChangeProject;
+        public event Action<T> ChangeFile;
 
-        public void Set(T projectPath, T projectName, T comments)
+        public void SetProject(T projectPath)
         {
             if (!String.Equals(this.Path, projectPath))
             {
                 Path = projectPath;
-                Name = projectName;
-                Comments = comments;
-                NotifyStateChanged();
+                NotifyProjectChanged();
             }
         }
 
-        private void NotifyStateChanged() =>
-            OnChange?.Invoke(Path, Name, Comments);
+        public void SetVideoFile(T projectfileName)
+        {
+            if (!String.Equals(this.fileName, projectfileName))
+            {
+                fileName = projectfileName;
+                NotifyFileChanged();
+            }
+        }
+
+        private void NotifyProjectChanged() =>
+            ChangeProject?.Invoke(Path);
+
+        private void NotifyFileChanged() =>
+            ChangeFile?.Invoke(fileName);
+        
+
     }
 }

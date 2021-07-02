@@ -69,7 +69,8 @@ namespace CablesTool.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            ProjectContent.OnChange += ChangeContent;
+            ProjectContent.ChangeProject += OnProjectChanged;
+            ProjectContent.ChangeFile += OnFileChanged;
             VariableSetName = "s_videoPath";
             VariableSetValue = "test.mp4";
             VariableGetName = "i_rotY";
@@ -83,16 +84,27 @@ namespace CablesTool.Pages
 
         }
 
-        private void ChangeContent(string content, string i, string d)
+        private void OnFileChanged(string fileName)
+        {
+            if(fileName != VariableSetName)
+                Task.Run(() => SetVariable(VariableSetName, fileName));
+        }
+
+        private void OnProjectChanged(string content)
         {
             ProjectPath = content;
             ProjectName = "Project";
             StateHasChanged();
         }
 
-        private async Task SetVariable()
+        private async Task SetVariable(string varName, string varValue)
         {
-           await JS.InvokeAsync<string>("setVariable", VariableSetName, VariableSetValue);
+           await JS.InvokeAsync<string>("setVariable", varName, varValue);
+        }
+
+        private void ChangeVariableName(string varName)
+        {
+
         }
 
         private async Task GetVariable()

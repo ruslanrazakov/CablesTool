@@ -11,5 +11,6 @@ namespace CablesTool.Data
         public string FolderName { get; set; }
         public string Path { get; set; }
         public string Content { get; set; }
+        public List<string> Files { get; set; }
     }
 }

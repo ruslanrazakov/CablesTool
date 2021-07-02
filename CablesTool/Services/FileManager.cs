@@ -34,7 +34,7 @@ namespace CablesTool.Services
                     FolderName = project.Name,
                     Name = GetExecutableFileName(files),
                     Path = GetServerPathToFile(project.FullName) + @"\index.html",
-                    Content = GetDirContent(files)
+                    Files = GetDirContent(files),
                 });
             }
             return CableProjects;
@@ -46,12 +46,17 @@ namespace CablesTool.Services
             return fullName.Split("wwwroot").Last();
         }
 
-        private string GetDirContent(FileInfo[] files)
+        private List <string> GetDirContent(FileInfo[] files)
         {
+            List<string> content = new();
             foreach (var file in files)
-                return file.Name.Contains("txt") ? File.ReadAllText(file.FullName) : String.Empty;
-
-            return String.Empty;
+            {
+                if (file.Name.EndsWith("mp4"))
+                {
+                    content.Add(file.Name);
+                }
+            }
+            return content;
         }
 
         private string GetExecutableFileName(FileInfo[] files)

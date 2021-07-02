@@ -12,22 +12,31 @@
         @foreach (var project in CableProjects)
         {
             <li>
-                <label for="@project.FolderName">@project.FolderName</label> <input type="checkbox" id="@project.FolderName">
+                <label for="@project.FolderName">@project.FolderName</label> <input type="checkbox" id="@project.FolderName" @onclick="@(()=>OnFolderClicked(project.Path))">
+               
                 <ol>
-                    <li class="file"><img src="file.png" class="icon" /><a @onclick="@(()=>OnFileClicked(project.Path, "", ""))">@project.FolderName</a></li>
+                    @foreach (var fileName in project.Files)
+                    {
+                    <li class="file"><img src="file.png" class="icon" /><a @onclick="@(() => OnFileClicked(fileName))">@fileName</a></li>
+                    }
                 </ol>
+
+
+                <div style="margin-left: 1%; margin-top: 1%">
+                    <button class="btn btn-outline-secondary btn-sm" 
+                            type="button" @onclick="@(()=>ToggleUploadFileMenu(project.FolderName))">
+                        <span class="oi oi-data-transfer-upload"></span>
+                    </button>
+                </div>
             </li>
         }
     </ol>
 
-    <div style="margin-left: 1%">
-        <button class="btn btn-secondary" type="button" @onclick="ToggleUploadFileMenu">Upload file</button>
-    </div>
-
     @if (uploadFileMenuOpened)
     {
-        <Uploader />
+        <Uploader FolderName="@folderNameToUpload" />
     }
+
 </div>
 
 @code {
