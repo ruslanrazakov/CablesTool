@@ -1,4 +1,5 @@
-﻿using CablesTool.Services;
+﻿using CablesTool.Data;
+using CablesTool.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
@@ -21,6 +22,8 @@ namespace CablesTool.Pages
         public IJSRuntime JS { get; set; }
         [Inject]
         public ToastService ToastService { get; set; }
+        [Inject]
+        public ApplicationContext ApplicationContext { get; set; }
         public string FileContent { get; set; }
         public string ProjectName { get; set; }
         public string ProjectPath { get; set; }
@@ -61,7 +64,6 @@ namespace CablesTool.Pages
             set
             {
                 _videoTime = value;
-               // JS.InvokeAsync<string>("setVariable", "i_videoSetTime", VideoTime);
                 Logger.Log(LogLevel.Information, VideoTime.ToString()); 
             }
         }
@@ -81,13 +83,14 @@ namespace CablesTool.Pages
             {
                 Interval = 100
             };
-
         }
 
         private void OnFileChanged(string fileName)
         {
-            if(fileName != VariableSetName)
+            if (fileName != VariableSetValue)
+            {
                 Task.Run(() => SetVariable(VariableSetName, fileName));
+            }
         }
 
         private void OnProjectChanged(string content)
@@ -102,9 +105,9 @@ namespace CablesTool.Pages
            await JS.InvokeAsync<string>("setVariable", varName, varValue);
         }
 
-        private void ChangeVariableName(string varName)
+        private async Task ChangeVariableName(string varName)
         {
-
+            await JS.InvokeAsync<string>("setVariable", varName, VariableSetValue);
         }
 
         private async Task GetVariable()
@@ -165,15 +168,12 @@ namespace CablesTool.Pages
         private async Task InputMouseUp()
         {
             await JS.InvokeAsync<string>("setVariable", "i_videoSpeed", "1");
-
         }
 
         private async Task VideoSliderChanged(string step)
         {
             await JS.InvokeAsync<string>("setVariable", "i_videoTime", step);
-
             Logger.Log(LogLevel.Information, step);
         }
-
     }
 }

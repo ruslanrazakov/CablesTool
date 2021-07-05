@@ -25,7 +25,7 @@ namespace CablesTool.Shared
         public ProjectContent<string> ProjectContent { get; set; }
         [Inject]
         public ILogger<NavMenu> Logger { get; set; }
-        public List<CableProject> CableProjects { get; set; }
+        public List<CableProjectEntity> CableProjects { get; set; }
         private bool uploadFileMenuOpened;
         private string folderNameToUpload;
         protected override async Task OnInitializedAsync()

@@ -38,8 +38,13 @@ namespace CablesTool
             services.AddSingleton<FileManager>();
             services.AddScoped<ToastService>();
             services.AddScoped<LoginState>();
+            services.AddDbContext<ApplicationContext>(options =>
+               options.UseSqlite(Configuration.GetConnectionString("MainDatabase")));
             services.AddAuthentication();
 
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+                                                                            .AllowAnyMethod()
+                                                                            .AllowAnyHeader()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

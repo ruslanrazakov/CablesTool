@@ -5,12 +5,17 @@ using System.Threading.Tasks;
 
 namespace CablesTool.Data
 {
-    public class CableProject
+    public class VideoFileEntity
     {
+        public long Id { get; set; }
         public string Name { get; set; }
-        public string FolderName { get; set; }
         public string Path { get; set; }
+    }
+
+    public class CommentEntity
+    {
+        public int Id { get; set; }
+        public DateTime Time { get; set; }
         public string Content { get; set; }
-        public List<string> Files { get; set; }
     }
 }

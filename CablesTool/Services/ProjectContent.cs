@@ -32,7 +32,5 @@ namespace CablesTool.Services
 
         private void NotifyFileChanged() =>
             ChangeFile?.Invoke(fileName);
-        
-
     }
 }

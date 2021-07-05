@@ -5563,7 +5563,7 @@ var CABLES = function (t) {
 	  return 'assets/'
 	},
 	Ct.prototype.getFilePath = function (t) {
-	  return this._isLocal && !this.config.allowLocalFileAccess && this.exitError('localAccess', 'Browser security forbids loading files directly without a webserver. Upload files to a server to work. use allowLocalFileAccess:true to ignore this.'),
+	  return !this._isLocal && !this.config.allowLocalFileAccess && this.exitError('localAccess', 'Browser security forbids loading files directly without a webserver. Upload files to a server to work. use allowLocalFileAccess:true to ignore this.'),
 	  t ? 0 === (t = String(t)).indexOf('https:') || 0 === t.indexOf('http:') ? t : (t = t.replace('//', '/'), this.config.prefixAssetPath + t + (this.config.suffixAssetPath || '')) : t
 	},
 	Ct.prototype.clear = function () {
@@ -11317,7 +11317,7 @@ var CABLES = function (t) {
 		portsIn: [
 		  {
 			name: 'Value',
-			value: 'https://sandbox.cables.gl/assets/library/videos/M10.mp4'
+			value: 'file:///C:/Users/akade/Documents/Bandicam/sw.mp4'
 		  },
 		  {
 			name: 'Variable',
@@ -11351,7 +11351,7 @@ var CABLES = function (t) {
 		portsIn: [
 		  {
 			name: 'Value',
-			value: 0
+			value: 1
 		  },
 		  {
 			name: 'Variable',

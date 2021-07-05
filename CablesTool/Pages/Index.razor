@@ -8,49 +8,39 @@
         <button class="btn btn-secondary" type="button" @onclick="Play"><span class="oi oi-media-play"></span></button>
         <button class="btn btn-secondary" type="button" @onclick="Stop"><span class="oi oi-media-stop"></span></button>
         <div class="input-group-prepend">
-            <button class="btn btn-outline-secondary" type="button" @onclick="@(()=>ChangeVariableName(VariableSetName))">Variable</button>
+            <button class="btn btn-outline-secondary" type="button" @onclick="@(()=>ChangeVariableName(VariableSetName))">Variable_name</button>
         </div>
         <input type="text" class="form-control" @bind="@VariableSetName" placeholder="variable name" aria-label="" aria-describedby="basic-addon1">
     </div>
 
     <input class="slider" type="range" min="1" max="32" step="1"
-            @bind-value="@VideoTime"
-            @oninput="@((args)=>VideoSliderChanged(args.Value.ToString() ))"
-            @onmousedown="InputMouseDown"
-            @onmouseup="InputMouseUp">
-    
+           @bind-value="@VideoTime"
+           @oninput="@((args)=>VideoSliderChanged(args.Value.ToString() ))"
+           @onmousedown="InputMouseDown"
+           @onmouseup="InputMouseUp">
 
-        <!-- @for (int i = 0; i < SetAccessorsAmount; i++)
-     {
-         <div class="input-group mb-3">
-             <div class="input-group-prepend">
-                 <button class="btn btn-outline-secondary" type="button" @onclick="SetVariable">Set variable</button>
-             </div>
-             <input type="text" class="form-control" @bind="@VariableSetName" placeholder="variable name" aria-label="" aria-describedby="basic-addon1">
-             <input type="text" class="form-control" @bind="@VariableSetValue" placeholder="value" aria-label="" aria-describedby="basic-addon1">
-         </div>
-     }
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Time</th>
+                <th scope="col">Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var comment in Comments)
+            {
+            <tr>
+                <th scope="row">1</th>
+                <td>comment.Time</td>
+                <td>comment.Content</td>
+            </tr>
+            }
+        </tbody>
+    </table>
 
-     @for (int i = 0; i < GetAccessorsAmount; i++)
-     {
-         <div class="input-group mb-3">
-             <div class="input-group-prepend">
-                 <button class="btn btn-outline-secondary" type="button" @onclick="GetVariable">Get variable</button>
-             </div>
-             <input type="text" class="form-control" @bind="@VariableGetName" placeholder="variable name" aria-label="" aria-describedby="basic-addon1">
-             <input class="form-control" id="disabledInput" type="text" placeholder="value" @bind="@VariableGetValue" disabled>
-             <div style="margin-left: 1%"></div>
-             <div class="form-check form-check-inline">
-                 <input class="form-check-input" @bind="@VariableIsBinded" type="checkbox" id="inlineCheckbox1" value="option1">
-                 <label class="form-check-label" for="inlineCheckbox1">Bind value</label>
-             </div>
-         </div>
-     }-->
-        }
-
-
-        @if (DebugVariable != null && DebugVariable != String.Empty)
-        {
-            ToastService.ShowToast(DebugVariable + " does not exists", CablesTool.Services.ToastLevel.Info);
-            DebugVariable = String.Empty;
-        }
+    @if (DebugVariable != null && DebugVariable != String.Empty)
+    {
+        ToastService.ShowToast(DebugVariable + " does not exists", CablesTool.Services.ToastLevel.Info);
+        DebugVariable = String.Empty;
+    }

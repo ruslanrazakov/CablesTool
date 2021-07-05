@@ -12,14 +12,14 @@ namespace CablesTool.Services
         public string FileContent { get; set; }
         public string _projectsDirPath;
         public Dictionary<string, string> FilesHierarchy { get; set; }
-        public List<CableProject> CableProjects { get; set; }
+        public List<CableProjectEntity> CableProjects { get; set; }
         public FileManager()
         {
             FilesHierarchy = new();
         }
 
 
-        public List<CableProject> Upload()
+        public List<CableProjectEntity> Upload()
         {
             CableProjects = new();
 
@@ -29,7 +29,7 @@ namespace CablesTool.Services
             {
                 //FilesHierarchy.Add(project.Name, GetExecutableFileName(project.GetFiles()));
                 var files = project.GetFiles();
-                CableProjects.Add(new CableProject()
+                CableProjects.Add(new CableProjectEntity()
                 {
                     FolderName = project.Name,
                     Name = GetExecutableFileName(files),
