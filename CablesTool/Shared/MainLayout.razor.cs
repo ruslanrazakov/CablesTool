@@ -17,10 +17,5 @@ namespace CablesTool.Shared
         [Inject]
         public LoginState LoginState { get; set; }
         public bool Authentificated { get; set; }
-
-        protected override async Task OnInitializedAsync()
-        {
-           
-        }
     }
 }

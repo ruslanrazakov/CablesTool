@@ -10,3 +10,7 @@ function getVariable(varName) {
 function initWebGL() {
     document.getElementById('patchFrame').contentWindow.CABLES.patch;
 }
+
+function getVideoLength(filePath) {
+    return 
+}

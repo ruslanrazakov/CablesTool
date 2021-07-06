@@ -24,6 +24,8 @@ namespace CablesTool.Pages
         public ToastService ToastService { get; set; }
         [Inject]
         public ApplicationContext ApplicationContext { get; set; }
+        public List<VideoFileEntity> videoFileEntities;
+        public List<CommentEntity> commentEntities;
         public string FileContent { get; set; }
         public string ProjectName { get; set; }
         public string ProjectPath { get; set; }
@@ -83,13 +85,20 @@ namespace CablesTool.Pages
             {
                 Interval = 100
             };
+            //videoFileEntities = ApplicationContext.VideoFiles.ToList();
         }
 
         private void OnFileChanged(string fileName)
         {
+            Logger.Log(LogLevel.Information, $"FileName: {fileName} | VariableSetValue: {VariableSetValue}");
+
             if (fileName != VariableSetValue)
             {
                 Task.Run(() => SetVariable(VariableSetName, fileName));
+                long fileId = ApplicationContext.VideoFiles.Where(vf => vf.Name == fileName).First().Id;
+                commentEntities = ApplicationContext.Comments.Where(c => c.Id == fileId).ToList();
+                VariableSetValue = fileName;
+                StateHasChanged();
             }
         }
 
@@ -97,6 +106,7 @@ namespace CablesTool.Pages
         {
             ProjectPath = content;
             ProjectName = "Project";
+          
             StateHasChanged();
         }
 

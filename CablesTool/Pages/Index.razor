@@ -8,37 +8,41 @@
         <button class="btn btn-secondary" type="button" @onclick="Play"><span class="oi oi-media-play"></span></button>
         <button class="btn btn-secondary" type="button" @onclick="Stop"><span class="oi oi-media-stop"></span></button>
         <div class="input-group-prepend">
-            <button class="btn btn-outline-secondary" type="button" @onclick="@(()=>ChangeVariableName(VariableSetName))">Variable_name</button>
+            <button class="btn btn-outline-secondary" type="button" @onclick="@(() => ChangeVariableName(VariableSetName))">Variable_name</button>
         </div>
         <input type="text" class="form-control" @bind="@VariableSetName" placeholder="variable name" aria-label="" aria-describedby="basic-addon1">
     </div>
 
     <input class="slider" type="range" min="1" max="32" step="1"
            @bind-value="@VideoTime"
-           @oninput="@((args)=>VideoSliderChanged(args.Value.ToString() ))"
+           @oninput="@((args) => VideoSliderChanged(args.Value.ToString()))"
            @onmousedown="InputMouseDown"
            @onmouseup="InputMouseUp">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Time</th>
-                <th scope="col">Comment</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var comment in Comments)
-            {
-            <tr>
-                <th scope="row">1</th>
-                <td>comment.Time</td>
-                <td>comment.Content</td>
-            </tr>
-            }
-        </tbody>
-    </table>
-
+        @if (commentEntities != null && commentEntities.Count() > 0)
+        {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var comment in commentEntities)
+                {
+                <tr>
+                    <th scope="row">1</th>
+                    <td>@comment.Id</td>
+                    <td>@comment.Time</td>
+                    <td>@comment.Content</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+        }
+    }
     @if (DebugVariable != null && DebugVariable != String.Empty)
     {
         ToastService.ShowToast(DebugVariable + " does not exists", CablesTool.Services.ToastLevel.Info);

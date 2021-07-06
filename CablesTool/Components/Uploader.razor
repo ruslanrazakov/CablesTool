@@ -1,6 +1,7 @@
 ﻿
 @using System.IO
 @using Microsoft.Extensions.Logging
+@using CablesTool.Data
 <div class="border">
     <p>
         Upload to @FolderName
@@ -20,10 +21,10 @@
         }
         else if (loadedFile != null)
         {
-            <li>Name: @loadedFile.Name</li>
-            <li>Last modified: @loadedFile.LastModified.ToString()</li>
-            <li>Size (bytes): @loadedFile.Size</li>
-            <li>Content type: @loadedFile.ContentType</li>
+            <p>Name:</p> @loadedFile.Name
+            <p>Last modified:</p> @loadedFile.LastModified.ToString()
+            <p>Size (bytes):</p> @loadedFile.Size
+            <p>Content type:</p> @loadedFile.ContentType
         }
     </div>
 </div>
@@ -33,6 +34,10 @@
     public ILogger<NavMenu> Logger { get; set; }
     [Inject]
     public ProjectContent<string> ProjectContent { get; set; }
+    [Inject]
+    public ApplicationContext ApplicationContext { get; set; }
+    [Inject]
+    public IJSRuntime JS { get; set; }
     [Parameter]
     public string FolderName { get; set; }
 
@@ -48,11 +53,13 @@
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
         isLoading = true;
+        var filePath = AppDomain.CurrentDomain.BaseDirectory + "/wwwroot/Projects/" + FolderName + "/" + e.File.Name;
+
         try
         {
             Logger.LogInformation( e.File.Name);
-            await using FileStream fs = new(AppDomain.CurrentDomain.BaseDirectory + "/wwwroot/Projects/" + FolderName + "/" + e.File.Name, FileMode.Create);
-            await e.File.OpenReadStream(maxFileSizeBytes).CopyToAsync(fs);
+            await WriteFile(filePath, e);
+            await SaveToDatabase(filePath, e);
         }
         catch (Exception ex)
         {
@@ -61,5 +68,24 @@
         }
 
         isLoading = false;
+    }
+
+    private async Task WriteFile(string filePath, InputFileChangeEventArgs e)
+    {
+        await using FileStream fs = new(filePath, FileMode.Create);
+        await e.File.OpenReadStream(maxFileSizeBytes).CopyToAsync(fs);
+    }
+
+    private async Task SaveToDatabase(string filePath, InputFileChangeEventArgs e)
+    {
+        float videoLength = await JS.InvokeAsync<float>("getVideoLength", filePath);
+
+        ApplicationContext.VideoFiles.Add(new VideoFileEntity()
+        {
+            Name = e.File.Name,
+            Path = filePath,
+            Length = videoLength
+        });
+        await ApplicationContext.SaveChangesAsync();
     }
 }
