@@ -18,17 +18,20 @@ namespace CablesTool.Migrations.Application
 
             modelBuilder.Entity("CablesTool.Data.CommentEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Content")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("Time")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("VideoFileId")
+                    b.Property<double>("Time")
+                        .HasColumnType("REAL");
+
+                    b.Property<long>("VideoFileId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -41,6 +44,9 @@ namespace CablesTool.Migrations.Application
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<double>("Length")
+                        .HasColumnType("REAL");
 
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");

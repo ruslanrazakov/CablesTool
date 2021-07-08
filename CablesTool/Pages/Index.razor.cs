@@ -9,181 +9,146 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace CablesTool.Pages
 {
     partial class Index
     {
         [Inject]
-        public ILogger<Index> Logger { get; set; }
+        UserManager<IdentityUser> UserManager { get; set; }
         [Inject]
-        public ProjectContent<string> ProjectContent { get; set; }
+        SignInManager<IdentityUser> SignInManager { get; set; }
+        [CascadingParameter] 
+        private Task<AuthenticationState> authenticationStateTask { get; set; }
+        AuthenticationState authState;
         [Inject]
-        public IJSRuntime JS { get; set; }
+        IJSRuntime JS { get; set; }
         [Inject]
-        public ToastService ToastService { get; set; }
+        public UploadEvents<long> UploadEvents { get; set; }
         [Inject]
         public ApplicationContext ApplicationContext { get; set; }
-        public List<VideoFileEntity> videoFileEntities;
-        public List<CommentEntity> commentEntities;
-        public string FileContent { get; set; }
-        public string ProjectName { get; set; }
+        [Inject]
+        public ILogger <Index> Logger { get; set; }
+        public VideoFileEntity videoFileEntity = new();
+        public List<CommentEntity> commentEntities = new();
+        public string VideoPath { get; set; }
+        public string CommentContent { get; set; }
         public string ProjectPath { get; set; }
-        public string VariableSetName { get; set; }
-        public string VariableSetValue { get; set; }
-        public string VariableGetName { get; set; }
-        public string VariableGetValue { get; set; }
-        public string DebugVariable { get; set; }
-        public bool VariableIsBinded { get; set; }
-        bool iFrameMouseover;
-        int _getAccessorsAmount;
-        public int GetAccessorsAmount
-        {
-            get => _getAccessorsAmount;
-            set
-            {
-                _getAccessorsAmount = value;
-                StateHasChanged();
-            }
-        }
-        int _setAccessorsAmount;
-        public int SetAccessorsAmount
-        {
-            get => _setAccessorsAmount;
-            set
-            {
-                _setAccessorsAmount = value;
-                StateHasChanged();
-            }
-        }
-        double _videoTime;
-        public double VideoTime
-        {
-            get
-            {
-                return _videoTime;
-            }
-            set
-            {
-                _videoTime = value;
-                Logger.Log(LogLevel.Information, VideoTime.ToString()); 
-            }
-        }
-        private Timer videoTimer;
+        public string UserName { get; set; }
+        public double VideoTime { get; set; }
+        private Timer videoTimer = new Timer() { Interval = 200 };
 
         protected override async Task OnInitializedAsync()
         {
-            ProjectContent.ChangeProject += OnProjectChanged;
-            ProjectContent.ChangeFile += OnFileChanged;
-            VariableSetName = "s_videoPath";
-            VariableSetValue = "test.mp4";
-            VariableGetName = "i_rotY";
-            GetAccessorsAmount = 1;
-            SetAccessorsAmount = 1;
-
-            videoTimer = new Timer()
+            ProjectPath = "CablesProject/index.html";
+            UploadEvents.FileUploaded += FileUploaded;
+            if (ApplicationContext.VideoFiles.Count() > 0)
             {
-                Interval = 100
-            };
-            //videoFileEntities = ApplicationContext.VideoFiles.ToList();
-        }
-
-        private void OnFileChanged(string fileName)
-        {
-            Logger.Log(LogLevel.Information, $"FileName: {fileName} | VariableSetValue: {VariableSetValue}");
-
-            if (fileName != VariableSetValue)
-            {
-                Task.Run(() => SetVariable(VariableSetName, fileName));
-                long fileId = ApplicationContext.VideoFiles.Where(vf => vf.Name == fileName).First().Id;
-                commentEntities = ApplicationContext.Comments.Where(c => c.Id == fileId).ToList();
-                VariableSetValue = fileName;
-                StateHasChanged();
+                videoFileEntity = ApplicationContext.VideoFiles.First();
+                commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id).ToList();
             }
-        }
-
-        private void OnProjectChanged(string content)
-        {
-            ProjectPath = content;
-            ProjectName = "Project";
-          
-            StateHasChanged();
-        }
-
-        private async Task SetVariable(string varName, string varValue)
-        {
-           await JS.InvokeAsync<string>("setVariable", varName, varValue);
-        }
-
-        private async Task ChangeVariableName(string varName)
-        {
-            await JS.InvokeAsync<string>("setVariable", varName, VariableSetValue);
-        }
-
-        private async Task GetVariable()
-        {
-            var variable = await JS.InvokeAsync<object>("getVariable", VariableGetName);
-            if (variable.ToString() == "undefined")
-            {
-                DebugVariable = VariableGetName;
-            }
+            authState = await authenticationStateTask;
+            var user = await UserManager.FindByNameAsync("razakov.rus@yandex.ru");
+            /*if (user != null)
+                UserName = "razakov.rus";
             else
-                VariableGetValue = variable.ToString();
-            StateHasChanged();
+                UserName = "Guest";*/
+            if(authState.User.Identities.First().IsAuthenticated)
+                UserName = "Razakov Ruslan";
+            else
+                UserName = "Guest";
         }
 
-        private async Task IFrameMouseMove()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            iFrameMouseover = true;
-            while(iFrameMouseover && VariableIsBinded)
-            { 
-                await Task.Delay(100);
-                await GetVariable();
-                Logger.Log(LogLevel.Information, "mouseOver");
+            await Task.Delay(500);
+            if (firstRender)
+            {
+                // !important for successfull uploading ProjectPath in Iframe!
+                if (videoFileEntity.Name != String.Empty)
+                {
+                    await SetCablesVariable("s_videoPath", videoFileEntity.Name);
+                    await SetCablesVariable("i_videoSpeed", "0"); //!important cuz if video starts immediately after page uploading - slider doesnt work
+                }
             }
         }
 
-        private void IFrameMouseOut()
+        private void FileUploaded(long videoFileId)
         {
-            iFrameMouseover = false;
+            videoFileEntity = ApplicationContext.VideoFiles.First(v => v.Id == videoFileId);
+            Task.Run(() => SetCablesVariable("s_videoPath", videoFileEntity.Name));
+            InvokeAsync(StateHasChanged);
         }
 
+        #region SLIDER PLAY STOP
         private async Task Play()
         {
             videoTimer.Elapsed += VideoTimer_Elapsed;
             videoTimer.Start();
 
-            await JS.InvokeAsync<string>("setVariable", "i_videoSpeed", "1");
+            await SetCablesVariable("i_videoSpeed", "1");
         }
 
         private async void VideoTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            var time = await JS.InvokeAsync<double>("getVariable", "i_getTime");
-            VideoTime = Convert.ToInt32(time, CultureInfo.InvariantCulture);
+            var time = await GetCablesVariable("i_getTime");
+            Logger.LogInformation("string" + time);
+            VideoTime = Math.Round(time, 0);
+            Logger.LogInformation("double" + VideoTime.ToString());
+
             await InvokeAsync(StateHasChanged);
+        }
+        private async Task InputMouseDown()
+        {
+            await SetCablesVariable("i_videoSpeed", "0");
+        }
+
+        private async Task InputMouseUp()
+        {
+            await SetCablesVariable("i_videoSpeed", "1");
+        }
+
+        private async Task VideoSliderChanged(string step)
+        {
+            await SetCablesVariable("i_videoTime", step);
         }
 
         private async Task Stop()
         {
             videoTimer.Elapsed -= VideoTimer_Elapsed;
             videoTimer.Stop();
-            await JS.InvokeAsync<string>("setVariable", "i_videoSpeed", "0");
+            await SetCablesVariable("i_videoSpeed", "0");
+        }
+        #endregion
+
+        private async Task AddComment()
+        {
+            await Stop();
+
+            if(CommentContent != String.Empty)
+            {
+                ApplicationContext.Comments.Add(new CommentEntity()
+                {
+                    VideoFileId = videoFileEntity.Id,
+                    Content = CommentContent,
+                    Time = VideoTime,
+                    Date = DateTime.Now
+                }) ;
+                await ApplicationContext.SaveChangesAsync();
+            }
+            commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id).OrderByDescending(c=>c.Date).ToList();
+            StateHasChanged();
         }
 
-        private async Task InputMouseDown()
-        {
-            await JS.InvokeAsync<string>("setVariable", "i_videoSpeed", "0");
-        }
+        private async Task SetCablesVariable(string varName, string varValue)
+            => await JS.InvokeAsync<string>("setVariable", varName, varValue);
 
-        private async Task InputMouseUp()
+        private async Task<double> GetCablesVariable(string varName)
         {
-            await JS.InvokeAsync<string>("setVariable", "i_videoSpeed", "1");
-        }
-
-        private async Task VideoSliderChanged(string step)
-        {
-            await JS.InvokeAsync<string>("setVariable", "i_videoTime", step);
-            Logger.Log(LogLevel.Information, step);
+            return await JS.InvokeAsync<double>("getVariable", varName);
         }
     }
 }

@@ -1,50 +1,45 @@
 ﻿@page "/"
 
-@if (ProjectContent.Path != null && ProjectContent.Path != String.Empty)
-{
-    <iframe id="patchFrame" class="video-control" @onmouseover="IFrameMouseMove" @onmouseout="IFrameMouseOut" src="@ProjectPath"></iframe>
+<iframe id="patchFrame" class="video-control" src="@ProjectPath"></iframe>
 
-    <div class="left-to-right-container">
-        <button class="btn btn-secondary" type="button" @onclick="Play"><span class="oi oi-media-play"></span></button>
-        <button class="btn btn-secondary" type="button" @onclick="Stop"><span class="oi oi-media-stop"></span></button>
-        <div class="input-group-prepend">
-            <button class="btn btn-outline-secondary" type="button" @onclick="@(() => ChangeVariableName(VariableSetName))">Variable_name</button>
-        </div>
-        <input type="text" class="form-control" @bind="@VariableSetName" placeholder="variable name" aria-label="" aria-describedby="basic-addon1">
+<div class="left-to-right-container">
+    <button class="btn btn-secondary" type="button" @onclick="Play"><span class="oi oi-media-play"></span></button>
+    <button class="btn btn-secondary" type="button" @onclick="Stop"><span class="oi oi-media-stop"></span></button>
+    <div style="width: 100%"></div>
+    <h5>@VideoTime|@videoFileEntity.Length</h5>
+</div>
+
+<input class="slider" type="range" min="1" max="@videoFileEntity.Length" step="1"
+       @bind-value="@VideoTime"
+       @onmousedown="InputMouseDown"
+       @onmouseup="InputMouseUp"
+       @oninput="@((args) => VideoSliderChanged(args.Value.ToString()))" />
+
+
+@if (videoFileEntity.Name != null && videoFileEntity.Name != String.Empty)
+{
+    <h3>@videoFileEntity.Name</h3>
+
+
+    <div class="input-group-prepend">
+        <button class="btn btn-outline-secondary" type="button" @onclick="AddComment">Add_comment</button>
+        <input type="text" class="form-control" @bind="@CommentContent" placeholder="type here..." aria-label="" aria-describedby="basic-addon1">
     </div>
 
-    <input class="slider" type="range" min="1" max="32" step="1"
-           @bind-value="@VideoTime"
-           @oninput="@((args) => VideoSliderChanged(args.Value.ToString()))"
-           @onmousedown="InputMouseDown"
-           @onmouseup="InputMouseUp">
-
-        @if (commentEntities != null && commentEntities.Count() > 0)
-        {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Comment</th>
-                </tr>
-            </thead>
+    @if (commentEntities != null && commentEntities.Count() > 0)
+    {
+        <table class="table table-dark borderless">
             <tbody>
                 @foreach (var comment in commentEntities)
                 {
-                <tr>
-                    <th scope="row">1</th>
-                    <td>@comment.Id</td>
-                    <td>@comment.Time</td>
-                    <td>@comment.Content</td>
-                </tr>
+                    <tr>
+                        <td style="width: 150px">@UserName</td>
+                        <td style="width: 200px">@comment.Date.ToString("dd-MM-yyyy HH:mm")</td>
+                        <td style="width: 60px">@comment.Time s</td>
+                        <td>@comment.Content</td>
+                    </tr>
                 }
             </tbody>
         </table>
-        }
     }
-    @if (DebugVariable != null && DebugVariable != String.Empty)
-    {
-        ToastService.ShowToast(DebugVariable + " does not exists", CablesTool.Services.ToastLevel.Info);
-        DebugVariable = String.Empty;
-    }
+}

@@ -2,6 +2,11 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: white;
+    text-align: left;
+    background-color: black;
+    padding-left: 8rem;
+    padding-right: 8rem;
 }
 
 a, .btn-link {

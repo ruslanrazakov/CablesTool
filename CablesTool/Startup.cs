@@ -34,17 +34,13 @@ namespace CablesTool
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddScoped<ProjectContent<string>>();
-            services.AddSingleton<FileManager>();
-            services.AddScoped<ToastService>();
-            services.AddScoped<LoginState>();
             services.AddDbContext<ApplicationContext>(options =>
                options.UseSqlite(Configuration.GetConnectionString("MainDatabase")));
+            services.AddScoped<UploadEvents<long>>();
             services.AddAuthentication();
-
-            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
-                                                                            .AllowAnyMethod()
-                                                                            .AllowAnyHeader()));
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.WithOrigins("https://localhost:44389/CablesProject/assets")
+                                                    .AllowAnyHeader()
+                                                  .AllowAnyMethod()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,9 +61,10 @@ namespace CablesTool
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseCors("AllowAll");
+
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();

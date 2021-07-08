@@ -2,22 +2,32 @@
 @using System.IO
 @using Microsoft.Extensions.Logging
 @using CablesTool.Data
+@using MediaToolkit.Model
+@using MediaToolkit
+@using CablesTool.Services
+
 <div class="border">
     <p>
-        Upload to @FolderName
+        Upload:
     </p>
     <div class="in-border">
 
         <p>
             <label>
                 Max size-@MaxFileSizeKb Kb:
-                <Microsoft.AspNetCore.Components.Forms.InputFile OnChange="@LoadFiles"/>
+                <Microsoft.AspNetCore.Components.Forms.InputFile OnChange="@LoadFiles" />
             </label>
         </p>
         @if (isLoading)
         {
             <div class="spinner-border text-primary" role="status"></div>
             <p>Loading...</p>
+        }
+        else if (WarningDivIsActive)
+        {
+            <div class="alert alert-warning alert-dismissible fade show">
+                <strong></strong> File name exists!
+            </div>
         }
         else if (loadedFile != null)
         {
@@ -33,11 +43,11 @@
     [Inject]
     public ILogger<NavMenu> Logger { get; set; }
     [Inject]
-    public ProjectContent<string> ProjectContent { get; set; }
-    [Inject]
     public ApplicationContext ApplicationContext { get; set; }
     [Inject]
     public IJSRuntime JS { get; set; }
+    [Inject]
+    public UploadEvents<long> UploadEvents { get; set; }
     [Parameter]
     public string FolderName { get; set; }
 
@@ -49,17 +59,28 @@
     private IBrowserFile loadedFile;
     private int maxAllowedFiles = 3;
     private bool isLoading = false;
+    private bool WarningDivIsActive = false;
 
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
         isLoading = true;
-        var filePath = AppDomain.CurrentDomain.BaseDirectory + "/wwwroot/Projects/" + FolderName + "/" + e.File.Name;
+        var filePath = AppDomain.CurrentDomain.BaseDirectory + "wwwroot/CablesProject/"  + e.File.Name;
 
         try
         {
-            Logger.LogInformation( e.File.Name);
-            await WriteFile(filePath, e);
-            await SaveToDatabase(filePath, e);
+            Logger.LogInformation(e.File.Name);
+            if (!ApplicationContext.VideoFiles.Any(file => file.Name == e.File.Name))
+            {
+                await WriteFile(filePath, e);
+                await SaveToDatabase(filePath, e);
+            }
+            else
+            {
+                isLoading = false;
+                WarningDivIsActive = true;
+                await Task.Delay(3000);
+                WarningDivIsActive = false;
+            }
         }
         catch (Exception ex)
         {
@@ -78,14 +99,30 @@
 
     private async Task SaveToDatabase(string filePath, InputFileChangeEventArgs e)
     {
-        float videoLength = await JS.InvokeAsync<float>("getVideoLength", filePath);
+        TimeSpan videoLength = GetVideoLength(filePath);
 
-        ApplicationContext.VideoFiles.Add(new VideoFileEntity()
+        VideoFileEntity videoFileEntity = new()
         {
             Name = e.File.Name,
             Path = filePath,
-            Length = videoLength
-        });
+            Length = Math.Round( videoLength.TotalSeconds, 0)
+        };
+
+        ApplicationContext.VideoFiles.Add(videoFileEntity);
         await ApplicationContext.SaveChangesAsync();
+        UploadEvents.UploadFile(videoFileEntity.Id);
+
+    }
+
+    private TimeSpan GetVideoLength(string filePath)
+    {
+        var inputFile = new MediaFile { Filename = filePath };
+
+        using (var engine = new Engine())
+        {
+            engine.GetMetadata(inputFile);
+        }
+
+        return inputFile.Metadata.Duration;
     }
 }
