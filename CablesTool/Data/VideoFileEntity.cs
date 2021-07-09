@@ -16,6 +16,7 @@ namespace CablesTool.Data
     public class CommentEntity
     {
         public long Id { get; set; }
+        public string UserName { get; set; }
         public long VideoFileId { get; set; }
         public DateTime Date { get; set; }
         public double Time { get; set; }

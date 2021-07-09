@@ -12,18 +12,15 @@ using System.Timers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Http;
+
 
 namespace CablesTool.Pages
 {
     partial class Index
     {
-        [Inject]
-        UserManager<IdentityUser> UserManager { get; set; }
-        [Inject]
-        SignInManager<IdentityUser> SignInManager { get; set; }
-        [CascadingParameter] 
-        private Task<AuthenticationState> authenticationStateTask { get; set; }
-        AuthenticationState authState;
+        [Inject] 
+        IHttpContextAccessor httpContextAccessor { get; set; }
         [Inject]
         IJSRuntime JS { get; set; }
         [Inject]
@@ -45,21 +42,15 @@ namespace CablesTool.Pages
         {
             ProjectPath = "CablesProject/index.html";
             UploadEvents.FileUploaded += FileUploaded;
+
             if (ApplicationContext.VideoFiles.Count() > 0)
             {
                 videoFileEntity = ApplicationContext.VideoFiles.First();
                 commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id).ToList();
             }
-            authState = await authenticationStateTask;
-            var user = await UserManager.FindByNameAsync("razakov.rus@yandex.ru");
-            /*if (user != null)
-                UserName = "razakov.rus";
-            else
-                UserName = "Guest";*/
-            if(authState.User.Identities.First().IsAuthenticated)
-                UserName = "Razakov Ruslan";
-            else
-                UserName = "Guest";
+
+            UserName = httpContextAccessor.HttpContext.User.Identity.Name != null ?
+                httpContextAccessor.HttpContext.User.Identity.Name : "Guest";
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -79,7 +70,17 @@ namespace CablesTool.Pages
         private void FileUploaded(long videoFileId)
         {
             videoFileEntity = ApplicationContext.VideoFiles.First(v => v.Id == videoFileId);
-            Task.Run(() => SetCablesVariable("s_videoPath", videoFileEntity.Name));
+
+            Task stopTask = SetCablesVariable("i_videoSpeed", "0");
+            Task setVideoPath = SetCablesVariable("s_videoPath", videoFileEntity.Name);
+
+            Task[] tasks = { stopTask, setVideoPath };
+            foreach (var task in tasks)
+            {
+                task.RunSynchronously();
+            }
+
+            UpdateCommentsSection();
             InvokeAsync(StateHasChanged);
         }
 
@@ -92,21 +93,27 @@ namespace CablesTool.Pages
             await SetCablesVariable("i_videoSpeed", "1");
         }
 
+        private async Task Stop()
+        {
+            videoTimer.Elapsed -= VideoTimer_Elapsed;
+            videoTimer.Stop();
+            await SetCablesVariable("i_videoSpeed", "0");
+        }
+
         private async void VideoTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             var time = await GetCablesVariable("i_getTime");
-            Logger.LogInformation("string" + time);
             VideoTime = Math.Round(time, 0);
             Logger.LogInformation("double" + VideoTime.ToString());
 
             await InvokeAsync(StateHasChanged);
         }
-        private async Task InputMouseDown()
+        private async Task VideoSliderInputMouseDown()
         {
             await SetCablesVariable("i_videoSpeed", "0");
         }
 
-        private async Task InputMouseUp()
+        private async Task VideoSliderInputMouseUp()
         {
             await SetCablesVariable("i_videoSpeed", "1");
         }
@@ -116,12 +123,6 @@ namespace CablesTool.Pages
             await SetCablesVariable("i_videoTime", step);
         }
 
-        private async Task Stop()
-        {
-            videoTimer.Elapsed -= VideoTimer_Elapsed;
-            videoTimer.Stop();
-            await SetCablesVariable("i_videoSpeed", "0");
-        }
         #endregion
 
         private async Task AddComment()
@@ -133,14 +134,20 @@ namespace CablesTool.Pages
                 ApplicationContext.Comments.Add(new CommentEntity()
                 {
                     VideoFileId = videoFileEntity.Id,
+                    UserName = this.UserName,
                     Content = CommentContent,
                     Time = VideoTime,
                     Date = DateTime.Now
                 }) ;
                 await ApplicationContext.SaveChangesAsync();
             }
-            commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id).OrderByDescending(c=>c.Date).ToList();
-            StateHasChanged();
+            UpdateCommentsSection();
+        }
+
+        private void UpdateCommentsSection()
+        {
+            commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id).OrderByDescending(c => c.Date).ToList();
+            InvokeAsync(StateHasChanged);
         }
 
         private async Task SetCablesVariable(string varName, string varValue)

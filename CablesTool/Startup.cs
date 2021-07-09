@@ -38,13 +38,14 @@ namespace CablesTool
                options.UseSqlite(Configuration.GetConnectionString("MainDatabase")));
             services.AddScoped<UploadEvents<long>>();
             services.AddAuthentication();
+            services.AddHttpContextAccessor();
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.WithOrigins("https://localhost:44389/CablesProject/assets")
                                                     .AllowAnyHeader()
                                                   .AllowAnyMethod()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationContext appContext)
         {
             if (env.IsDevelopment())
             {
@@ -57,6 +58,9 @@ namespace CablesTool
                 app.UseHsts();
             }
 
+            appContext.Database.EnsureDeleted();
+            appContext.Database.EnsureCreated();
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -65,6 +69,7 @@ namespace CablesTool
 
             app.UseAuthentication();
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();

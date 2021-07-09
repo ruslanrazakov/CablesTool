@@ -11,7 +11,6 @@ namespace CablesTool.Data
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
         {
-
         }
 
         public DbSet<VideoFileEntity> VideoFiles { get; set; }

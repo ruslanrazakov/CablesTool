@@ -18,7 +18,10 @@ namespace CablesTool.Areas.Identity
                 services.AddDbContext<CablesToolIdentityDbContext>(options =>
                     options.UseSqlite("Data Source=Identity.db"));
 
-                services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                /*services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)*/
+                services.AddDefaultIdentity<IdentityUser>(options => 
+                    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 -._@+"
+                )
                     .AddEntityFrameworkStores<CablesToolIdentityDbContext>();
             });
         }

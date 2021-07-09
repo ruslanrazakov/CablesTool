@@ -1,5 +1,4 @@
 ﻿@page "/"
-
 <iframe id="patchFrame" class="video-control" src="@ProjectPath"></iframe>
 
 <div class="left-to-right-container">
@@ -11,8 +10,8 @@
 
 <input class="slider" type="range" min="1" max="@videoFileEntity.Length" step="1"
        @bind-value="@VideoTime"
-       @onmousedown="InputMouseDown"
-       @onmouseup="InputMouseUp"
+       @onmousedown="VideoSliderInputMouseDown"
+       @onmouseup="VideoSliderInputMouseUp"
        @oninput="@((args) => VideoSliderChanged(args.Value.ToString()))" />
 
 
@@ -33,7 +32,7 @@
                 @foreach (var comment in commentEntities)
                 {
                     <tr>
-                        <td style="width: 150px">@UserName</td>
+                        <td style="width: 150px">@comment.UserName</td>
                         <td style="width: 200px">@comment.Date.ToString("dd-MM-yyyy HH:mm")</td>
                         <td style="width: 60px">@comment.Time s</td>
                         <td>@comment.Content</td>

@@ -31,6 +31,9 @@ namespace CablesTool.Migrations.Application
                     b.Property<double>("Time")
                         .HasColumnType("REAL");
 
+                    b.Property<string>("UserName")
+                        .HasColumnType("TEXT");
+
                     b.Property<long>("VideoFileId")
                         .HasColumnType("INTEGER");
 
