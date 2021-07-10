@@ -5,7 +5,7 @@
     <button class="btn btn-secondary" type="button" @onclick="Play"><span class="oi oi-media-play"></span></button>
     <button class="btn btn-secondary" type="button" @onclick="Stop"><span class="oi oi-media-stop"></span></button>
     <div style="width: 100%"></div>
-    <h5>@VideoTime|@videoFileEntity.Length</h5>
+    <h5 style="flex: none">@VideoName : @VideoTime|@videoFileEntity.Length</h5>
 </div>
 
 <input class="slider" type="range" min="1" max="@videoFileEntity.Length" step="1"
@@ -17,9 +17,6 @@
 
 @if (videoFileEntity.Name != null && videoFileEntity.Name != String.Empty)
 {
-    <h3>@videoFileEntity.Name</h3>
-
-
     <div class="input-group-prepend">
         <button class="btn btn-outline-secondary" type="button" @onclick="AddComment">Add_comment</button>
         <input type="text" class="form-control" @bind="@CommentContent" placeholder="type here..." aria-label="" aria-describedby="basic-addon1">
@@ -27,7 +24,7 @@
 
     @if (commentEntities != null && commentEntities.Count() > 0)
     {
-        <table class="table table-dark borderless">
+        <table class="table table-dark borderless" style="margin-top: 2%">
             <tbody>
                 @foreach (var comment in commentEntities)
                 {

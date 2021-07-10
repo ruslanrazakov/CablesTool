@@ -4,9 +4,6 @@
     flex-direction: column;
 }
 
-.main {
-    flex: 1;
-}
 
 .sidebar {
     background-image: linear-gradient(180deg, #ffe4c4 0%, #fffdd0 70%);
@@ -32,8 +29,12 @@
     }
 
 @media (max-width: 640.98px) {
+    .main {
+        flex: 1;
+    }
+
     .top-row:not(.auth) {
-        display: none;
+    display: none;
     }
 
     .top-row.auth {
@@ -46,6 +47,12 @@
 }
 
 @media (min-width: 641px) {
+    .main {
+        flex: 1;
+        padding-left: 8rem;
+        padding-right: 8rem;
+    }
+
     .page {
         flex-direction: row;
     }

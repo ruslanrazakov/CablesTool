@@ -58,7 +58,6 @@ namespace CablesTool
                 app.UseHsts();
             }
 
-            appContext.Database.EnsureDeleted();
             appContext.Database.EnsureCreated();
 
             app.UseHttpsRedirection();
