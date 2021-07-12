@@ -1,0 +1,126 @@
+﻿@using System.Timers
+@using Microsoft.Extensions.Logging
+@using Nito.AsyncEx.Synchronous
+@inject JSWrapper JSWrapper
+
+<iframe id="patchFrame" class="video-control" src="@ProjectPath"></iframe>
+
+<div class="left-to-right-container">
+    <button class="btn btn-secondary" type="button" @onclick="PlayClicked"><span class="oi oi-media-play"></span></button>
+    <button class="btn btn-secondary" type="button" @onclick="StopClicked"><span class="oi oi-media-stop"></span></button>
+    <div style="width: 100%"></div>
+    <h5 style="flex: none">@VideoName | @VideoTime/@VideoLength</h5>
+</div>
+
+<input class="slider" type="range" min="1" max="@VideoLength" step="1"
+       @bind-value="@VideoTime"
+       @onmousedown="VideoSliderInputMouseDown"
+       @onmouseup="VideoSliderInputMouseUp"
+       @oninput="@((args) => VideoSliderChanged(args.Value.ToString()))" />
+
+@code {
+    [Inject]
+    public ILogger<CablesPlayer> Logger { get; set; }
+    [Parameter]
+    public double VideoLength { get; set; }
+    [Parameter]
+    public string ProjectPath { get; set; }
+    [Parameter]
+    public string VideoName { get; set; } = "Video not selected";
+
+    public double VideoTime { get; set; }
+    private Timer videoTimer = new Timer() { Interval = 200 };
+    private bool isPlaying;
+
+    protected override void OnInitialized()
+    {
+        videoTimer.Elapsed += VideoTimer_Elapsed;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(500); // !important for successfull uploading ProjectPath in Iframe!
+
+            if (VideoName != null && VideoName != String.Empty)
+            {
+                await Stop();
+                await JSWrapper.SetCablesVariable("s_videoPath", VideoName);
+            }
+        }
+    }
+
+    private async Task PlayClicked()
+    {
+        await Play();
+        isPlaying = true;
+    }
+
+    private async Task StopClicked()
+    {
+        await Stop();
+        isPlaying = false;
+    }
+
+    private void VideoTimer_Elapsed(object sender, ElapsedEventArgs e)
+    {
+        try
+        {
+            var task = Task.Run(async () => await JSWrapper.GetCablesVariable("i_getTime"));
+            var time = task.WaitAndUnwrapException();
+            VideoTime = Math.Round(time, 0);
+            Logger.LogWarning(VideoTime.ToString());
+            InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            videoTimer.Stop();
+            videoTimer.Elapsed -= VideoTimer_Elapsed;
+            Logger.LogError(ex.ToString());
+        }
+    }
+
+    private async Task Play()
+    {
+        videoTimer.Start();
+        await JSWrapper.SetCablesVariable("i_videoSpeed", "1");
+        Logger.LogWarning("CABLESPLAYER PLAYING");
+    }
+
+    private async Task Stop()
+    {
+        videoTimer.Stop();
+        await JSWrapper.SetCablesVariable("i_videoSpeed", "0");
+        Logger.LogWarning("CABLESPLAYER STOPPED");
+    }
+
+    private async Task VideoSliderInputMouseDown()
+    {
+        await Stop();
+    }
+
+    private async Task VideoSliderInputMouseUp()
+    {
+        if (isPlaying) await Play();
+        else await Stop();
+    }
+
+    private async Task VideoSliderChanged(string step)
+    {
+        await JSWrapper.SetCablesVariable("i_videoTime", step);
+    }
+
+    public async Task ChangeVideo(string fileName)
+    {
+        VideoName = fileName;
+        await JSWrapper.SetCablesVariable("s_videoPath", fileName);
+    }
+
+    public void Dispose()
+    {
+        videoTimer.Stop();
+        videoTimer.Elapsed -= VideoTimer_Elapsed;
+        Logger.LogWarning("CABLESPLAYER DISPOSED");
+    }
+}

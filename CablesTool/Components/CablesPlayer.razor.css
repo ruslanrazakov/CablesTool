@@ -1,0 +1,15 @@
+﻿.video-control {
+    width: 100%;
+    height: 35rem;
+    margin-bottom: 1%;
+    border-width: 0px
+}
+
+.slider {
+    width: 100%;
+}
+.left-to-right-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px
+}

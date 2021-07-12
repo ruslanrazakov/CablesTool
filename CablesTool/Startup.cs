@@ -37,6 +37,7 @@ namespace CablesTool
             services.AddDbContext<ApplicationContext>(options =>
                options.UseSqlite(Configuration.GetConnectionString("MainDatabase")));
             services.AddScoped<UploadEvents<long>>();
+            services.AddScoped<JSWrapper>();
             services.AddAuthentication();
             services.AddHttpContextAccessor();
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.WithOrigins("https://localhost:44389/CablesProject/assets")

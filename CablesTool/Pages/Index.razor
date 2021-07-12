@@ -1,19 +1,6 @@
 ﻿@page "/"
-<iframe id="patchFrame" class="video-control" src="@ProjectPath"></iframe>
 
-<div class="left-to-right-container">
-    <button class="btn btn-secondary" type="button" @onclick="Play"><span class="oi oi-media-play"></span></button>
-    <button class="btn btn-secondary" type="button" @onclick="Stop"><span class="oi oi-media-stop"></span></button>
-    <div style="width: 100%"></div>
-    <h5 style="flex: none">@VideoName : @VideoTime|@videoFileEntity.Length</h5>
-</div>
-
-<input class="slider" type="range" min="1" max="@videoFileEntity.Length" step="1"
-       @bind-value="@VideoTime"
-       @onmousedown="VideoSliderInputMouseDown"
-       @onmouseup="VideoSliderInputMouseUp"
-       @oninput="@((args) => VideoSliderChanged(args.Value.ToString()))" />
-
+<CablesPlayer @ref="cablesPlayerRef" ProjectPath="@ProjectPath" VideoName="@VideoName" VideoLength="@VideoLength"/>
 
 @if (videoFileEntity.Name != null && videoFileEntity.Name != String.Empty)
 {
