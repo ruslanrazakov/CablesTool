@@ -1,6 +1,7 @@
 ﻿@using System.Timers
 @using Microsoft.Extensions.Logging
 @using Nito.AsyncEx.Synchronous
+@using System.Globalization
 @inject JSWrapper JSWrapper
 
 <iframe id="patchFrame" class="video-control" src="@ProjectPath"></iframe>
@@ -9,11 +10,11 @@
     <button class="btn btn-secondary" type="button" @onclick="PlayClicked"><span class="oi oi-media-play"></span></button>
     <button class="btn btn-secondary" type="button" @onclick="StopClicked"><span class="oi oi-media-stop"></span></button>
     <div style="width: 100%"></div>
-    <h5 style="flex: none">@VideoName | @VideoTime/@VideoLength</h5>
+    <h5 style="flex: none">@VideoName | @CurrentTime/@VideoLength</h5>
 </div>
 
 <input class="slider" type="range" min="1" max="@VideoLength" step="1"
-       @bind-value="@VideoTime"
+       @bind-value="@CurrentTime"
        @onmousedown="VideoSliderInputMouseDown"
        @onmouseup="VideoSliderInputMouseUp"
        @oninput="@((args) => VideoSliderChanged(args.Value.ToString()))" />
@@ -28,7 +29,7 @@
     [Parameter]
     public string VideoName { get; set; } = "Video not selected";
 
-    public double VideoTime { get; set; }
+    public double CurrentTime { get; set; }
     private Timer videoTimer = new Timer() { Interval = 200 };
     private bool isPlaying;
 
@@ -69,8 +70,8 @@
         {
             var task = Task.Run(async () => await JSWrapper.GetCablesVariable("i_getTime"));
             var time = task.WaitAndUnwrapException();
-            VideoTime = Math.Round(time, 0);
-            Logger.LogWarning(VideoTime.ToString());
+            CurrentTime = Math.Round(time, 0);
+            Logger.LogWarning(CurrentTime.ToString());
             InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
@@ -108,10 +109,30 @@
 
     private async Task VideoSliderChanged(string step)
     {
-        await JSWrapper.SetCablesVariable("i_videoTime", step);
+        await ChangeVideoPosition(step);
     }
 
-    public async Task ChangeVideo(string fileName)
+    public async Task ChangeVideoPosition(string step)
+    {
+        CurrentTime = Convert.ToDouble(step);
+        double cablesTime = Convert.ToDouble(step) + GetSmallRandomDouble();
+        await JSWrapper.SetCablesVariable("i_videoTime", cablesTime.ToString(CultureInfo.InvariantCulture));
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Cables unexpected behavior: cant set same variable more than one time.
+    /// So, we can add small float number to i_videoTime variable to get different variables
+    /// </summary>
+    /// <returns></returns>
+    private double GetSmallRandomDouble()
+    {
+        Random rnd = new Random();
+        double max = 0.5;
+        return Math.Round(rnd.NextDouble() * max, 1);
+    }
+
+    public async Task ChangeVideoContent(string fileName)
     {
         VideoName = fileName;
         await JSWrapper.SetCablesVariable("s_videoPath", fileName);

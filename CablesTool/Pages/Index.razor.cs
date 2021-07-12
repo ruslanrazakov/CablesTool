@@ -43,6 +43,7 @@ namespace CablesTool.Pages
             {
                 InitCablesPlayer(ApplicationContext.VideoFiles.First().Id);
                 commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id).ToList();
+
             }
 
             UserName = httpContextAccessor.HttpContext.User.Identity.Name != null ?
@@ -52,7 +53,9 @@ namespace CablesTool.Pages
         private async Task OnFileUploadedAsync(object arg1, long id)
         {
             InitCablesPlayer(id);
-            await cablesPlayerRef.ChangeVideo(VideoName);
+            commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id).ToList();
+            StateHasChanged();
+            await cablesPlayerRef.ChangeVideoContent(VideoName);
         }
 
         private void InitCablesPlayer(long id)
@@ -71,7 +74,7 @@ namespace CablesTool.Pages
                     VideoFileId = videoFileEntity.Id,
                     UserName = this.UserName,
                     Content = CommentContent,
-                   // Time = VideoTime,
+                    Time = cablesPlayerRef.CurrentTime,
                     Date = DateTime.Now
                 }) ;
                 await ApplicationContext.SaveChangesAsync();
@@ -85,5 +88,9 @@ namespace CablesTool.Pages
             InvokeAsync(StateHasChanged);
         }
 
+        private async Task CommentClicked(double time)
+        {
+            await cablesPlayerRef.ChangeVideoPosition(time.ToString());
+        }
     }
 }

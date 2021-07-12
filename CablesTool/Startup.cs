@@ -35,7 +35,7 @@ namespace CablesTool
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddDbContext<ApplicationContext>(options =>
-               options.UseSqlite(Configuration.GetConnectionString("MainDatabase")));
+               options.UseSqlite("Data Source=dbMain.db"));
             services.AddScoped<UploadEvents<long>>();
             services.AddScoped<JSWrapper>();
             services.AddAuthentication();

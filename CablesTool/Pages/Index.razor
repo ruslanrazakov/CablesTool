@@ -15,7 +15,7 @@
             <tbody>
                 @foreach (var comment in commentEntities)
                 {
-                    <tr>
+                    <tr @onclick="@(()=>CommentClicked(comment.Time))">
                         <td style="width: 150px">@comment.UserName</td>
                         <td style="width: 200px">@comment.Date.ToString("dd-MM-yyyy HH:mm")</td>
                         <td style="width: 60px">@comment.Time s</td>
