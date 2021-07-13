@@ -2,6 +2,7 @@
 @using Microsoft.Extensions.Logging
 @using Nito.AsyncEx.Synchronous
 @using System.Globalization
+@using Data
 @inject JSWrapper JSWrapper
 
 <iframe id="patchFrame" class="video-control" src="@ProjectPath"></iframe>
@@ -13,21 +14,40 @@
     <h5 style="flex: none">@VideoName | @CurrentTime/@VideoLength</h5>
 </div>
 
-<input class="slider" type="range" min="1" max="@VideoLength" step="1"
+<input class="slider" type="range" min="1" max="@VideoLength" step="1" list="tickmarks"
        @bind-value="@CurrentTime"
        @onmousedown="VideoSliderInputMouseDown"
        @onmouseup="VideoSliderInputMouseUp"
        @oninput="@((args) => VideoSliderChanged(args.Value.ToString()))" />
+
+<datalist style="margin-bottom: 1%" id="tickmarks">
+    @foreach (var currentSecond in Enumerable.Range(1, int_VideoLength))
+    {
+        var comment = CommentEntities.FirstOrDefault(comment => comment.Time == currentSecond);
+        if (comment != null)
+        {
+            <option value="@currentSecond" label="^" @onclick="@(()=>VideoSliderChanged(currentSecond.ToString()))"></option>
+        }
+        else
+        {
+            <option value="@currentSecond" label="" style="visibility:hidden"></option>
+        }
+    }
+</datalist>
+
 
 @code {
     [Inject]
     public ILogger<CablesPlayer> Logger { get; set; }
     [Parameter]
     public double VideoLength { get; set; }
+    private int int_VideoLength => (int)VideoLength;
     [Parameter]
     public string ProjectPath { get; set; }
     [Parameter]
     public string VideoName { get; set; } = "Video not selected";
+    [Parameter]
+    public List<CommentEntity> CommentEntities { get; set; }
 
     public double CurrentTime { get; set; }
     private Timer videoTimer = new Timer() { Interval = 200 };
@@ -72,7 +92,7 @@
             var time = task.WaitAndUnwrapException();
             CurrentTime = Math.Round(time, 0);
             Logger.LogWarning(CurrentTime.ToString());
-            InvokeAsync(StateHasChanged);
+            InvokeAsync( StateHasChanged);
         }
         catch (Exception ex)
         {
@@ -122,7 +142,7 @@
 
     /// <summary>
     /// Cables unexpected behavior: cant set same variable more than one time.
-    /// So, we can add small float number to i_videoTime variable to get different variables
+    /// So, we can add small float number to i_videoTime variable to get different variables for Cables build
     /// </summary>
     /// <returns></returns>
     private double GetSmallRandomDouble()
@@ -134,6 +154,7 @@
 
     public async Task ChangeVideoContent(string fileName)
     {
+        Stop();
         VideoName = fileName;
         await JSWrapper.SetCablesVariable("s_videoPath", fileName);
     }

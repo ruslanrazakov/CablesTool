@@ -1,6 +1,6 @@
 ﻿@page "/"
 
-<CablesPlayer @ref="cablesPlayerRef" ProjectPath="@ProjectPath" VideoName="@VideoName" VideoLength="@VideoLength"/>
+<CablesPlayer @ref="cablesPlayerRef" ProjectPath="@ProjectPath" VideoName="@VideoName" VideoLength="@VideoLength" CommentEntities="@commentEntities"/>
 
 @if (videoFileEntity.Name != null && videoFileEntity.Name != String.Empty)
 {
@@ -11,7 +11,7 @@
 
     @if (commentEntities != null && commentEntities.Count() > 0)
     {
-        <table class="table table-dark borderless" style="margin-top: 2%">
+        <table class="table table-dark table-hover borderless" style="margin-top: 2%">
             <tbody>
                 @foreach (var comment in commentEntities)
                 {

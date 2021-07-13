@@ -7,21 +7,21 @@ namespace CablesTool.Services
 {
     public class UploadEvents<T>
     {
-        public T Id { get; set; }
-        public event Func<object, T, Task> FileUploaded;
+        public T CurrentVideoFileId { get; set; }
+        public event Func<T, Task> FileUploaded;
 
         public async Task UploadFile(T id)
         {
-            if (!Id.Equals(id))
+            if (!CurrentVideoFileId.Equals(id))
             {
-                Id = id;
+                CurrentVideoFileId = id;
                 await NotifyFileUploaded();
             }
         }
 
         private async Task NotifyFileUploaded()
         {
-            Func<object, T, Task> handler = FileUploaded;
+            Func<T, Task> handler = FileUploaded;
 
             if (handler == null)
             {
@@ -33,7 +33,7 @@ namespace CablesTool.Services
 
             for (int i = 0; i < invocationList.Length; i++)
             {
-                handlerTasks[i] = ((Func<object, T, Task>)invocationList[i])(this, Id);
+                handlerTasks[i] = ((Func<T, Task>)invocationList[i])(CurrentVideoFileId);
             }
 
             await Task.WhenAll(handlerTasks);

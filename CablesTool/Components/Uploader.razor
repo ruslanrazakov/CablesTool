@@ -14,10 +14,10 @@
             <p>
                 <div class="input-group">
                     <div class="custom-file">
-                        <Microsoft.AspNetCore.Components.Forms.InputFile OnChange="@LoadFiles" 
-                                                                         type="file"
+                        <Microsoft.AspNetCore.Components.Forms.InputFile OnChange="@LoadFiles"
+                                                                         type="file" 
                                                                          class="custom-file-input" 
-                                                                         id="inputGroupFile" 
+                                                                         id="inputGroupFile04" 
                                                                          aria-describedby="inputGroupFileAddon04">
                         </Microsoft.AspNetCore.Components.Forms.InputFile>
                         <label class="custom-file-label" for="inputGroupFile">Choose video</label>
@@ -95,10 +95,10 @@
 
     private async Task WriteFile(string filePath, InputFileChangeEventArgs e)
     {
-        await using FileStream fs = new(filePath, FileMode.Create);
+        await using FileStream fs = new(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
         await e.File.OpenReadStream(maxFileSizeBytes).CopyToAsync(fs);
         File.SetAttributes(filePath, FileAttributes.Normal);
-        Logger.LogInformation($"{filePath} UPLOADED to Db");
+        Logger.LogInformation($"{filePath} uploaded.");
     }
 
     private async Task<long> SaveToDatabase(string filePath, InputFileChangeEventArgs e)
@@ -114,6 +114,8 @@
 
         ApplicationContext.VideoFiles.Add(videoFileEntity);
         await ApplicationContext.SaveChangesAsync();
+        Logger.LogInformation($"{filePath} metadata saved to Db.");
+
         return ApplicationContext.VideoFiles.FirstOrDefault(v => v.Name == videoFileEntity.Name).Id;
 
     }

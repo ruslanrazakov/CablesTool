@@ -43,19 +43,18 @@ namespace CablesTool.Pages
             {
                 InitCablesPlayer(ApplicationContext.VideoFiles.First().Id);
                 commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id).ToList();
-
             }
 
             UserName = httpContextAccessor.HttpContext.User.Identity.Name != null ?
                 httpContextAccessor.HttpContext.User.Identity.Name : "Guest";
         }
 
-        private async Task OnFileUploadedAsync(object arg1, long id)
+        private async Task OnFileUploadedAsync(long id)
         {
             InitCablesPlayer(id);
             commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id).ToList();
-            StateHasChanged();
             await cablesPlayerRef.ChangeVideoContent(VideoName);
+            StateHasChanged();
         }
 
         private void InitCablesPlayer(long id)
