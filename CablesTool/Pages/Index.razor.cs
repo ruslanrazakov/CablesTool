@@ -37,7 +37,7 @@ namespace CablesTool.Pages
         protected override void OnInitialized()
         {
             ProjectPath = "CablesProject/index.html";
-            UploadEvents.FileUploaded += OnFileUploadedAsync;
+            UploadEvents.FileUploadedAsync += OnFileUploadedAsync;
 
             if (ApplicationContext.VideoFiles.Count() > 0)
             {

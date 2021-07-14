@@ -14,14 +14,30 @@
     gap: 10px
 }
 
-datalist {
-    display: flex;
-    color: white;
-    width: 100%;
-}
-
-option {
+p {
     width: 100%;
     font-size: smaller;
-    cursor: pointer;
+}
+
+span[data-descr] {
+    position: relative;
+    text-decoration: underline;
+    color: white;
+    cursor: help;
+    width:100%
+}
+
+span[data-descr]:hover::after {
+    content: attr(data-descr);
+    position: absolute;
+    left: 0;
+    top: 24px;
+    border: 1px #999999 solid;
+    border-radius: 5px;
+    background-color: #3E3E42;
+    padding: 12px;
+    color: white;
+    font-size: 14px;
+    /*cuz bootstrap btns has z-index 2*/
+    z-index: 3;
 }

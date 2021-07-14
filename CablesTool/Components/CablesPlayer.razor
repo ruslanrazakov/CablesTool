@@ -2,7 +2,9 @@
 @using Microsoft.Extensions.Logging
 @using Nito.AsyncEx.Synchronous
 @using System.Globalization
+@using System.Threading
 @using Data
+@using Utils 
 @inject JSWrapper JSWrapper
 
 <iframe id="patchFrame" class="video-control" src="@ProjectPath"></iframe>
@@ -11,30 +13,34 @@
     <button class="btn btn-secondary" type="button" @onclick="PlayClicked"><span class="oi oi-media-play"></span></button>
     <button class="btn btn-secondary" type="button" @onclick="StopClicked"><span class="oi oi-media-stop"></span></button>
     <div style="width: 100%"></div>
-    <h5 style="flex: none">@VideoName | @CurrentTime/@VideoLength</h5>
+    <h5 style="flex: none">@VideoName   @CurrentTime:00/@VideoLength:00</h5>
 </div>
 
-<input class="slider" type="range" min="1" max="@VideoLength" step="1" list="tickmarks"
-       @bind-value="@CurrentTime"
-       @onmousedown="VideoSliderInputMouseDown"
-       @onmouseup="VideoSliderInputMouseUp"
-       @oninput="@((args) => VideoSliderChanged(args.Value.ToString()))" />
-
-<datalist style="margin-bottom: 1%" id="tickmarks">
-    @foreach (var currentSecond in Enumerable.Range(1, int_VideoLength))
+<!--comments icons for slider range-->
+<div class="d-inline-flex" style="width:100%">
+    @foreach (var currentSecond in Enumerable.Range(0, int_VideoLength+1))
     {
         var comment = CommentEntities.FirstOrDefault(comment => comment.Time == currentSecond);
         if (comment != null)
         {
-            <option value="@currentSecond" label="^" @onclick="@(()=>VideoSliderChanged(currentSecond.ToString()))"></option>
+            <span data-descr="@comment.UserName: @comment.Content">
+                <span class="oi oi-chat" @onclick="@(()=>VideoSliderChanged(currentSecond.ToString()))" />
+            </span>
         }
         else
         {
-            <option value="@currentSecond" label="" style="visibility:hidden"></option>
+            <span data-descr="@String.Empty" style="visibility:hidden">
+                <span class="oi oi-chat" style="visibility:hidden" />
+            </span>
         }
     }
-</datalist>
+</div>
 
+<input class="slider" type="range" min="0" max="@VideoLength" step="1"
+       @bind-value="@CurrentTime"
+       @onmousedown="VideoSliderInputMouseDown"
+       @onmouseup="VideoSliderInputMouseUp"
+       @oninput="@((args) => VideoSliderChanged(args.Value.ToString()))" />
 
 @code {
     [Inject]
@@ -50,19 +56,15 @@
     public List<CommentEntity> CommentEntities { get; set; }
 
     public double CurrentTime { get; set; }
-    private Timer videoTimer = new Timer() { Interval = 200 };
     private bool isPlaying;
 
-    protected override void OnInitialized()
-    {
-        videoTimer.Elapsed += VideoTimer_Elapsed;
-    }
+    TimerAsync timer = new TimerAsync(delay: 100);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await Task.Delay(500); // !important for successfull uploading ProjectPath in Iframe!
+            await Task.Delay(500); // !important for successfull uploading /Project/Path.html in Iframe!
 
             if (VideoName != null && VideoName != String.Empty)
             {
@@ -78,42 +80,33 @@
         isPlaying = true;
     }
 
+    private async Task Play()
+    {
+        await JSWrapper.SetCablesVariable("i_videoSpeed", "1");
+
+        await timer.Start(async () => await UpdateVideoSlider());
+        Logger.LogInformation("CABLESPLAYER PLAYING");
+    }
+
+    private async Task UpdateVideoSlider()
+    {
+        var time = await JSWrapper.GetCablesVariable("i_getTime");
+        CurrentTime = Math.Round(time, 0);
+        Logger.LogInformation(CurrentTime.ToString());
+
+        StateHasChanged();
+    }
+
     private async Task StopClicked()
     {
         await Stop();
         isPlaying = false;
     }
 
-    private void VideoTimer_Elapsed(object sender, ElapsedEventArgs e)
-    {
-        try
-        {
-            var task = Task.Run(async () => await JSWrapper.GetCablesVariable("i_getTime"));
-            var time = task.WaitAndUnwrapException();
-            CurrentTime = Math.Round(time, 0);
-            Logger.LogWarning(CurrentTime.ToString());
-            InvokeAsync( StateHasChanged);
-        }
-        catch (Exception ex)
-        {
-            videoTimer.Stop();
-            videoTimer.Elapsed -= VideoTimer_Elapsed;
-            Logger.LogError(ex.ToString());
-        }
-    }
-
-    private async Task Play()
-    {
-        videoTimer.Start();
-        await JSWrapper.SetCablesVariable("i_videoSpeed", "1");
-        Logger.LogWarning("CABLESPLAYER PLAYING");
-    }
-
     private async Task Stop()
     {
-        videoTimer.Stop();
-        await JSWrapper.SetCablesVariable("i_videoSpeed", "0");
-        Logger.LogWarning("CABLESPLAYER STOPPED");
+        await timer.Stop(async () => await JSWrapper.SetCablesVariable("i_videoSpeed", "0"));
+        Logger.LogInformation("CABLESPLAYER STOPPED");
     }
 
     private async Task VideoSliderInputMouseDown()
@@ -142,7 +135,7 @@
 
     /// <summary>
     /// Cables unexpected behavior: cant set same variable more than one time.
-    /// So, we can add small float number to i_videoTime variable to get different variables for Cables build
+    /// So, we can add small float number to i_videoTime variable to send different variables in Cables build
     /// </summary>
     /// <returns></returns>
     private double GetSmallRandomDouble()
@@ -154,15 +147,9 @@
 
     public async Task ChangeVideoContent(string fileName)
     {
-        Stop();
+        await Stop();
         VideoName = fileName;
+        CurrentTime = 0;
         await JSWrapper.SetCablesVariable("s_videoPath", fileName);
-    }
-
-    public void Dispose()
-    {
-        videoTimer.Stop();
-        videoTimer.Elapsed -= VideoTimer_Elapsed;
-        Logger.LogWarning("CABLESPLAYER DISPOSED");
     }
 }

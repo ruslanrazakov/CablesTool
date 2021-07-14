@@ -8,20 +8,20 @@ namespace CablesTool.Services
     public class UploadEvents<T>
     {
         public T CurrentVideoFileId { get; set; }
-        public event Func<T, Task> FileUploaded;
+        public event Func<T, Task> FileUploadedAsync;
 
         public async Task UploadFile(T id)
         {
             if (!CurrentVideoFileId.Equals(id))
             {
                 CurrentVideoFileId = id;
-                await NotifyFileUploaded();
+                await NotifyFileUploadedAsync();
             }
         }
 
-        private async Task NotifyFileUploaded()
+        private async Task NotifyFileUploadedAsync()
         {
-            Func<T, Task> handler = FileUploaded;
+            Func<T, Task> handler = FileUploadedAsync;
 
             if (handler == null)
             {
