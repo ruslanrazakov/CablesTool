@@ -11,7 +11,7 @@
 
 <div class="left-to-right-container">
     <button class="btn btn-secondary" type="button" @onclick="PlayClicked"><span class="oi oi-media-play"></span></button>
-    <button class="btn btn-secondary" type="button" @onclick="StopClicked"><span class="oi oi-media-stop"></span></button>
+    <button class="btn btn-secondary" type="button" @onclick="StopClicked"><span class="oi oi-media-pause"></span></button>
     <div style="width: 100%"></div>
     <h5 style="flex: none">@VideoName   @CurrentTime:00/@VideoLength:00</h5>
 </div>
@@ -20,17 +20,16 @@
 <div class="d-inline-flex" style="width:100%">
     @foreach (var currentSecond in Enumerable.Range(0, int_VideoLength+1))
     {
-        var comment = CommentEntities.FirstOrDefault(comment => comment.Time == currentSecond);
-        if (comment != null)
+        var comments = CommentEntities.Where(comment => comment.Time == currentSecond);
+        if (comments != null && comments.Count() > 0)
         {
-            <span data-descr="@comment.UserName: @comment.Content">
+            <span data-descr="@GetComments(comments)">
                 <span class="oi oi-chat" @onclick="@(()=>VideoSliderChanged(currentSecond.ToString()))" />
             </span>
         }
         else
         {
             <span data-descr="@String.Empty" style="visibility:hidden">
-                <span class="oi oi-chat" style="visibility:hidden" />
             </span>
         }
     }
@@ -64,12 +63,12 @@
     {
         if (firstRender)
         {
-            await Task.Delay(500); // !important for successfull uploading /Project/Path.html in Iframe!
+            await Task.Delay(1000); // !important for successfull uploading /Project/Path.html in Iframe!
 
             if (VideoName != null && VideoName != String.Empty)
             {
-                await Stop();
-                await JSWrapper.SetCablesVariable("s_videoPath", VideoName);
+                await JSWrapper.TrySetCablesVariableWithRetries("i_videoSpeed", "0");
+                await JSWrapper.TrySetCablesVariableWithRetries("s_videoPath", VideoName);
             }
         }
     }
@@ -80,10 +79,15 @@
         isPlaying = true;
     }
 
+    private async Task StopClicked()
+    {
+        await Stop();
+        isPlaying = false;
+    }
+
     private async Task Play()
     {
         await JSWrapper.SetCablesVariable("i_videoSpeed", "1");
-
         await timer.Start(async () => await UpdateVideoSlider());
         Logger.LogInformation("CABLESPLAYER PLAYING");
     }
@@ -95,12 +99,6 @@
         Logger.LogInformation(CurrentTime.ToString());
 
         StateHasChanged();
-    }
-
-    private async Task StopClicked()
-    {
-        await Stop();
-        isPlaying = false;
     }
 
     private async Task Stop()
@@ -151,5 +149,18 @@
         VideoName = fileName;
         CurrentTime = 0;
         await JSWrapper.SetCablesVariable("s_videoPath", fileName);
+    }
+
+    private string GetComments(IEnumerable<CommentEntity> comments)
+    {
+        string result = String.Empty;
+        foreach(var comment in comments)
+        {
+            result += $"{comment.UserName}: ";
+            result += comment.Content.Length >= 15 ? comment.Content.Substring(0, 15) + "..." : comment.Content;
+            result += "\n";
+        }
+
+        return result;
     }
 }

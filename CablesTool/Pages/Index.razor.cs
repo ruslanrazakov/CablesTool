@@ -42,7 +42,9 @@ namespace CablesTool.Pages
             if (ApplicationContext.VideoFiles.Count() > 0)
             {
                 InitCablesPlayer(ApplicationContext.VideoFiles.First().Id);
-                commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id).ToList();
+                commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id)
+                                                              .OrderByDescending(c => c.Date)
+                                                              .ToList();
             }
 
             UserName = httpContextAccessor.HttpContext.User.Identity.Name != null ?
@@ -52,7 +54,9 @@ namespace CablesTool.Pages
         private async Task OnFileUploadedAsync(long id)
         {
             InitCablesPlayer(id);
-            commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id).ToList();
+            commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id)
+                                                          .OrderByDescending(c => c.Date)
+                                                          .ToList();
             await cablesPlayerRef.ChangeVideoContent(VideoName);
             StateHasChanged();
         }
@@ -66,7 +70,7 @@ namespace CablesTool.Pages
 
         private async Task AddComment()
         {
-            if(CommentContent != String.Empty)
+            if(CommentContent != null && CommentContent != String.Empty)
             {
                 ApplicationContext.Comments.Add(new CommentEntity()
                 {
@@ -79,11 +83,14 @@ namespace CablesTool.Pages
                 await ApplicationContext.SaveChangesAsync();
             }
             UpdateCommentsSection();
+            CommentContent = String.Empty;
         }
 
         private void UpdateCommentsSection()
         {
-            commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id).OrderByDescending(c => c.Date).ToList();
+            commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id)
+                                                          .OrderByDescending(c => c.Date)
+                                                          .ToList();
             InvokeAsync(StateHasChanged);
         }
 

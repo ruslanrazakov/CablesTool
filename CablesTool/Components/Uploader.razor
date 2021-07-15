@@ -3,6 +3,8 @@
 @using Microsoft.Extensions.Logging
 @using CablesTool.Data
 @using CablesTool.Services
+@using System.Threading
+@using Utils
 @using Xabe.FFmpeg
 
 <div class="border">
@@ -15,30 +17,21 @@
                 <div class="input-group">
                     <div class="custom-file">
                         <Microsoft.AspNetCore.Components.Forms.InputFile OnChange="@LoadFiles"
-                                                                         type="file" 
-                                                                         class="custom-file-input" 
-                                                                         id="inputGroupFile04" 
+                                                                         type="file"
+                                                                         class="custom-file-input"
+                                                                         id="inputGroupFile04"
                                                                          aria-describedby="inputGroupFileAddon04">
                         </Microsoft.AspNetCore.Components.Forms.InputFile>
                         <label class="custom-file-label" for="inputGroupFile">Choose video</label>
                     </div>
                 </div>
-
             </p>
             @if (isLoading)
             {
-                <div class="spinner-border text-primary" role="status"></div>
-                <p>Loading...</p>
+                <div class="progress" style="width: 300px">
+                    <div class="progress-bar" role="progressbar" style="@($"width: {progressValue}%")" aria-valuenow="@progressValue" aria-valuemin="0" aria-valuemax="100">@progressValue %</div>
+                </div>
             }
-            else if (loadedFile != null)
-            {
-                <p>Name:</p> @loadedFile.Name
-                <p>Last modified:</p> @loadedFile.LastModified.ToString()
-                <p>Size (bytes):</p> @loadedFile.Size
-                <p>Content type:</p> @loadedFile.ContentType
-            }
-
-            @VideoName
         </div>
     </div>
 </div>
@@ -55,6 +48,7 @@
     [Parameter]
     public string FolderName { get; set; }
     public string VideoName;
+    private CancellationTokenSource cts;
 
     private long maxFileSizeBytes = 1024 * 1024 * 1000;
     public long MaxFileSizeKb
@@ -62,7 +56,7 @@
         get => maxFileSizeBytes / 1024;
     }
     private IBrowserFile loadedFile;
-    private int maxAllowedFiles = 3;
+    private int progressValue = 0;
     private bool isLoading = false;
 
     private async Task LoadFiles(InputFileChangeEventArgs e)
@@ -77,13 +71,13 @@
             {
                 await WriteFile(filePath, e);
                 var currentId = await SaveToDatabase(filePath, e);
+                isLoading = false;
                 await UploadEvents.UploadFile(currentId);
             }
             else
             {
                 await UploadEvents.UploadFile(videoFile.Id);
             }
-            isLoading = false;
         }
         catch (Exception ex)
         {
@@ -91,14 +85,34 @@
         }
 
         isLoading = false;
+        progressValue = 0;
     }
 
     private async Task WriteFile(string filePath, InputFileChangeEventArgs e)
     {
-        await using FileStream fs = new(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
-        await e.File.OpenReadStream(maxFileSizeBytes).CopyToAsync(fs);
+        cts = new CancellationTokenSource();
+        await using (FileStream output = new(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+        {
+
+            var input = e.File.OpenReadStream(maxFileSizeBytes, cts.Token);//.CopyToAsync(streamTo);
+            int read;
+            double inputLength = input.Length;
+            double currentLength = 0;
+            var buffer = new byte[1024 * 16];
+
+            while ((read = await input.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                await output.WriteAsync(buffer, 0, read);
+                currentLength += read;
+                progressValue = Convert.ToInt32(currentLength / inputLength * 100d);
+                StateHasChanged();
+                Logger.LogWarning($"Uploading {e.File.Name}: {progressValue.ToString()}");
+            }
+        }
+
         File.SetAttributes(filePath, FileAttributes.Normal);
         Logger.LogInformation($"{filePath} uploaded.");
+
     }
 
     private async Task<long> SaveToDatabase(string filePath, InputFileChangeEventArgs e)
@@ -126,4 +140,5 @@
         var videoDuration = mediaInfo.VideoStreams.First().Duration;
         return videoDuration;
     }
+
 }
