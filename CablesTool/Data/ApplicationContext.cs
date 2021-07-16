@@ -12,6 +12,7 @@ namespace CablesTool.Data
             : base(options)
         {
         }
+        public DbSet<UserWorkspaceEntity> UserWorkspaces { get; set; }
 
         public DbSet<VideoFileEntity> VideoFiles { get; set; }
         public DbSet<CommentEntity> Comments { get; set; }

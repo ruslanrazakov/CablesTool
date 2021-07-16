@@ -1,16 +1,34 @@
 ﻿@inherits LayoutComponentBase
-
 <div class="page">
-   
     <div class="main">
+
         <div class="top-row px-4 auth">
             <LoginDisplay />
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
-        <div></div>
-        <Uploader />
-        <div class="content px-4">
-            @Body
-        </div>
+
+        @if (authState == null || !authState.User.Identity.IsAuthenticated)
+        {
+            <div style="margin-top: 3%">
+                Please,  <a href="Identity/Account/Login">sign in</a>  to Cables Tool.
+            </div>
+        }
+        else
+        {
+            <div class="content px-4">
+                <Uploader />
+                @Body
+            </div>
+        }
+
     </div>
 </div>
+
+@code
+{
+    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+    AuthenticationState authState;
+    protected override async Task OnInitializedAsync()
+    {
+        authState = await authenticationStateTask;
+    }
+}

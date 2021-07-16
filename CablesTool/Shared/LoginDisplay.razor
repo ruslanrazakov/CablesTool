@@ -6,14 +6,14 @@
         <a href="Identity/Account/Manage/Index">
             Hello, @context.User.Identity.Name!
         </a>
+        <a href="Identity/Account/Register">
+            Register new user
+        </a>
         <form action="/Identity/Account/Logout?returnUrl=%2F" method="post">
-            <button class="nav-link btn btn-link" type="submit">Logout</button>
-            <!--<input name="__RequestVerificationToken" type="hidden"
-                   value="@TokenProvider.XsrfToken">-->
+            <button style="border-width: 0; background: none; color: blue; "> Logout </button>
         </form>
     </Authorized>
     <NotAuthorized>
-        <a href="Identity/Account/Register">Register</a>
         <a href="Identity/Account/Login">Login</a>
     </NotAuthorized>
 </AuthorizeView>

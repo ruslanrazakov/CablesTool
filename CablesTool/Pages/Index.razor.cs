@@ -2,16 +2,13 @@
 using CablesTool.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
-using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Timers;
 using Microsoft.AspNetCore.Http;
-using Nito.AsyncEx.Synchronous;
 using CablesTool.Components;
+using System.Security.Claims;
 
 namespace CablesTool.Pages
 {
@@ -39,29 +36,44 @@ namespace CablesTool.Pages
             ProjectPath = "CablesProject/index.html";
             UploadEvents.FileUploadedAsync += OnFileUploadedAsync;
 
-            if (ApplicationContext.VideoFiles.Count() > 0)
+            var currentUserId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userWorkSpace = ApplicationContext.UserWorkspaces.FirstOrDefault(uw => uw.UserIdentifier == currentUserId);
+            if (userWorkSpace == null)
             {
-                InitCablesPlayer(ApplicationContext.VideoFiles.First().Id);
-                commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id)
-                                                              .OrderByDescending(c => c.Date)
-                                                              .ToList();
+                ApplicationContext.UserWorkspaces.Add(new UserWorkspaceEntity()
+                {
+                    UserIdentifier = currentUserId
+                });
+                ApplicationContext.SaveChanges();
+            }
+            else if(userWorkSpace.CurrentVideoId != null )
+            {
+                InitCablesPlayer(userWorkSpace.CurrentVideoId);
+                UpdateCommentsSection();
+
             }
 
-            UserName = httpContextAccessor.HttpContext.User.Identity.Name != null ?
-                httpContextAccessor.HttpContext.User.Identity.Name : "Guest";
+            UserName = httpContextAccessor.HttpContext.User.Identity.Name ?? "Guest";
         }
 
         private async Task OnFileUploadedAsync(long id)
         {
+            var currentUserId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userWorkSpace = ApplicationContext.UserWorkspaces.FirstOrDefault(uw => uw.UserIdentifier == currentUserId);
+            if (userWorkSpace != null)
+            {
+                userWorkSpace.CurrentVideoId = id;
+            }
+            ApplicationContext.SaveChanges();
+
             InitCablesPlayer(id);
-            commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id)
-                                                          .OrderByDescending(c => c.Date)
-                                                          .ToList();
+            UpdateCommentsSection();
+           
             await cablesPlayerRef.ChangeVideoContent(VideoName);
             StateHasChanged();
         }
 
-        private void InitCablesPlayer(long id)
+        private void InitCablesPlayer(long? id)
         {
             videoFileEntity = ApplicationContext.VideoFiles.First(v => v.Id == id);
             VideoName = videoFileEntity.Name;

@@ -49,8 +49,8 @@
     public string FolderName { get; set; }
     public string VideoName;
     private CancellationTokenSource cts;
-
     private long maxFileSizeBytes = 1024 * 1024 * 1000;
+
     public long MaxFileSizeKb
     {
         get => maxFileSizeBytes / 1024;

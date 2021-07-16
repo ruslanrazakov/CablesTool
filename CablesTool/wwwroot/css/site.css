@@ -5,7 +5,7 @@ html, body {
     color: white;
     text-align: left;
     background-color: black;
-
+    font-size: smaller;
 }
 
 a, .btn-link {

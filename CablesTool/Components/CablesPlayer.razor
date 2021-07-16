@@ -1,6 +1,4 @@
-﻿@using System.Timers
-@using Microsoft.Extensions.Logging
-@using Nito.AsyncEx.Synchronous
+﻿@using Microsoft.Extensions.Logging
 @using System.Globalization
 @using System.Threading
 @using Data
@@ -23,7 +21,7 @@
         var comments = CommentEntities.Where(comment => comment.Time == currentSecond);
         if (comments != null && comments.Count() > 0)
         {
-            <span data-descr="@GetComments(comments)">
+            <span data-descr="@GetCommentsPreview(comments)">
                 <span class="oi oi-chat" @onclick="@(()=>VideoSliderChanged(currentSecond.ToString()))" />
             </span>
         }
@@ -151,7 +149,7 @@
         await JSWrapper.SetCablesVariable("s_videoPath", fileName);
     }
 
-    private string GetComments(IEnumerable<CommentEntity> comments)
+    private string GetCommentsPreview(IEnumerable<CommentEntity> comments)
     {
         string result = String.Empty;
         foreach(var comment in comments)
