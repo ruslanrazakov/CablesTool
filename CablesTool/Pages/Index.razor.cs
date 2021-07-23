@@ -17,38 +17,43 @@ namespace CablesTool.Pages
         [Inject] 
         IHttpContextAccessor httpContextAccessor { get; set; }
         [Inject]
-        public UploadEvents<long> UploadEvents { get; set; }
+        UploadEventsService<long> UploadEvents { get; set; }
         [Inject]
-        public ApplicationContext ApplicationContext { get; set; }
+        ApplicationContext ApplicationContext { get; set; }
         [Inject]
-        public ILogger <Index> Logger { get; set; }
-        public VideoFileEntity videoFileEntity = new();
-        public List<CommentEntity> commentEntities = new();
-        public string CommentContent { get; set; }
-        public string ProjectPath { get; set; }
-        public string UserName { get; set; }
-        public string VideoName { get; set; }
-        public double VideoLength { get; set; }
-        private CablesPlayer cablesPlayerRef;
+        ILogger <Index> Logger { get; set; }
+        [Inject]
+        UserWorkspaceService UserWorkspaceService { get; set; }
+        VideoFileEntity videoFileEntity = new();
+        List<CommentEntity> commentEntities = new();
+        string CommentContent { get; set; }
+        string ProjectPath { get; set; }
+        string UserName { get; set; }
+        string VideoName { get; set; }
+        double VideoLength { get; set; }
+        CablesPlayer cablesPlayerRef;
+        UserWorkspaceEntity userWorkspace;
+        string userIdentifier;
 
         protected override void OnInitialized()
         {
             ProjectPath = "CablesProject/index.html";
             UploadEvents.FileUploadedAsync += OnFileUploadedAsync;
 
-            var currentUserId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userWorkSpace = ApplicationContext.UserWorkspaces.FirstOrDefault(uw => uw.UserIdentifier == currentUserId);
-            if (userWorkSpace == null)
+            //TODO: need refactoring! Should be encapsulated in some userworkspace service
+            //in porgress
+            userWorkspace = GetUserWorkspace();
+            if (userWorkspace == null)
             {
                 ApplicationContext.UserWorkspaces.Add(new UserWorkspaceEntity()
                 {
-                    UserIdentifier = currentUserId
+                    UserIdentifier = userIdentifier
                 });
                 ApplicationContext.SaveChanges();
             }
-            else if(userWorkSpace.CurrentVideoId != null )
+            else if(userWorkspace.CurrentVideoId != null )
             {
-                InitCablesPlayer(userWorkSpace.CurrentVideoId);
+                InitCablesPlayer(userWorkspace.CurrentVideoId);
                 UpdateCommentsSection();
 
             }
@@ -56,14 +61,15 @@ namespace CablesTool.Pages
             UserName = httpContextAccessor.HttpContext.User.Identity.Name ?? "Guest";
         }
 
+        private UserWorkspaceEntity GetUserWorkspace()
+        {
+            userIdentifier = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return ApplicationContext.UserWorkspaces.FirstOrDefault(uw => uw.UserIdentifier == userIdentifier);
+        }
+
         private async Task OnFileUploadedAsync(long id)
         {
-            var currentUserId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userWorkSpace = ApplicationContext.UserWorkspaces.FirstOrDefault(uw => uw.UserIdentifier == currentUserId);
-            if (userWorkSpace != null)
-            {
-                userWorkSpace.CurrentVideoId = id;
-            }
+            userWorkspace.CurrentVideoId = id;
             ApplicationContext.SaveChanges();
 
             InitCablesPlayer(id);
@@ -80,6 +86,11 @@ namespace CablesTool.Pages
             VideoLength = videoFileEntity.Length;
         }
 
+        /// <summary>
+        /// Comments section
+        /// TODO: Comments should be encapsulated in separate razor component
+        /// </summary>
+        /// <returns></returns>
         private async Task AddComment()
         {
             if(CommentContent != null && CommentContent != String.Empty)

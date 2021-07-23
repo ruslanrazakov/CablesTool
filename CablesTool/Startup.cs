@@ -36,13 +36,11 @@ namespace CablesTool
             services.AddServerSideBlazor().AddHubOptions(hub => hub.MaximumReceiveMessageSize = 100 * 1024 * 1024); // 100 MB;
             services.AddDbContext<ApplicationContext>(options =>
                options.UseSqlite(Configuration.GetConnectionString("MainDatabase")));
-            services.AddScoped<UploadEvents<long>>();
+            services.AddScoped<UploadEventsService<long>>();
             services.AddScoped<JSWrapper>();
+            services.AddScoped<UserWorkspaceService>();
             services.AddAuthentication();
             services.AddHttpContextAccessor();
-            services.AddCors(options => options.AddPolicy("AllowAll", p => p.WithOrigins("https://localhost:44389/CablesProject/assets")
-                                                    .AllowAnyHeader()
-                                                  .AllowAnyMethod()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,7 +63,6 @@ namespace CablesTool
             app.UseStaticFiles();
 
             app.UseRouting();
-            app.UseCors("AllowAll");
 
             app.UseAuthentication();
             app.UseAuthorization();

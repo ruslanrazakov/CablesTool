@@ -29,7 +29,11 @@
             @if (isLoading)
             {
                 <div class="progress" style="width: 300px">
-                    <div class="progress-bar" role="progressbar" style="@($"width: {progressValue}%")" aria-valuenow="@progressValue" aria-valuemin="0" aria-valuemax="100">@progressValue %</div>
+                    <div class="progress-bar" role="progressbar"
+                         style="@($"width: {progressPercentValue}%")"
+                         aria-valuenow="@progressPercentValue" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">@progressPercentValue %</div>
                 </div>
             }
         </div>
@@ -44,20 +48,21 @@
     [Inject]
     public IJSRuntime JS { get; set; }
     [Inject]
-    public UploadEvents<long> UploadEvents { get; set; }
+    public UploadEventsService<long> UploadEvents { get; set; }
     [Parameter]
     public string FolderName { get; set; }
+
     public string VideoName;
     private CancellationTokenSource cts;
     private long maxFileSizeBytes = 1024 * 1024 * 1000;
-
     public long MaxFileSizeKb
     {
         get => maxFileSizeBytes / 1024;
     }
     private IBrowserFile loadedFile;
-    private int progressValue = 0;
+    private int progressPercentValue = 0;
     private bool isLoading = false;
+    private string uploadFolderPath = AppDomain.CurrentDomain.BaseDirectory + "wwwroot/CablesProject/";
 
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
@@ -65,57 +70,59 @@
         var videoFile = ApplicationContext.VideoFiles.FirstOrDefault(file => file.Name == e.File.Name);
         try
         {
-            string filePath = AppDomain.CurrentDomain.BaseDirectory + "wwwroot/CablesProject/" + e.File.Name;
-            Logger.LogInformation(e.File.Name);
             if (videoFile == null)
             {
-                await WriteFile(filePath, e);
-                var currentId = await SaveToDatabase(filePath, e);
-                isLoading = false;
-                await UploadEvents.UploadFile(currentId);
+                string filePath = uploadFolderPath + e.File.Name;
+                await WriteVideoFileStream(filePath, e);
+                long videoFileId = await SaveVideoFileMetadataToDB(filePath, e);
+                await UploadEvents.UploadFile(videoFileId);
             }
             else
-            {
                 await UploadEvents.UploadFile(videoFile.Id);
-            }
         }
         catch (Exception ex)
         {
             Logger.LogError(ex.ToString());
         }
-
-        isLoading = false;
-        progressValue = 0;
+        finally
+        {
+            isLoading = false;
+            progressPercentValue = 0;
+        }
     }
 
-    private async Task WriteFile(string filePath, InputFileChangeEventArgs e)
+    /// <summary>
+    /// Provides filestream and manages progressbar
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <param name="e"></param>
+    /// <returns></returns>
+    private async Task WriteVideoFileStream(string filePath, InputFileChangeEventArgs e)
     {
         cts = new CancellationTokenSource();
-        await using (FileStream output = new(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+        await using (FileStream outputStream = new(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
         {
-
-            var input = e.File.OpenReadStream(maxFileSizeBytes, cts.Token);//.CopyToAsync(streamTo);
-            int read;
-            double inputLength = input.Length;
+            var inputStream = e.File.OpenReadStream(maxFileSizeBytes, cts.Token);
+            int bytesChunk;
+            double inputFullLength = inputStream.Length;
             double currentLength = 0;
             var buffer = new byte[1024 * 16];
 
-            while ((read = await input.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            while ((bytesChunk = await inputStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
             {
-                await output.WriteAsync(buffer, 0, read);
-                currentLength += read;
-                progressValue = Convert.ToInt32(currentLength / inputLength * 100d);
+                await outputStream.WriteAsync(buffer, 0, bytesChunk);
+                currentLength += bytesChunk;
+                progressPercentValue = Convert.ToInt32(currentLength / inputFullLength * 100d);
                 StateHasChanged();
-                Logger.LogWarning($"Uploading {e.File.Name}: {progressValue.ToString()}");
+                Logger.LogInformation($"Uploading {e.File.Name}: {progressPercentValue.ToString()}");
             }
         }
 
         File.SetAttributes(filePath, FileAttributes.Normal);
         Logger.LogInformation($"{filePath} uploaded.");
-
     }
 
-    private async Task<long> SaveToDatabase(string filePath, InputFileChangeEventArgs e)
+    private async Task<long> SaveVideoFileMetadataToDB(string filePath, InputFileChangeEventArgs e)
     {
         TimeSpan videoLength = await GetVideoLength(filePath);
 
@@ -130,15 +137,19 @@
         await ApplicationContext.SaveChangesAsync();
         Logger.LogInformation($"{filePath} metadata saved to Db.");
 
-        return ApplicationContext.VideoFiles.FirstOrDefault(v => v.Name == videoFileEntity.Name).Id;
-
+        return videoFileEntity.Id;
     }
 
+    /// <summary>
+    /// Uses FFmpeg lib
+    /// FFmpeg should be installed on host OS
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <returns></returns>
     private async Task<TimeSpan> GetVideoLength(string filePath)
     {
         IMediaInfo mediaInfo = await FFmpeg.GetMediaInfo(filePath);
         var videoDuration = mediaInfo.VideoStreams.First().Duration;
         return videoDuration;
     }
-
 }

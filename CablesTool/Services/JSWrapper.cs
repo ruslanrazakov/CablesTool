@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace CablesTool.Services
 {
+    /// <summary>
+    /// Wrapper for JS invoke functions in patchProcessor.js
+    /// </summary>
     public class JSWrapper
     {
         private readonly IJSRuntime js;
@@ -21,6 +24,14 @@ namespace CablesTool.Services
         public async Task SetCablesVariable(string varName, string varValue)
             => await js.InvokeAsync<string>("setVariable", varName, varValue);
 
+        /// <summary>
+        /// Sometimes, /wwwroot/CablesProject/index.html cant upload in time in iframe in Index.razor
+        /// cuz of weak internet connection or something else, so patch.js is undefined. 
+        /// This method provides retries and exception handling.
+        /// </summary>
+        /// <param name="varName"></param>
+        /// <param name="varValue"></param>
+        /// <returns></returns>
         public async Task TrySetCablesVariableWithRetries(string varName, string varValue)
         {
             TimeSpan nextDelay = TimeSpan.FromSeconds(1);
