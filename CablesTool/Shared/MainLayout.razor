@@ -14,10 +14,12 @@
         }
         else
         {
-            <div class="content px-4">
-                <Uploader />
-                @Body
-            </div>
+        <div class="content px-4">
+            <Uploader />
+            <button class="btn btn-outline-secondary" type="button" @onclick="RedirectToNavManager">Nav Manager</button>
+
+            @Body
+        </div>
         }
 
     </div>
@@ -25,10 +27,19 @@
 
 @code
 {
-    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+    [CascadingParameter] 
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
     AuthenticationState authState;
+
     protected override async Task OnInitializedAsync()
     {
         authState = await authenticationStateTask;
+    }
+
+    private void RedirectToNavManager()
+    {
+        NavigationManager.NavigateTo("navigationmanager");
     }
 }

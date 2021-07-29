@@ -17,14 +17,13 @@ namespace CablesTool.Pages
         [Inject] 
         IHttpContextAccessor httpContextAccessor { get; set; }
         [Inject]
-        UploadEventsService<long> UploadEvents { get; set; }
+        FileChangedEventsService<long> UploadEvents { get; set; }
         [Inject]
         ApplicationContext ApplicationContext { get; set; }
         [Inject]
         ILogger <Index> Logger { get; set; }
         [Inject]
         UserWorkspaceService UserWorkspaceService { get; set; }
-        VideoFileEntity videoFileEntity = new();
         List<CommentEntity> commentEntities = new();
         string CommentContent { get; set; }
         string ProjectPath { get; set; }
@@ -32,58 +31,34 @@ namespace CablesTool.Pages
         string VideoName { get; set; }
         double VideoLength { get; set; }
         CablesPlayer cablesPlayerRef;
-        UserWorkspaceEntity userWorkspace;
         string userIdentifier;
 
         protected override void OnInitialized()
         {
             ProjectPath = "CablesProject/index.html";
-            UploadEvents.FileUploadedAsync += OnFileUploadedAsync;
+            UploadEvents.FileChangedAsync += OnFileChangedAsync;
+            userIdentifier = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            //TODO: need refactoring! Should be encapsulated in some userworkspace service
-            //in porgress
-            userWorkspace = GetUserWorkspace();
-            if (userWorkspace == null)
-            {
-                ApplicationContext.UserWorkspaces.Add(new UserWorkspaceEntity()
-                {
-                    UserIdentifier = userIdentifier
-                });
-                ApplicationContext.SaveChanges();
-            }
-            else if(userWorkspace.CurrentVideoId != null )
-            {
-                InitCablesPlayer(userWorkspace.CurrentVideoId);
-                UpdateCommentsSection();
-
-            }
-
+            UpdatePlayer();
+            UpdateCommentsSection();
             UserName = httpContextAccessor.HttpContext.User.Identity.Name ?? "Guest";
         }
 
-        private UserWorkspaceEntity GetUserWorkspace()
+        private async Task OnFileChangedAsync(long id)
         {
-            userIdentifier = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return ApplicationContext.UserWorkspaces.FirstOrDefault(uw => uw.UserIdentifier == userIdentifier);
-        }
+            UserWorkspaceService.ChangeCurrentWorkspaceVideoId(id, userIdentifier);
 
-        private async Task OnFileUploadedAsync(long id)
-        {
-            userWorkspace.CurrentVideoId = id;
-            ApplicationContext.SaveChanges();
-
-            InitCablesPlayer(id);
+            UpdatePlayer();
             UpdateCommentsSection();
-           
             await cablesPlayerRef.ChangeVideoContent(VideoName);
             StateHasChanged();
         }
 
-        private void InitCablesPlayer(long? id)
+        private void UpdatePlayer()
         {
-            videoFileEntity = ApplicationContext.VideoFiles.First(v => v.Id == id);
-            VideoName = videoFileEntity.Name;
-            VideoLength = videoFileEntity.Length;
+            var fileId = UserWorkspaceService.GetVideoId(userIdentifier);
+            VideoName = UserWorkspaceService.GetVideoName(fileId);
+            VideoLength = UserWorkspaceService.GetVideoLength(fileId);
         }
 
         /// <summary>
@@ -97,7 +72,7 @@ namespace CablesTool.Pages
             {
                 ApplicationContext.Comments.Add(new CommentEntity()
                 {
-                    VideoFileId = videoFileEntity.Id,
+                    VideoFileId = UserWorkspaceService.GetVideoId(userIdentifier),
                     UserName = this.UserName,
                     Content = CommentContent,
                     Time = cablesPlayerRef.CurrentTime,
@@ -111,7 +86,8 @@ namespace CablesTool.Pages
 
         private void UpdateCommentsSection()
         {
-            commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == videoFileEntity.Id)
+            var fileId = UserWorkspaceService.GetVideoId(userIdentifier);
+            commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == fileId)
                                                           .OrderByDescending(c => c.Date)
                                                           .ToList();
             InvokeAsync(StateHasChanged);

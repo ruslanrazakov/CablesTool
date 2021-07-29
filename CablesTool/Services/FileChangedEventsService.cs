@@ -10,12 +10,12 @@ namespace CablesTool.Services
     /// uploading/changing videofiles
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class UploadEventsService<T>
+    public class FileChangedEventsService<T>
     {
         public T CurrentVideoFileId { get; set; }
-        public event Func<T, Task> FileUploadedAsync;
+        public event Func<T, Task> FileChangedAsync;
 
-        public async Task UploadFile(T id)
+        public async Task ChangeFile(T id)
         {
             if (!CurrentVideoFileId.Equals(id))
             {
@@ -26,7 +26,7 @@ namespace CablesTool.Services
 
         private async Task NotifyFileUploadedAsync()
         {
-            Func<T, Task> handler = FileUploadedAsync;
+            Func<T, Task> handler = FileChangedAsync;
 
             if (handler == null)
             {
@@ -43,22 +43,5 @@ namespace CablesTool.Services
 
             await Task.WhenAll(handlerTasks);
         }
-
-
-        //sync uploadEvents
-
-
-        //public event Action<T> FileUploaded;
-        //public void UploadFile(T id)
-        //{
-        //    if (!Id.Equals(id))
-        //    {
-        //        Id = id;
-        //        NotifyFileUploaded(id);
-        //    }
-        //}
-
-        //private void NotifyFileUploaded(T id)
-        //    => FileUploaded?.Invoke(Id);
     }
 }

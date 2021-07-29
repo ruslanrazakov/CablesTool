@@ -11,6 +11,7 @@ namespace CablesTool.Data
         public string Name { get; set; }
         public string Path { get; set; }
         public double Length { get; set; }
+
     }
 
     public class CommentEntity

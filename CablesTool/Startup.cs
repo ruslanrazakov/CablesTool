@@ -36,7 +36,7 @@ namespace CablesTool
             services.AddServerSideBlazor().AddHubOptions(hub => hub.MaximumReceiveMessageSize = 100 * 1024 * 1024); // 100 MB;
             services.AddDbContext<ApplicationContext>(options =>
                options.UseSqlite(Configuration.GetConnectionString("MainDatabase")));
-            services.AddScoped<UploadEventsService<long>>();
+            services.AddScoped<FileChangedEventsService<long>>();
             services.AddScoped<JSWrapper>();
             services.AddScoped<UserWorkspaceService>();
             services.AddAuthentication();

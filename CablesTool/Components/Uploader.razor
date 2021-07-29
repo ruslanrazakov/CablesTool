@@ -31,11 +31,11 @@
                 <div class="progress" style="width: 300px">
                     <div class="progress-bar" role="progressbar"
                          style="@($"width: {progressPercentValue}%")"
-                         aria-valuenow="@progressPercentValue" 
-                         aria-valuemin="0" 
+                         aria-valuenow="@progressPercentValue"
+                         aria-valuemin="0"
                          aria-valuemax="100">@progressPercentValue %</div>
-                </div>
-            }
+                    </div>
+                }
         </div>
     </div>
 </div>
@@ -48,7 +48,7 @@
     [Inject]
     public IJSRuntime JS { get; set; }
     [Inject]
-    public UploadEventsService<long> UploadEvents { get; set; }
+    public FileChangedEventsService<long> FileChangedEvents { get; set; }
     [Parameter]
     public string FolderName { get; set; }
 
@@ -75,10 +75,10 @@
                 string filePath = uploadFolderPath + e.File.Name;
                 await WriteVideoFileStream(filePath, e);
                 long videoFileId = await SaveVideoFileMetadataToDB(filePath, e);
-                await UploadEvents.UploadFile(videoFileId);
+                await FileChangedEvents.ChangeFile(videoFileId);
             }
             else
-                await UploadEvents.UploadFile(videoFile.Id);
+                await FileChangedEvents.ChangeFile(videoFile.Id);
         }
         catch (Exception ex)
         {

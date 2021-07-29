@@ -2,7 +2,7 @@
 
 <CablesPlayer @ref="cablesPlayerRef" ProjectPath="@ProjectPath" VideoName="@VideoName" VideoLength="@VideoLength" CommentEntities="@commentEntities"/>
 
-@if (videoFileEntity.Name != null && videoFileEntity.Name != String.Empty)
+@if (VideoName != null && VideoName != String.Empty)
 {
     <div class="input-group-prepend">
         <button class="btn btn-outline-secondary" type="button" @onclick="AddComment">Add_comment</button>
