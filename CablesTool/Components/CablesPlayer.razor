@@ -2,8 +2,9 @@
 @using System.Globalization
 @using System.Threading
 @using Data
-@using Utils 
+@using Utils
 @inject JSWrapper JSWrapper
+@implements IAsyncDisposable
 
 <iframe id="patchFrame" class="video-control" src="@ProjectPath"></iframe>
 
@@ -16,7 +17,7 @@
 
 <!--comments icons for slider range-->
 <div class="d-inline-flex" style="width:100%">
-    @foreach (var currentSecond in Enumerable.Range(0, int_VideoLength+1))
+    @foreach (var currentSecond in Enumerable.Range(0, int_VideoLength + 1))
     {
         var comments = CommentEntities.Where(comment => comment.Time == currentSecond);
         if (comments != null && comments.Count() > 0)
@@ -85,9 +86,9 @@
 
     private async Task Play()
     {
-        await JSWrapper.SetCablesVariable("i_videoSpeed", "1");
-        await timer.Start(async () => await UpdateVideoSlider());
+        await JSWrapper.TrySetCablesVariableWithRetries("i_videoSpeed", "1");
         Logger.LogInformation("CABLESPLAYER PLAYING");
+        await timer.Start(async () => await UpdateVideoSlider());
     }
 
     private async Task UpdateVideoSlider()
@@ -101,7 +102,7 @@
 
     private async Task Stop()
     {
-        await timer.Stop(async () => await JSWrapper.SetCablesVariable("i_videoSpeed", "0"));
+        await timer.Stop(async () => await JSWrapper.TrySetCablesVariableWithRetries("i_videoSpeed", "0"));
         Logger.LogInformation("CABLESPLAYER STOPPED");
     }
 
@@ -152,13 +153,18 @@
     private string GetCommentsPreview(IEnumerable<CommentEntity> comments)
     {
         string result = String.Empty;
-        foreach(var comment in comments)
+        foreach (var comment in comments)
         {
             result += $"{comment.UserName}: ";
-            result += comment.Content.Length >= 15 ? comment.Content.Substring(0, 15) + "..." : comment.Content;
+            result += comment.Content.Length > 15 ? comment.Content.Substring(0, 15) + "..." : comment.Content;
             result += "\n";
         }
 
         return result;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await Stop();
     }
 }

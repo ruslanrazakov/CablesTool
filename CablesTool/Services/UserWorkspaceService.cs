@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CablesTool.Services
 {
@@ -25,15 +26,15 @@ namespace CablesTool.Services
         /// </summary>
         /// <param name="userIdentifier"></param>
         /// <returns></returns>
-        public long GetVideoId(string userIdentifier)
+        public async Task <long> GetVideoId(string userIdentifier)
         {
-            if (!_context.UserWorkspaces.Any())
+            if (!_context.UserWorkspaces.Any(uw => uw.UserIdentifier == userIdentifier))
             {
                 _context.UserWorkspaces.Add(new UserWorkspaceEntity()
                 {
                     UserIdentifier = userIdentifier
                 });
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return _context.UserWorkspaces.First().CurrentVideoId;
             }
             else
@@ -45,11 +46,11 @@ namespace CablesTool.Services
         /// </summary>
         /// <param name="userIdentifier"></param>
         /// <returns></returns>
-        public void ChangeCurrentWorkspaceVideoId(long id, string userIdentifier)
+        public async Task ChangeCurrentWorkspaceVideoId(long id, string userIdentifier)
         {
             var userWorkspace = _context.UserWorkspaces.FirstOrDefault(uw => uw.UserIdentifier == userIdentifier);
             userWorkspace.CurrentVideoId = id;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -59,7 +60,10 @@ namespace CablesTool.Services
         /// <returns></returns>
         public string GetVideoName(long videoId)
         {
-            return _context.VideoFiles.FirstOrDefault(file => file.Id == videoId).Name ?? String.Empty;
+            if (_context.VideoFiles.Any(file => file.Id == videoId))
+                return _context.VideoFiles.FirstOrDefault(file => file.Id == videoId).Name ?? String.Empty;
+            else
+                return String.Empty;
         }
 
         /// <summary>
@@ -68,6 +72,11 @@ namespace CablesTool.Services
         /// <param name="userIdentifier"></param>
         /// <returns></returns>
         public double GetVideoLength(long videoId)
-            => _context.VideoFiles.First(v => v.Id == videoId).Length;
+        {
+            if (_context.VideoFiles.Any(file => file.Id == videoId))
+                return _context.VideoFiles.FirstOrDefault(file => file.Id == videoId).Length;
+            else
+                return 0;
+        }
     }
 }

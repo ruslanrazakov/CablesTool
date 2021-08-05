@@ -36,7 +36,7 @@ namespace CablesTool.Services
         {
             TimeSpan nextDelay = TimeSpan.FromSeconds(1);
             bool success = false;
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 3; i++)
             {
                 try
                 {
@@ -53,13 +53,36 @@ namespace CablesTool.Services
                 }
                 await Task.Delay(nextDelay);
             }
-            if(!success) // last try, and call exception
-                await js.InvokeAsync<string>("setVariable", varName, varValue);
         }
 
         public async Task<double> GetCablesVariable(string varName)
         {
             return await js.InvokeAsync<double>("getVariable", varName);
+        }
+
+        public async Task<double> TryGetCablesVariableWithRetries(string varName)
+        {
+            TimeSpan nextDelay = TimeSpan.FromSeconds(1);
+            double result = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                try
+                {
+                    logger.LogWarning($"Trying to get {varName}  in {i} attempt");
+                    result = await js.InvokeAsync<double>("getVariable", varName);
+                }
+                catch
+                {
+                    logger.LogWarning($"Failed getting {varName} in {i} attempt");
+                }
+                await Task.Delay(nextDelay);
+            }
+            return result;
+        }
+
+        public async Task DownloadFile(string path)
+        {
+            await js.InvokeVoidAsync("downloadFile", path);
         }
     }
 }

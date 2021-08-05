@@ -1,6 +1,7 @@
 ﻿@page "/"
 
-<CablesPlayer @ref="cablesPlayerRef" ProjectPath="@ProjectPath" VideoName="@VideoName" VideoLength="@VideoLength" CommentEntities="@commentEntities"/>
+<Uploader />
+<CablesPlayer @ref="cablesPlayerRef" ProjectPath="@ProjectPath" VideoName="@VideoName" VideoLength="@VideoLength" CommentEntities="@commentEntities" />
 
 @if (VideoName != null && VideoName != String.Empty)
 {

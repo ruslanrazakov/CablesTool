@@ -3,8 +3,14 @@
 
 <AuthorizeView>
     <Authorized>
+        <a href="/" style="margin-right: auto">
+            @escapeSym Home
+        </a>
         <a href="Identity/Account/Manage/Index">
             Hello, @context.User.Identity.Name!
+        </a>
+        <a href="NavigationManager">
+            Your Video files
         </a>
         <a href="Identity/Account/Register">
             Register new user
@@ -17,3 +23,8 @@
         <a href="Identity/Account/Login">Login</a>
     </NotAuthorized>
 </AuthorizeView>
+
+@code
+{
+    const string escapeSym = "<";
+}

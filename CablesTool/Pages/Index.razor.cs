@@ -14,8 +14,10 @@ namespace CablesTool.Pages
 {
     partial class Index
     {
-        [Inject] 
-        IHttpContextAccessor httpContextAccessor { get; set; }
+        [CascadingParameter(Name = "NameIdentifier")] 
+        public string NameIdentifier { get; set; }
+        [CascadingParameter(Name = "UserName")]
+        public string UserName { get; set; }
         [Inject]
         FileChangedEventsService<long> UploadEvents { get; set; }
         [Inject]
@@ -27,37 +29,42 @@ namespace CablesTool.Pages
         List<CommentEntity> commentEntities = new();
         string CommentContent { get; set; }
         string ProjectPath { get; set; }
-        string UserName { get; set; }
         string VideoName { get; set; }
         double VideoLength { get; set; }
         CablesPlayer cablesPlayerRef;
         string userIdentifier;
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
             ProjectPath = "CablesProject/index.html";
             UploadEvents.FileChangedAsync += OnFileChangedAsync;
-            userIdentifier = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            UpdatePlayer();
-            UpdateCommentsSection();
-            UserName = httpContextAccessor.HttpContext.User.Identity.Name ?? "Guest";
+            try
+            {
+                userIdentifier = NameIdentifier;
+            }
+            catch(Exception ex)
+            {
+                Logger.LogWarning(ex.ToString());
+            }
+            UserWorkspaceService.UserIdentifier = userIdentifier;
+            await UpdatePlayer();
+            await UpdateCommentsSection();
         }
 
         private async Task OnFileChangedAsync(long id)
         {
-            UserWorkspaceService.ChangeCurrentWorkspaceVideoId(id, userIdentifier);
+            await UserWorkspaceService.ChangeCurrentWorkspaceVideoId(id, userIdentifier);
 
-            UpdatePlayer();
-            UpdateCommentsSection();
+            await UpdatePlayer();
+            await UpdateCommentsSection();
             await cablesPlayerRef.ChangeVideoContent(VideoName);
             StateHasChanged();
         }
 
-        private void UpdatePlayer()
+        private async Task UpdatePlayer()
         {
-            var fileId = UserWorkspaceService.GetVideoId(userIdentifier);
-            VideoName = UserWorkspaceService.GetVideoName(fileId);
+            var fileId = await UserWorkspaceService.GetVideoId(userIdentifier);
+            VideoName = UserWorkspaceService.GetVideoName(fileId).Replace(NameIdentifier, String.Empty);
             VideoLength = UserWorkspaceService.GetVideoLength(fileId);
         }
 
@@ -72,25 +79,25 @@ namespace CablesTool.Pages
             {
                 ApplicationContext.Comments.Add(new CommentEntity()
                 {
-                    VideoFileId = UserWorkspaceService.GetVideoId(userIdentifier),
-                    UserName = this.UserName,
+                    VideoFileId = await UserWorkspaceService.GetVideoId(userIdentifier),
+                    UserName = UserName,
                     Content = CommentContent,
                     Time = cablesPlayerRef.CurrentTime,
                     Date = DateTime.Now
                 }) ;
                 await ApplicationContext.SaveChangesAsync();
             }
-            UpdateCommentsSection();
+            await UpdateCommentsSection();
             CommentContent = String.Empty;
         }
 
-        private void UpdateCommentsSection()
+        private async Task UpdateCommentsSection()
         {
-            var fileId = UserWorkspaceService.GetVideoId(userIdentifier);
+            var fileId = await UserWorkspaceService.GetVideoId(userIdentifier);
             commentEntities = ApplicationContext.Comments?.Where(c => c.VideoFileId == fileId)
                                                           .OrderByDescending(c => c.Date)
                                                           .ToList();
-            InvokeAsync(StateHasChanged);
+            StateHasChanged();
         }
 
         private async Task CommentClicked(double time)

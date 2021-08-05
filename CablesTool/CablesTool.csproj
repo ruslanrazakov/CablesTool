@@ -35,6 +35,10 @@
   <ItemGroup>
       <Content Update="wwwroot\**\*" CopyToOutputDirectory="Always" />
     </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Folders\" />
+  </ItemGroup>
   
 
 </Project>

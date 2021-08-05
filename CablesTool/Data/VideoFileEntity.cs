@@ -8,10 +8,11 @@ namespace CablesTool.Data
     public class VideoFileEntity
     {
         public long Id { get; set; }
+        public long FolderId { get; set; }
         public string Name { get; set; }
         public string Path { get; set; }
         public double Length { get; set; }
-
+        public string UserIdentifier { get; set; }
     }
 
     public class CommentEntity

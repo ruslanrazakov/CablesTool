@@ -1,13 +1,151 @@
 ﻿@page "/navigationmanager"
-<h3>NavigationManager</h3>
+@using Data
+@using Microsoft.AspNetCore.Components
 
+
+<div class="d-flex bd-highlight">
+
+    <div class=" flex-fill bd-highlight list-group p-2  border rounded">
+        <h3>Folders</h3>
+        <div class=" flex-fill bd-highlight list-group p-2 border rounded" style="height: 50rem; overflow-y: auto">
+
+            @foreach (var folder in folders)
+            {
+                <div class="d-flex flex-row">
+                    <div class="list-group-item list-group-item-action"
+                         @onclick="@(()=>OpenFolder(folder.Id))">
+                        @folder.Name
+                        <span class="badge badge-primary badge-pill">Local storage</span>
+                    </div>
+                    <button class="btn btn-secondary btn-sm"
+                            type="button"
+                            @onclick="@(() => RemoveFolder(folder.Id))">
+                        <span class="oi oi-minus"></span>
+                    </button>
+                </div>
+            }
+
+        </div>
+        <div class="d-flex bd-highlight mt-3">
+            @if (folderNameTextAreaEnabled)
+            {
+                <input class="list-group-item list-group-item-action" type="text" @bind="@folderName" @bind:event="oninput">
+                <button disabled="@(folderName == String.Empty)"
+                        class="btn btn-secondary"
+                        type="button"
+                        @onclick="@(() => ConfirmFolderName())">
+                    Add
+                </button>
+            }
+            else
+            {
+                <button class="btn btn-secondary" type="button" @onclick="@(() => AddFolder())">
+                    <span class="oi oi-plus"></span>
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class=" flex-fill bd-highlight list-group p-2  border rounded">
+        <h3>Files</h3>
+        <div class=" flex-fill bd-highlight list-group p-2  border rounded" style="height: 50rem; overflow-y: auto">
+
+            @foreach (var video in videoFiles)
+            {
+                <div class="d-flex flex-row">
+                    <a href="/" class="list-group-item list-group-item-action" @onclick="@(()=>ChangeCurrentFile(video.Id))">
+                        @video.Name.Replace(NameIdentifier, String.Empty)
+                        <span class="badge badge-primary badge-pill">Local storage</span>
+                    </a>
+                </div>
+            }
+
+        </div>
+        <div class="d-flex bd-highlight mt-3">
+            <button class="btn btn-secondary" type="button" @onclick="@(() => AddFolder())">
+                <span class="oi oi-plus"></span>
+            </button>
+        </div>
+
+    </div>
+
+    <div class=" flex-fill bd-highlight list-group p-2  border rounded">
+        <h3>Versions</h3>
+        <div class=" flex-fill bd-highlight list-group p-2  border rounded" style="height: 50rem; overflow-y: auto">
+        </div>
+    </div>
+</div>
 
 
 @code {
-    public List<string> videoFiles;
-    public string currentFile;
-    public string fileName;
-    public async Task OnFileClicked()
-    { 
+
+    [CascadingParameter(Name = "NameIdentifier")]
+    public string NameIdentifier { get; set; }
+    [Inject]
+    ApplicationContext ApplicationContext { get; set; }
+    [Inject]
+    UserWorkspaceService UserWorkspaceService { get; set; }
+    [Inject]
+    JSWrapper JS { get; set; }
+    List<VideoFileEntity> videoFiles;
+    List<FolderEntity> folders;
+    string fileName;
+    long currentFolder;
+    long currentFile;
+    bool folderNameTextAreaEnabled = false;
+    string folderName = String.Empty;
+
+    protected override void OnInitialized()
+    {
+        videoFiles = ApplicationContext.VideoFiles.Where(f => f.UserIdentifier == NameIdentifier).ToList();
+        folders = ApplicationContext.Folders.Where(f=>f.Status == FolderStatus.Active).ToList();
+    }
+
+    private async Task ChangeCurrentFile(long id)
+    {
+        await UserWorkspaceService.ChangeCurrentWorkspaceVideoId(id, NameIdentifier);
+        currentFile = id;
+    }
+
+    private void OpenFile(string path)
+    {
+        //await JS.DownloadFile(path);
+    }
+
+    private void OpenFolder(long id)
+    {
+        videoFiles = ApplicationContext.VideoFiles.Where(f => f.FolderId == id).ToList();
+        currentFolder = id;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void AddFolder()
+    {
+        folderNameTextAreaEnabled = true;
+    }
+
+    private async Task RemoveFolder(long id)
+    {
+        var folderToRemove = ApplicationContext.Folders.FirstOrDefault(f => f.Id == id);
+        folderToRemove.Status = FolderStatus.Archived;
+        await ApplicationContext.SaveChangesAsync();
+        folders = ApplicationContext.Folders.Where(f => f.Status == FolderStatus.Active).ToList();
+        StateHasChanged();
+    }
+
+    private async Task ConfirmFolderName()
+    {
+        folderNameTextAreaEnabled = false;
+        ApplicationContext.Folders.Add(new FolderEntity() { Name = folderName, Status = FolderStatus.Active });
+        await ApplicationContext.SaveChangesAsync();
+        folders = ApplicationContext.Folders.Where(f => f.Status == FolderStatus.Active).ToList();
+        folderName = String.Empty;
+        StateHasChanged();
+    }
+
+    private async Task AddFile()
+    {
+       
+        StateHasChanged();
     }
 }
