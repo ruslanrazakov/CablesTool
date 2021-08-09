@@ -6,10 +6,13 @@
 
   <ItemGroup>
     <None Remove="Components\CablesPlayer.razor.css" />
+    <None Remove="Components\Modal.razor.css" />
+    <None Remove="Components\PopConfirm.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Components\CablesPlayer.razor.css" />
+    <Content Include="Components\PopConfirm.razor.css" />
   </ItemGroup>
 
   <ItemGroup>

@@ -49,8 +49,8 @@
 @media (min-width: 641px) {
     .main {
         flex: 1;
-        padding-left: 8rem;
-        padding-right: 8rem;
+        padding-left: 10rem;
+        padding-right: 10rem;
     }
 
     .page {

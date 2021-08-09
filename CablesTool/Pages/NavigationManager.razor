@@ -1,77 +1,95 @@
 ﻿@page "/navigationmanager"
 @using Data
 @using Microsoft.AspNetCore.Components
+@using System.IO
+@using Microsoft.Extensions.Configuration
 
 
 <div class="d-flex bd-highlight">
 
     <div class=" flex-fill bd-highlight list-group p-2  border rounded">
         <h3>Folders</h3>
-        <div class=" flex-fill bd-highlight list-group p-2 border rounded" style="height: 50rem; overflow-y: auto">
 
-            @foreach (var folder in folders)
+            <div class=" flex-fill bd-highlight list-group p-2 border rounded" id="list-tab" role="tablist" style="height: 50rem; overflow-y: auto">
+                @foreach (var folder in rootFolders)
+                {
+                    <div class="d-flex flex-row">
+                        <div class="list-group-item list-group-item-action @GetActive(folder.Id)" id="list-home-list" data-toggle="list" role="tab"
+                             @onclick="@(() => OpenRootFolder(folder.Id))">
+                            @folder.Name
+                            <span class="badge badge-primary badge-pill">Local storage</span>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="d-flex bd-highlight mt-3">
+                @if (folderNameTextAreaEnabled)
+                {
+                    <input class="list-group-item list-group-item-action" type="text" @bind="@rootFolderName" @bind:event="oninput">
+                    <button disabled="@(rootFolderName == String.Empty)"
+                            class="btn btn-secondary"
+                            type="button"
+                            @onclick="@(() => ConfirmRootFolderName())">
+                        Add
+                    </button>
+                }
+                else
+                {
+                    <button class="btn btn-secondary" type="button" @onclick="@(() => CreateRootFolder())">
+                        <span class="oi oi-plus"></span>
+                    </button>
+                }
+                <PopConfirm Class="btn btn-secondary" ConfirmedChanged="@RemoveRootFolder">
+                    <span class="oi oi-minus"></span>
+                </PopConfirm>
+            </div>
+
+    </div>
+        
+    <div class=" flex-fill bd-highlight list-group p-2  border rounded">
+        <h3>Files in @rootFolderName</h3>
+        <div class=" flex-fill bd-highlight list-group p-2  border rounded" style="height: 50rem; overflow-y: auto">
+
+            @foreach (var versionsFolder in versionsFolders)
             {
                 <div class="d-flex flex-row">
-                    <div class="list-group-item list-group-item-action"
-                         @onclick="@(()=>OpenFolder(folder.Id))">
-                        @folder.Name
+                    <div class="list-group-item list-group-item-action">
+                        @versionsFolder.Name
                         <span class="badge badge-primary badge-pill">Local storage</span>
                     </div>
-                    <button class="btn btn-secondary btn-sm"
-                            type="button"
-                            @onclick="@(() => RemoveFolder(folder.Id))">
-                        <span class="oi oi-minus"></span>
-                    </button>
                 </div>
             }
-
         </div>
         <div class="d-flex bd-highlight mt-3">
-            @if (folderNameTextAreaEnabled)
+            @if (fileVersionsFolderNameTextAreaEnabled)
             {
-                <input class="list-group-item list-group-item-action" type="text" @bind="@folderName" @bind:event="oninput">
-                <button disabled="@(folderName == String.Empty)"
+                <input class="list-group-item list-group-item-action" type="text" @bind="@fileVersionsFolderName" @bind:event="oninput">
+                <button disabled="@(fileVersionsFolderName == String.Empty)"
                         class="btn btn-secondary"
                         type="button"
-                        @onclick="@(() => ConfirmFolderName())">
+                        @onclick="@(() => ConfirmFileVersionsFolderName())">
                     Add
                 </button>
             }
             else
             {
-                <button class="btn btn-secondary" type="button" @onclick="@(() => AddFolder())">
+                <button class="btn btn-secondary" type="button" @onclick="@(() => CreateFileVersionsFolder())">
                     <span class="oi oi-plus"></span>
                 </button>
             }
+            <Uploader FolderId="@currentRootFolderId" VersionId="@fileVersion" />
+            <PopConfirm Class="btn btn-secondary" ConfirmedChanged="@RemoveFileVersionsFolder">
+                <span class="oi oi-minus"></span>
+            </PopConfirm>
         </div>
-    </div>
-
-    <div class=" flex-fill bd-highlight list-group p-2  border rounded">
-        <h3>Files</h3>
-        <div class=" flex-fill bd-highlight list-group p-2  border rounded" style="height: 50rem; overflow-y: auto">
-
-            @foreach (var video in videoFiles)
-            {
-                <div class="d-flex flex-row">
-                    <a href="/" class="list-group-item list-group-item-action" @onclick="@(()=>ChangeCurrentFile(video.Id))">
-                        @video.Name.Replace(NameIdentifier, String.Empty)
-                        <span class="badge badge-primary badge-pill">Local storage</span>
-                    </a>
-                </div>
-            }
-
-        </div>
-        <div class="d-flex bd-highlight mt-3">
-            <button class="btn btn-secondary" type="button" @onclick="@(() => AddFolder())">
-                <span class="oi oi-plus"></span>
-            </button>
-        </div>
-
     </div>
 
     <div class=" flex-fill bd-highlight list-group p-2  border rounded">
         <h3>Versions</h3>
         <div class=" flex-fill bd-highlight list-group p-2  border rounded" style="height: 50rem; overflow-y: auto">
+        </div>
+        <div class="d-flex bd-highlight mt-3">
+            <Uploader FolderId="@currentRootFolderId" VersionId="@fileVersion" />
         </div>
     </div>
 </div>
@@ -87,65 +105,104 @@
     UserWorkspaceService UserWorkspaceService { get; set; }
     [Inject]
     JSWrapper JS { get; set; }
-    List<VideoFileEntity> videoFiles;
-    List<FolderEntity> folders;
-    string fileName;
-    long currentFolder;
-    long currentFile;
+    [Inject]
+    private IConfiguration Configuration { get; set; }
+    List<RootFolderEntity> rootFolders;
+    List<VersionsFolderEntity> versionsFolders;
+
+    long currentRootFolderId;
+    long fileVersion;
+
     bool folderNameTextAreaEnabled = false;
-    string folderName = String.Empty;
+    bool fileVersionsFolderNameTextAreaEnabled = false;
+    string rootFolderName = String.Empty;
+    bool modalOpened = false;
+    string highLightClass = String.Empty;
+    string fileVersionsFolderName = String.Empty;
 
     protected override void OnInitialized()
     {
-        videoFiles = ApplicationContext.VideoFiles.Where(f => f.UserIdentifier == NameIdentifier).ToList();
-        folders = ApplicationContext.Folders.Where(f=>f.Status == FolderStatus.Active).ToList();
+        rootFolders = ApplicationContext.RootFolders.Where(rf=>rf.Status == FolderStatus.Active).ToList();
+        currentRootFolderId = rootFolders != null && rootFolders.Count() > 0 ? rootFolders.First().Id : 0;
+        versionsFolders = ApplicationContext.VersionsFolders.Where(vf => vf.Status == FolderStatus.Active && vf.Id == currentRootFolderId).ToList();
     }
 
-    private async Task ChangeCurrentFile(long id)
+    private void OpenRootFolder(long id)
     {
-        await UserWorkspaceService.ChangeCurrentWorkspaceVideoId(id, NameIdentifier);
-        currentFile = id;
-    }
+        currentRootFolderId = id;
+        rootFolderName = ApplicationContext.RootFolders.FirstOrDefault(f => f.Id == id).Name;
+        versionsFolders = ApplicationContext.VersionsFolders.Where(vf => vf.Status == FolderStatus.Active && vf.Id == currentRootFolderId).ToList();
 
-    private void OpenFile(string path)
-    {
-        //await JS.DownloadFile(path);
-    }
-
-    private void OpenFolder(long id)
-    {
-        videoFiles = ApplicationContext.VideoFiles.Where(f => f.FolderId == id).ToList();
-        currentFolder = id;
         InvokeAsync(StateHasChanged);
     }
 
-    private void AddFolder()
+    private void CreateRootFolder()
     {
         folderNameTextAreaEnabled = true;
     }
 
-    private async Task RemoveFolder(long id)
-    {
-        var folderToRemove = ApplicationContext.Folders.FirstOrDefault(f => f.Id == id);
-        folderToRemove.Status = FolderStatus.Archived;
-        await ApplicationContext.SaveChangesAsync();
-        folders = ApplicationContext.Folders.Where(f => f.Status == FolderStatus.Active).ToList();
-        StateHasChanged();
-    }
-
-    private async Task ConfirmFolderName()
+    private async Task ConfirmRootFolderName()
     {
         folderNameTextAreaEnabled = false;
-        ApplicationContext.Folders.Add(new FolderEntity() { Name = folderName, Status = FolderStatus.Active });
+
+        string path = Utils.Constants.cablesProjectFolderPath + rootFolderName;
+        ApplicationContext.RootFolders.Add(new RootFolderEntity()
+        {
+            Name = rootFolderName,
+            Status = FolderStatus.Active,
+            Path = path
+        }) ;
         await ApplicationContext.SaveChangesAsync();
-        folders = ApplicationContext.Folders.Where(f => f.Status == FolderStatus.Active).ToList();
-        folderName = String.Empty;
+
+        Directory.CreateDirectory(path);
+
+        rootFolders = ApplicationContext.RootFolders.Where(f => f.Status == FolderStatus.Active).ToList();
+        rootFolderName = String.Empty;
         StateHasChanged();
     }
 
-    private async Task AddFile()
+    private async Task RemoveRootFolder(bool confirmed)
     {
-       
+        if (confirmed)
+        {
+            var folderToRemove = ApplicationContext.RootFolders.FirstOrDefault(f => f.Id == currentRootFolderId);
+            folderToRemove.Status = FolderStatus.Archived;
+            await ApplicationContext.SaveChangesAsync();
+            rootFolders = ApplicationContext.RootFolders.Where(f => f.Status == FolderStatus.Active).ToList();
+            StateHasChanged();
+        }
+    }
+
+    private void CreateFileVersionsFolder()
+    {
+        fileVersionsFolderNameTextAreaEnabled = true;
+    }
+
+    private async Task ConfirmFileVersionsFolderName()
+    {
+        fileVersionsFolderNameTextAreaEnabled = false;
+
+        string path = Utils.Constants.cablesProjectFolderPath + rootFolderName + "/" + fileVersionsFolderName;
+        ApplicationContext.VersionsFolders.Add(new VersionsFolderEntity()
+        {
+            Name = fileVersionsFolderName,
+            Status = FolderStatus.Active,
+            Path = path,
+            RootFolderId = currentRootFolderId,
+        }) ;
+        await ApplicationContext.SaveChangesAsync();
+
+        Directory.CreateDirectory(path);
+
+        versionsFolders = ApplicationContext.VersionsFolders.Where(f => f.Status == FolderStatus.Active && f.RootFolderId == currentRootFolderId).ToList();
+        fileVersionsFolderName = String.Empty;
         StateHasChanged();
     }
+
+    private async Task RemoveFileVersionsFolder(bool confirmed)
+    {
+
+    }
+
+    string GetActive(long id) => id == currentRootFolderId ? "list-group-item-dark" : String.Empty;
 }
