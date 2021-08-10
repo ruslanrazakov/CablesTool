@@ -1,0 +1,21 @@
+﻿@page "/"
+
+<div class="d-flex bd-highlight">
+    <RootFolders />
+    <FileFolders />
+    <Versions />
+</div>
+
+@code {
+    [Inject]
+    NavigationEvents NavigationEvents { get; set; }
+    protected override void OnInitialized()
+    {
+        NavigationEvents.UIupdated += OnUIupdated;
+    }
+
+    private void OnUIupdated()
+    {
+        InvokeAsync( StateHasChanged);
+    }
+}

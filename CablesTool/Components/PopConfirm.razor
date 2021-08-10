@@ -8,10 +8,12 @@
         </div>
 
     }
-    <button type="button" class="@Class" @onclick="ShowPop">@ChildContent</button>
+    <button disabled="@Disabled" type="button" class="@Class" @onclick="ShowPop">@ChildContent</button>
 </div>
 @code {
+
     public bool Show { get; set; }
+    [Parameter] public bool Disabled { get; set; }
     [Parameter] public RenderFragment ChildContent { get; set; }
     [Parameter] public string Class { get; set; }
     [Parameter] public string Message { get; set; } = "Are you sure?";

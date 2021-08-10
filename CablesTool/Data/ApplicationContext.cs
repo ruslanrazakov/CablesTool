@@ -17,7 +17,7 @@ namespace CablesTool.Data
         public DbSet<VideoFileEntity> VideoFiles { get; set; }
         public DbSet<CommentEntity> Comments { get; set; }
         public DbSet<RootFolderEntity> RootFolders { get; set; }
-        public DbSet<VersionsFolderEntity> VersionsFolders { get; set; }
+        public DbSet<FileFolderEntity> FileFolders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,11 +29,18 @@ namespace CablesTool.Data
                     v => (FolderStatus)Enum.Parse(typeof(FolderStatus), v));
 
             modelBuilder
-                .Entity<VersionsFolderEntity>()
+                .Entity<FileFolderEntity>()
                 .Property(e => e.Status)
                 .HasConversion(
                     v => v.ToString(),
                     v => (FolderStatus)Enum.Parse(typeof(FolderStatus), v));
+
+            modelBuilder
+               .Entity<VideoFileEntity>()
+               .Property(e => e.Status)
+               .HasConversion(
+                   v => v.ToString(),
+                   v => (FolderStatus)Enum.Parse(typeof(FolderStatus), v));
         }
     }
 }

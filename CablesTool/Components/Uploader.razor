@@ -7,10 +7,11 @@
 @using Utils
 @using Xabe.FFmpeg
 @using Microsoft.AspNetCore.Components
+@using CablesTool.Pages.Navigation
 
 
 <div class="left-to-right-container">
-        <label class="custom-file-upload btn btn-secondary">
+        <label class="custom-file-upload btn btn-secondary btn-sm"> 
             <Microsoft.AspNetCore.Components.Forms.InputFile OnChange="@LoadFiles"
                                                                 style="display: none"
                                                                 type="file"
@@ -42,10 +43,10 @@
     public IJSRuntime JS { get; set; }
     [Inject]
     public FileChangedEventsService<long> FileChangedEvents { get; set; }
+    [Inject]
+    public NavigationEvents NavigationEvents { get; set; }
     [Parameter]
-    public long RootFolderId { get; set; }
-    [Parameter]
-    public long VersionId { get; set; }
+    public long? FolderId { get; set; }
 
     public string VideoName;
     private CancellationTokenSource cts;
@@ -70,6 +71,7 @@
                 await WriteVideoFileStream(filePath, e);
                 long videoFileId = await SaveVideoFileMetadataToDB(filePath, e);
                 await FileChangedEvents.ChangeFile(videoFileId);
+                NavigationEvents.UpdateUI();
             }
             else
                 await FileChangedEvents.ChangeFile(videoFile.Id);
@@ -83,6 +85,7 @@
             isLoading = false;
             progressPercentValue = 0;
         }
+        NavigationEvents.NoifyFileUploaded();
         StateHasChanged();
     }
 
@@ -127,7 +130,7 @@
             Path = filePath,
             Length = Math.Round(videoLength.TotalSeconds, 0),
             UserIdentifier = NameIdentifier,
-            FolderId = RootFolderId,
+            FileFolderId = (long)FolderId,
         };
 
         ApplicationContext.VideoFiles.Add(videoFileEntity);

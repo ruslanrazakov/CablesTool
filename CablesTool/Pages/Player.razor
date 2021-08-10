@@ -1,0 +1,30 @@
+﻿@page "/player/{VideoId}"
+
+<CablesPlayer @ref="cablesPlayerRef" ProjectPath="@ProjectPath" VideoName="@VideoName" VideoLength="@VideoLength" CommentEntities="@commentEntities" />
+
+@if (VideoName != null && VideoName != String.Empty)
+{
+    <div class="input-group-prepend">
+        <button class="btn btn-outline-secondary" type="button" @onclick="AddComment">Add_comment</button>
+        <input type="text" class="form-control" @bind="@CommentContent" placeholder="type here..." aria-label="" aria-describedby="basic-addon1">
+    </div>
+
+    @if (commentEntities != null && commentEntities.Count() > 0)
+    {
+    <div class="table-scroll-wrapper">
+        <table class="table table-dark table-hover borderless" >
+            <tbody>
+                @foreach (var comment in commentEntities)
+                {
+                    <tr @onclick="@(()=>CommentClicked(comment.Time))">
+                        <td style="width: 150px">@comment.UserName</td>
+                        <td style="width: 200px">@comment.Date.ToString("dd-MM-yyyy HH:mm")</td>
+                        <td style="width: 60px">@comment.Time s</td>
+                        <td>@comment.Content</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+}

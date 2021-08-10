@@ -1,0 +1,99 @@
+﻿@using Data
+@using Microsoft.AspNetCore.Components
+@using System.Collections.Generic
+@inject NavigationManager NavigationManager
+
+<div class=" flex-fill bd-highlight list-group p-2  border rounded" style="width: min-content">
+    <h3>Versions</h3>
+
+    <div class=" flex-fill bd-highlight list-group p-2  border rounded" style="height: 50rem; overflow-y: auto">
+        @foreach (var file in files)
+        {
+            <div class="d-flex flex-row">
+                <div class="list-group-item list-group-item-action  @GetActive(file.Id)" @onclick="@(() => FileClicked(file.Id))">
+                    @file.Name
+                    <span class="badge badge-primary badge-pill">Local storage</span>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="d-flex bd-highlight">
+        <button disabled="@(!currentFileId.HasValue)"
+                class="btn btn-secondary" 
+                style="height: 32px; width: 32px;"
+                type="button" @onclick="PlayClicked">
+            <span class="oi oi-media-play"></span>
+        </button>
+        <PopConfirm Disabled="@(!currentFileId.HasValue)" Class="btn btn-secondary" ConfirmedChanged="@RemoveFile">
+            <span class="oi oi-minus"></span>
+        </PopConfirm>
+        @if (fileFolderId.HasValue)
+        {
+            <div class="d-flex bd-highlight">
+                <Uploader FolderId="@fileFolderId" />
+            </div>
+        }
+    </div>
+</div>
+
+@code
+{
+
+    [Inject]
+    ApplicationContext ApplicationContext { get; set; }
+    [Inject]
+    NavigationEvents NavigationEvents { get; set; }
+    List<VideoFileEntity> files = new();
+    long? fileFolderId;
+    long? currentFileId;
+
+    protected override void OnInitialized()
+    {
+        NavigationEvents.FileFolderSelected += OnFileFolderChanged;
+        NavigationEvents.RootFolderSelected += OnRootFolderChanged;
+        NavigationEvents.FileUploaded += OnFileUploaded;
+    }
+
+    private async Task OnFileFolderChanged(long? folderId)
+    {
+        fileFolderId = folderId;
+        files = ApplicationContext.VideoFiles.Where(vf => vf.FileFolderId == fileFolderId && vf.Status == FolderStatus.Active).ToList();
+        StateHasChanged();
+    }
+
+    private async Task OnRootFolderChanged(long? folderId)
+    {
+        fileFolderId = null;
+        files.Clear();
+        StateHasChanged();
+    }
+
+    private void OnFileUploaded()
+    {
+        files = ApplicationContext.VideoFiles.Where(vf => vf.FileFolderId == fileFolderId && vf.Status == FolderStatus.Active).ToList();
+        StateHasChanged();
+    }
+
+    private void FileClicked(long? fileId)
+    {
+        currentFileId = fileId;
+    }
+
+    private void PlayClicked()
+    {
+        NavigationManager.NavigateTo($"player/{currentFileId}");
+    }
+
+    private async Task RemoveFile()
+    {
+        var fileToRemove = ApplicationContext.VideoFiles.FirstOrDefault(f => f.Id == currentFileId);
+        fileToRemove.Status = FolderStatus.Archived;
+        await ApplicationContext.SaveChangesAsync();
+        files = ApplicationContext.VideoFiles.Where(f => f.Status == FolderStatus.Active).ToList();
+        StateHasChanged();
+    }
+
+    string GetActive(long id) => id == currentFileId ? "list-group-item-warning" : String.Empty;
+
+}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,11 +9,13 @@ namespace CablesTool.Data
     public class VideoFileEntity
     {
         public long Id { get; set; }
-        public long FolderId { get; set; }
+        public long FileFolderId { get; set; }
         public string Name { get; set; }
         public string Path { get; set; }
         public double Length { get; set; }
         public string UserIdentifier { get; set; }
+        [Column(TypeName = "TEXT")]
+        public FolderStatus Status { get; set; }
     }
 
     public class CommentEntity

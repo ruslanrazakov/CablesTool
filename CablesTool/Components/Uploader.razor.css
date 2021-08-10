@@ -15,7 +15,6 @@
 .left-to-right-container {
     display: flex;
     flex-direction: row;
-    gap: 10px
 }
 
 .custom-file-upload {

@@ -1,0 +1,128 @@
+﻿@using Data
+@using Microsoft.AspNetCore.Components
+@using System.IO
+
+<div class=" flex-fill bd-highlight list-group p-2  border rounded" style="width: min-content">
+    <h3>@(rootParams.rootName!=String.Empty ? "Projects in " + rootParams.rootName : "Select folder")</h3>
+    <div class="flex-fill bd-highlight list-group p-2  border rounded" style="height: 50rem; overflow-y: auto;">
+        @foreach (var folder in filesFolders)
+        {
+            <div class="d-flex flex-row">
+                <div class="list-group-item list-group-item-action @GetActive(folder.Id)" @onclick="@(() => FileFolderClicked(folder.Id))">
+                    @folder.Name
+                    <span class="badge badge-primary badge-pill">Local storage</span>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="d-flex bd-highlight">
+        @if (folderNameTextAreaEnabled)
+        {
+            <input class="list-group-item list-group-item-action" type="text" @bind="@folderName" @bind:event="oninput">
+            <button  class="btn btn-secondary"
+                     type="button"
+                     @onclick="@(() => ConfirmFileVersionsFolderName())">Add
+            </button>
+        }
+        else
+        {
+            <button  disabled="@(rootParams.rootName == String.Empty)" class="btn btn-secondary" type="button" @onclick="@(() => CreateFileVersionsFolder())">
+                <span class="oi oi-plus"></span>
+            </button>
+        }
+        <PopConfirm Disabled="@(rootParams.rootName == String.Empty)" Class="btn btn-secondary" ConfirmedChanged="@RemoveFileVersionsFolder">
+            <span class="oi oi-minus"></span>
+        </PopConfirm>
+    </div>
+</div>
+
+@code 
+{
+    [Inject]
+    ApplicationContext ApplicationContext { get; set; }
+    [Inject]
+    NavigationEvents NavigationEvents { get; set; }
+    List<FileFolderEntity> filesFolders = new();
+    bool folderNameTextAreaEnabled = false;
+    string folderName = String.Empty;
+    long currentFileFolderId;
+    RootParams rootParams = new()
+    {
+        rootId = 1,
+        rootName = String.Empty,
+    };
+
+    protected override void OnInitialized()
+    {
+        NavigationEvents.RootFolderSelected += OnRootFolderChanged;
+    }
+
+    private async Task OnRootFolderChanged(long? rootId)
+    {
+        if (ApplicationContext.RootFolders.Any(rf => rf.Status == FolderStatus.Active && rf.Id == rootId))
+        {
+            rootParams.rootId = rootId;
+            rootParams.rootName = ApplicationContext.RootFolders.FirstOrDefault(rf => rf.Id == rootId && rf.Status == FolderStatus.Active).Name;
+            filesFolders = ApplicationContext.FileFolders.Where(vf => vf.Status == FolderStatus.Active && vf.RootFolderId == rootId).ToList();
+        }
+        else
+        {
+            rootParams.rootName = String.Empty;
+            filesFolders.Clear();
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task FileFolderClicked(long id)
+    {
+        currentFileFolderId = id;
+        await NavigationEvents.ChangeFileFolder(id);
+    }
+
+    private void CreateFileVersionsFolder()
+    {
+        folderNameTextAreaEnabled = true;
+    }
+
+    private async Task ConfirmFileVersionsFolderName()
+    {
+        folderNameTextAreaEnabled = false;
+
+        string path = $"{Utils.Constants.cablesProjectFolderPath}/{rootParams.rootName}/{this.folderName}";
+        ApplicationContext.FileFolders.Add(new FileFolderEntity()
+        {
+            Name = folderName,
+            Status = FolderStatus.Active,
+            Path = path,
+            RootFolderId = rootParams.rootId
+        });
+        await ApplicationContext.SaveChangesAsync();
+
+        Directory.CreateDirectory(path);
+
+        filesFolders = ApplicationContext.FileFolders.Where(vf => vf.Status == FolderStatus.Active && vf.RootFolderId == rootParams.rootId).ToList();
+        StateHasChanged();
+    }
+
+    private async Task RemoveFileVersionsFolder(bool confirmed)
+    {
+        if (confirmed)
+        {
+            var folderToRemove = ApplicationContext.FileFolders.FirstOrDefault(f => f.RootFolderId == rootParams.rootId);
+            folderToRemove.Status = FolderStatus.Archived;
+            await ApplicationContext.SaveChangesAsync();
+            filesFolders = ApplicationContext.FileFolders.Where(ff => ff.Status == FolderStatus.Active && ff.RootFolderId == rootParams.rootId).ToList();
+            StateHasChanged();
+        }
+        NavigationEvents.UpdateUI();
+    }
+
+    string GetActive(long id) => id == currentFileFolderId ? "list-group-item-warning" : String.Empty;
+
+    public class RootParams
+    {
+        public long? rootId;
+        public string rootName;
+    }
+}

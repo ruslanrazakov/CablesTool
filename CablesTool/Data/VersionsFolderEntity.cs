@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace CablesTool.Data
 {
-    public class VersionsFolderEntity
+    public class FileFolderEntity
     {
         public long Id { get; set; }
-        public long RootFolderId { get; set; }
+        public long? RootFolderId { get; set; }
         public string Name { get; set; }
         [Column(TypeName = "TEXT")]
         public FolderStatus Status { get; set; }

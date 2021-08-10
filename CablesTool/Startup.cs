@@ -1,5 +1,6 @@
 using CablesTool.Areas.Identity.Data;
 using CablesTool.Data;
+using CablesTool.Pages.Navigation;
 using CablesTool.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -37,6 +38,7 @@ namespace CablesTool
             services.AddDbContext<ApplicationContext>(options =>
                options.UseSqlite(Configuration.GetConnectionString("MainDatabase")));
             services.AddScoped<FileChangedEventsService<long>>();
+            services.AddScoped<NavigationEvents>();
             services.AddScoped<JSWrapper>();
             services.AddScoped<UserWorkspaceService>();
             services.AddAuthentication();
