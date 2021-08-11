@@ -22,4 +22,7 @@
     display: inline-block;
     padding: 6px 12px;
     cursor: pointer;
+    width: 35px;
+    height: 33px;
+    margin-bottom: 0; /*overrides default label margin-bottom: 0.5rem*/
 }

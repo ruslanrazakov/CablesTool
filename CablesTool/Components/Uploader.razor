@@ -21,7 +21,7 @@
         </label>
     @if (isLoading)
     {
-        <div class="progress" style="width: 200px">
+        <div class="progress" style="width: 200px; margin-top: 10px; margin-left: 10px">
             <div class="progress-bar" role="progressbar"
                     style="@($"width: {progressPercentValue}%")"
                     aria-valuenow="@progressPercentValue"
@@ -62,19 +62,26 @@
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
         isLoading = true;
-        var videoFile = ApplicationContext.VideoFiles.FirstOrDefault(file => file.Name == e.File.Name && file.Name.Contains(NameIdentifier));
+
+        var folderPath = ApplicationContext.FileFolders.FirstOrDefault(ff => ff.Id == FolderId).Path;
+        string filePath = $"{folderPath}/{e.File.Name}";
+        var videoFile = ApplicationContext.VideoFiles.FirstOrDefault(file => file.Name == e.File.Name && file.Path == filePath);
         try
         {
             if (videoFile == null)
             {
-                string filePath = Constants.cablesProjectFolderPath + e.File.Name.Replace(".mp4", String.Empty) + NameIdentifier + ".mp4";
+
                 await WriteVideoFileStream(filePath, e);
-                long videoFileId = await SaveVideoFileMetadataToDB(filePath, e);
-                await FileChangedEvents.ChangeFile(videoFileId);
-                NavigationEvents.UpdateUI();
+                await SaveVideoFileMetadataToDB(filePath, e);
             }
-            else
-                await FileChangedEvents.ChangeFile(videoFile.Id);
+            else if (videoFile.Status == FolderStatus.Active)
+                NavigationEvents.NotifyShowPopup("File already exists!");
+            else if (videoFile.Status == FolderStatus.Archived)
+            {
+                videoFile.Status = FolderStatus.Active;
+                await ApplicationContext.SaveChangesAsync();
+            }
+
         }
         catch (Exception ex)
         {
@@ -85,6 +92,7 @@
             isLoading = false;
             progressPercentValue = 0;
         }
+
         NavigationEvents.NoifyFileUploaded();
         StateHasChanged();
     }

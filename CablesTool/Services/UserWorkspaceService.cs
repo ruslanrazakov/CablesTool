@@ -61,7 +61,7 @@ namespace CablesTool.Services
         public string GetVideoName(long videoId)
         {
             if (_context.VideoFiles.Any(file => file.Id == videoId))
-                return _context.VideoFiles.FirstOrDefault(file => file.Id == videoId).Name ?? String.Empty;
+                return _context.VideoFiles.FirstOrDefault(file => file.Id == videoId).Path ?? String.Empty;
             else
                 return String.Empty;
         }

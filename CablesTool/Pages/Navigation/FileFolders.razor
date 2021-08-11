@@ -15,13 +15,14 @@
             </div>
         }
     </div>
-    <div class="d-flex bd-highlight">
+    <div class="d-flex bd-highlight" >
         @if (folderNameTextAreaEnabled)
         {
-            <input class="list-group-item list-group-item-action" type="text" @bind="@folderName" @bind:event="oninput">
-            <button  class="btn btn-secondary"
-                     type="button"
-                     @onclick="@(() => ConfirmFileVersionsFolderName())">Add
+            <input class="list-group-item list-group-item-action" type="text" @bind="@folderName" @bind:event="oninput" style="height: 33px;">
+            <button class="btn btn-secondary"
+                    type="button"
+                    @onclick="@(() => ConfirmFileVersionsFolderName())">
+                <span class="oi oi-check"></span>
             </button>
         }
         else
@@ -51,6 +52,7 @@
         rootId = 1,
         rootName = String.Empty,
     };
+    string fileFolderPath = String.Empty;
 
     protected override void OnInitialized()
     {
@@ -64,19 +66,27 @@
             rootParams.rootId = rootId;
             rootParams.rootName = ApplicationContext.RootFolders.FirstOrDefault(rf => rf.Id == rootId && rf.Status == FolderStatus.Active).Name;
             filesFolders = ApplicationContext.FileFolders.Where(vf => vf.Status == FolderStatus.Active && vf.RootFolderId == rootId).ToList();
+            /*if (filesFolders != null && filesFolders.Any())
+            {
+                currentFileFolderId = filesFolders.First().Id;
+                await NavigationEvents.ChangeFileFolder(currentFileFolderId);
+            }
+            else
+                await NavigationEvents.ChangeFileFolder(null);*/
         }
         else
         {
             rootParams.rootName = String.Empty;
             filesFolders.Clear();
         }
-        
+
         StateHasChanged();
     }
 
     private async Task FileFolderClicked(long id)
     {
         currentFileFolderId = id;
+        fileFolderPath = ApplicationContext.FileFolders.FirstOrDefault(ff => ff.Id == id).Path;
         await NavigationEvents.ChangeFileFolder(id);
     }
 
@@ -111,11 +121,24 @@
         {
             var folderToRemove = ApplicationContext.FileFolders.FirstOrDefault(f => f.RootFolderId == rootParams.rootId);
             folderToRemove.Status = FolderStatus.Archived;
+
+            RemoveNestedFiles();
+
             await ApplicationContext.SaveChangesAsync();
             filesFolders = ApplicationContext.FileFolders.Where(ff => ff.Status == FolderStatus.Active && ff.RootFolderId == rootParams.rootId).ToList();
             StateHasChanged();
+            await NavigationEvents.ChangeFileFolder(currentFileFolderId);
+
         }
-        NavigationEvents.UpdateUI();
+    }
+
+    private void RemoveNestedFiles()
+    {
+        var videofilesToRemove = ApplicationContext.VideoFiles.Where(vf => vf.RootFolderId == currentFileFolderId);
+        foreach (var file in videofilesToRemove)
+        {
+            file.Status = FolderStatus.Archived;
+        }
     }
 
     string GetActive(long id) => id == currentFileFolderId ? "list-group-item-warning" : String.Empty;

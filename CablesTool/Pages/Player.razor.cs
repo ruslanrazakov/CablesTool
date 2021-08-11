@@ -45,16 +45,17 @@ namespace CablesTool.Pages
             {
                 Logger.LogWarning(ex.ToString());
             }
-            //UserWorkspaceService.UserIdentifier = userIdentifier;
             await UpdatePlayer();
             await UpdateCommentsSection();
         }
 
         private async Task UpdatePlayer()
         {
-            var fileId = Convert.ToInt32( VideoId);
-            VideoName = UserWorkspaceService.GetVideoName(fileId).Replace(NameIdentifier, String.Empty);
+            var fileId = Convert.ToInt32(VideoId);
+            VideoName = UserWorkspaceService.GetVideoName(fileId).Split("wwwroot").Last();
+            
             VideoLength = UserWorkspaceService.GetVideoLength(fileId);
+            StateHasChanged();
         }
 
         /// <summary>

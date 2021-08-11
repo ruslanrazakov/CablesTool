@@ -31,15 +31,17 @@
         @if (fileFolderId.HasValue)
         {
             <div class="d-flex bd-highlight">
-                <Uploader FolderId="@fileFolderId" />
+                <Uploader FolderId="@fileFolderId"/>
             </div>
         }
     </div>
+
+    <Modal IsVisible="@modalIsVisible" Title="Warning" Content="@modalMessage">
+    </Modal>
 </div>
 
 @code
 {
-
     [Inject]
     ApplicationContext ApplicationContext { get; set; }
     [Inject]
@@ -47,24 +49,39 @@
     List<VideoFileEntity> files = new();
     long? fileFolderId;
     long? currentFileId;
+    string currentFilePath = String.Empty;
+    bool modalIsVisible;
+    bool playDisabled;
+    string modalMessage;
 
     protected override void OnInitialized()
     {
         NavigationEvents.FileFolderSelected += OnFileFolderChanged;
         NavigationEvents.RootFolderSelected += OnRootFolderChanged;
         NavigationEvents.FileUploaded += OnFileUploaded;
+        NavigationEvents.PopupShowed += OnPopupShowed;
     }
 
     private async Task OnFileFolderChanged(long? folderId)
     {
-        fileFolderId = folderId;
-        files = ApplicationContext.VideoFiles.Where(vf => vf.FileFolderId == fileFolderId && vf.Status == FolderStatus.Active).ToList();
+        if (folderId.HasValue)
+        {
+            fileFolderId = folderId;
+            files = ApplicationContext.VideoFiles.Where(vf => vf.FileFolderId == fileFolderId && vf.Status == FolderStatus.Active).ToList();
+        }
+        else
+        {
+            fileFolderId = null;
+            currentFileId = null;
+            files.Clear();
+        }
         StateHasChanged();
     }
 
     private async Task OnRootFolderChanged(long? folderId)
     {
         fileFolderId = null;
+        currentFileId = null;
         files.Clear();
         StateHasChanged();
     }
@@ -73,6 +90,12 @@
     {
         files = ApplicationContext.VideoFiles.Where(vf => vf.FileFolderId == fileFolderId && vf.Status == FolderStatus.Active).ToList();
         StateHasChanged();
+    }
+
+    private void OnPopupShowed(string content)
+    {
+        modalMessage = content;
+        modalIsVisible = true;
     }
 
     private void FileClicked(long? fileId)
@@ -95,5 +118,4 @@
     }
 
     string GetActive(long id) => id == currentFileId ? "list-group-item-warning" : String.Empty;
-
 }

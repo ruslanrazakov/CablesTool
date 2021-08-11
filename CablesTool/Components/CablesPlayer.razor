@@ -142,14 +142,6 @@
         return Math.Round(rnd.NextDouble() * max, 1);
     }
 
-    public async Task ChangeVideoContent(string fileName)
-    {
-        await Stop();
-        VideoName = fileName;
-        CurrentTime = 0;
-        await JSWrapper.SetCablesVariable("s_videoPath", fileName);
-    }
-
     private string GetCommentsPreview(IEnumerable<CommentEntity> comments)
     {
         string result = String.Empty;

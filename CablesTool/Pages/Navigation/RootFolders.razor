@@ -20,12 +20,12 @@
     <div class="d-flex bd-highlight">
         @if (folderNameTextAreaEnabled)
         {
-            <input class="list-group-item list-group-item-action" type="text" @bind="@rootFolderName" @bind:event="oninput">
+            <input class="list-group-item list-group-item-action" type="text" @bind="@rootFolderName" @bind:event="oninput" style="height: 33px;">
             <button disabled="@(rootFolderName == String.Empty)"
                     class="btn btn-secondary"
                     type="button"
                     @onclick="@(() => ConfirmRootFolderName())">
-                Add
+                <span class="oi oi-check"></span>
             </button>
         }
         else
@@ -34,13 +34,12 @@
                 <span class="oi oi-plus"></span>
             </button>
         }
-        <PopConfirm Class="btn btn-secondary" ConfirmedChanged="@RemoveRootFolder">
+        <PopConfirm Class="btn btn-secondary" ConfirmedChanged="@RemoveRootFolder" Disabled="@(!currentRootFolderId.HasValue)">
             <span class="oi oi-minus"></span>
         </PopConfirm>
     </div>
 
 </div>
-
 
 @code {
     [Inject]
@@ -102,13 +101,32 @@
     {
         if (confirmed)
         {
-            var folderToRemove = ApplicationContext.RootFolders.FirstOrDefault(f => f.Id == currentRootFolderId);
-            folderToRemove.Status = FolderStatus.Archived;
+            var rootFolderToRemove = ApplicationContext.RootFolders.FirstOrDefault(f => f.Id == currentRootFolderId);
+            rootFolderToRemove.Status = FolderStatus.Archived;
+
+            RemoveNestedFoldersAndFiles();
+
             await ApplicationContext.SaveChangesAsync();
             rootFolders = ApplicationContext.RootFolders.Where(f => f.Status == FolderStatus.Active).ToList();
+            currentRootFolderId = null;
             StateHasChanged();
         }
         await NavigationEvents.ChangeRootFolder(currentRootFolderId);
+    }
+
+    private void RemoveNestedFoldersAndFiles()
+    {
+        var fileFoldersToRemove = ApplicationContext.FileFolders.Where(ff => ff.RootFolderId == currentRootFolderId);
+        foreach (var folder in fileFoldersToRemove)
+        {
+            folder.Status = FolderStatus.Archived;
+        }
+
+        var videofilesToRemove = ApplicationContext.VideoFiles.Where(vf => vf.RootFolderId == currentRootFolderId);
+        foreach (var file in videofilesToRemove)
+        {
+            file.Status = FolderStatus.Archived;
+        }
     }
 
     string GetActive(long id) => id == currentRootFolderId ? "list-group-item-warning" : String.Empty;

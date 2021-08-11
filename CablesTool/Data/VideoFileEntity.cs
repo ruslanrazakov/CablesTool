@@ -9,6 +9,7 @@ namespace CablesTool.Data
     public class VideoFileEntity
     {
         public long Id { get; set; }
+        public long RootFolderId { get; set; }
         public long FileFolderId { get; set; }
         public string Name { get; set; }
         public string Path { get; set; }

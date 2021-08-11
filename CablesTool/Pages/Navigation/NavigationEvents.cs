@@ -10,8 +10,8 @@ namespace CablesTool.Pages.Navigation
         public event Func<long?, Task> RootFolderSelected;
         public event Func<long?, Task> FileFolderSelected;
         public event Func<long?, Task> FileVersionSelected;
-        public event Action UIupdated;
         public event Action FileUploaded;
+        public event Action<string> PopupShowed;
 
         public async Task ChangeRootFolder(long? id)
         {
@@ -28,14 +28,14 @@ namespace CablesTool.Pages.Navigation
             await NotifyContentSelectedAsync(id, FileVersionSelected);
         }
 
-        public void UpdateUI()
-        {
-            UIupdated();
-        }
-
         public void NoifyFileUploaded()
         {
             FileUploaded();
+        }
+
+        public void NotifyShowPopup(string popupContent)
+        {
+            PopupShowed(popupContent);
         }
 
         private async Task NotifyContentSelectedAsync(long? contentId, Func<long?, Task> contentSelected)
