@@ -3,11 +3,13 @@ using CablesTool.Data;
 using CablesTool.Pages.Navigation;
 using CablesTool.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,12 +43,11 @@ namespace CablesTool
             services.AddScoped<NavigationEvents>();
             services.AddScoped<JSWrapper>();
             services.AddScoped<UserWorkspaceService>();
-            services.AddAuthentication();
             services.AddHttpContextAccessor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationContext appContext)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationContext appContext, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -74,6 +75,31 @@ namespace CablesTool
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+
+            CreateRoles(serviceProvider);
+        }
+
+        private void CreateRoles(IServiceProvider serviceProvider)
+        {
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            CreateRole("Admin", roleManager);
+            CreateRole("Implementer", roleManager);
+            CreateRole("Client", roleManager);
+        }
+
+        private void CreateRole(string roleName, RoleManager<IdentityRole> roleManager)
+        {
+            Task<IdentityResult> roleResult;
+
+            //Check that there is a role and create if not
+            Task<bool> hasAdminRole = roleManager.RoleExistsAsync(roleName);
+            hasAdminRole.Wait();
+
+            if (!hasAdminRole.Result)
+            {
+                roleResult = roleManager.CreateAsync(new IdentityRole(roleName));
+                roleResult.Wait();
+            }
         }
     }
 }

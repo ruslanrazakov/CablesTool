@@ -1,5 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using CablesTool.Areas.Identity.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -14,16 +16,18 @@ namespace CablesTool.Areas.Identity
     {
         public void Configure(IWebHostBuilder builder)
         {
-            builder.ConfigureServices((context, services) => {
+            builder.ConfigureServices((context, services) =>
+            {
                 services.AddDbContext<CablesToolIdentityDbContext>(options =>
                     options.UseSqlite("Data Source=Identity.db"));
 
-                /*services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)*/
-                services.AddDefaultIdentity<IdentityUser>(options => 
-                    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 -._@+"
-                )
-                    .AddEntityFrameworkStores<CablesToolIdentityDbContext>();
-            });
+                services.AddDefaultIdentity<IdentityUser>(options =>
+                    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 -._@+")
+                        .AddRoles<IdentityRole>()
+                        .AddEntityFrameworkStores<CablesToolIdentityDbContext>();
+
+                services.AddAuthorization();
+            }).Build();
         }
     }
 }

@@ -18,7 +18,9 @@
     <link href="CablesTool.styles.css" rel="stylesheet" />
 </head>
 <body>
-    <component type="typeof(App)" render-mode="ServerPrerendered" param-NameIdentifier="@Model.NameIdentifier" param-UserName="@Model.UserName"/>
+    <component type="typeof(App)" render-mode="ServerPrerendered" param-NameIdentifier="@Model.NameIdentifier" 
+                                                                  param-UserName="@Model.UserName"
+                                                                    param-Role="@Model.Role"/>
     <div id="blazor-error-ui">
         <environment include="Staging,Production">
             An error has occurred. This application may no longer respond until reloaded.

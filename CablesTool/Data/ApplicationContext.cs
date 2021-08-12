@@ -29,6 +29,13 @@ namespace CablesTool.Data
                     v => (FolderStatus)Enum.Parse(typeof(FolderStatus), v));
 
             modelBuilder
+               .Entity<RootFolderEntity>()
+               .Property(e => e.Role)
+               .HasConversion(
+                   v => v.ToString(),
+                   v => (Role)Enum.Parse(typeof(Role), v));
+
+            modelBuilder
                 .Entity<FileFolderEntity>()
                 .Property(e => e.Status)
                 .HasConversion(

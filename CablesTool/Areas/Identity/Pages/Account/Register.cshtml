@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Register";
 }
+@inject UserManager<IdentityUser> UserManager
 
 <h1>@ViewData["Title"]</h1>
 
@@ -32,10 +33,19 @@
                 <input asp-for="Input.ConfirmPassword" class="form-control" />
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-primary">Register</button>
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="form-group">
+                    <select asp-for="Input.UserRole"
+                            asp-items="@(Model.Roles)">
+                    </select>
+                    <span asp-validation-for="Input.UserRole" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            }
         </form>
     </div>
-  
+
 </div>
 
 @section Scripts {

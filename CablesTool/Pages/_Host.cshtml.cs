@@ -15,6 +15,7 @@ public class HostModel : PageModel
     public string IPAddress { get; set; }
     public string NameIdentifier { get; set; }
     public string UserName { get; set; }
+    public string Role { get; set; }
 
     // The following links may be useful for getting the IP Adress:
     // https://stackoverflow.com/questions/35441521/remoteipaddress-is-always-null
@@ -29,5 +30,7 @@ public class HostModel : PageModel
         IPAddress = _httpContextAccssor.HttpContext.Connection.RemoteIpAddress.ToString();
         NameIdentifier = _httpContextAccssor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         UserName = _httpContextAccssor.HttpContext.User.Identity.Name ?? "Guest";
+        Role = _httpContextAccssor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+
     }
 }

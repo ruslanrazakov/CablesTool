@@ -13,6 +13,8 @@ namespace CablesTool.Data
         public string Name { get; set; }
         [Column(TypeName = "TEXT")]
         public FolderStatus Status { get; set; }
+        [Column(TypeName = "TEXT")]
+        public Role Role { get; set; }
         public string Path { get; set; }
     }
 
@@ -24,5 +26,15 @@ namespace CablesTool.Data
         Archived,
         [EnumMember(Value = "Deleted")]
         Deleted,
+    }
+
+    public enum Role
+    {
+        [EnumMember(Value = "Admin")]
+        Admin,
+        [EnumMember(Value = "Implementer")]
+        Implementer,
+        [EnumMember(Value = "Client")]
+        Client,
     }
 }
