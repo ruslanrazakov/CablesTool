@@ -43,6 +43,8 @@
 @code {
     [Inject]
     public ILogger<CablesPlayer> Logger { get; set; }
+    [Inject]
+    public UserWorkspaceService UserWorkspaceService { get; set; }
     [Parameter]
     public double VideoLength { get; set; }
     private int int_VideoLength => (int)VideoLength;
@@ -53,21 +55,31 @@
     [Parameter]
     public List<CommentEntity> CommentEntities { get; set; }
 
+
     public double CurrentTime { get; set; }
     private bool isPlaying;
 
     TimerAsync timer = new TimerAsync(delay: 100);
 
+    protected override void OnInitialized()
+    {
+        UserWorkspaceService.videoUploaded += OnVideoUploaded;
+    }
+
+    private async Task OnVideoUploaded()
+    {
+        await JSWrapper.TrySetCablesVariableWithRetries("s_videoPath", VideoName);
+        await JSWrapper.TrySetCablesVariableWithRetries("i_videoSpeed", "0");
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await Task.Delay(1000); // !important for successfull uploading /Project/Path.html in Iframe!
-
             if (VideoName != null && VideoName != String.Empty)
             {
-                await JSWrapper.TrySetCablesVariableWithRetries("i_videoSpeed", "0");
                 await JSWrapper.TrySetCablesVariableWithRetries("s_videoPath", VideoName);
+                await JSWrapper.TrySetCablesVariableWithRetries("i_videoSpeed", "0");
             }
         }
     }
@@ -95,7 +107,6 @@
     {
         var time = await JSWrapper.GetCablesVariable("i_getTime");
         CurrentTime = Math.Round(time, 0);
-        Logger.LogInformation(CurrentTime.ToString());
 
         StateHasChanged();
     }

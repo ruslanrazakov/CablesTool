@@ -31,6 +31,5 @@ public class HostModel : PageModel
         NameIdentifier = _httpContextAccssor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         UserName = _httpContextAccssor.HttpContext.User.Identity.Name ?? "Guest";
         Role = _httpContextAccssor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
-
     }
 }

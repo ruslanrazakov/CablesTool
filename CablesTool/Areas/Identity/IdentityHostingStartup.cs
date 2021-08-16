@@ -27,7 +27,7 @@ namespace CablesTool.Areas.Identity
                         .AddEntityFrameworkStores<CablesToolIdentityDbContext>();
 
                 services.AddAuthorization();
-            }).Build();
+            });
         }
     }
 }

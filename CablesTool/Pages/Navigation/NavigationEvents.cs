@@ -54,58 +54,5 @@ namespace CablesTool.Pages.Navigation
             }
             await Task.WhenAll(handlerTasks);
         }
-
-
-
-        /*private async Task NotifyRootFolderSelectedAsync()
-        {
-            Func<long, Task> handler = RootFolderSelected;
-            if (handler == null)
-            {
-                return;
-            }
-            Delegate[] invocationList = handler.GetInvocationList();
-            Task[] handlerTasks = new Task[invocationList.Length];
-
-            for (int i = 0; i < invocationList.Length; i++)
-            {
-                handlerTasks[i] = ((Func<long, Task>)invocationList[i])(rootFolderId);
-            }
-            await Task.WhenAll(handlerTasks);
-        }
-
-        private async Task NotifyFileFolderSelectedAsync()
-        {
-            Func<long, Task> handler = FileFolderSelected;
-            if (handler == null)
-            {
-                return;
-            }
-            Delegate[] invocationList = handler.GetInvocationList();
-            Task[] handlerTasks = new Task[invocationList.Length];
-
-            for (int i = 0; i < invocationList.Length; i++)
-            {
-                handlerTasks[i] = ((Func<long, Task>)invocationList[i])(fileFolderId);
-            }
-            await Task.WhenAll(handlerTasks);
-        }
-
-        private async Task NotifyFileVersionSelectedAsync()
-        {
-            Func<long, Task> handler = FileVersionSelected;
-            if (handler == null)
-            {
-                return;
-            }
-            Delegate[] invocationList = handler.GetInvocationList();
-            Task[] handlerTasks = new Task[invocationList.Length];
-
-            for (int i = 0; i < invocationList.Length; i++)
-            {
-                handlerTasks[i] = ((Func<long, Task>)invocationList[i])(fileVersionId);
-            }
-            await Task.WhenAll(handlerTasks);
-        }*/
     }
 }

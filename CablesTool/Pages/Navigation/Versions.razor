@@ -25,10 +25,15 @@
                 type="button" @onclick="PlayClicked">
             <span class="oi oi-media-play"></span>
         </button>
+
+        @if (Role == "Admin")
+        {
         <PopConfirm Disabled="@(!currentFileId.HasValue)" Class="btn btn-secondary" ConfirmedChanged="@RemoveFile">
             <span class="oi oi-minus"></span>
         </PopConfirm>
-        @if (fileFolderId.HasValue)
+        }
+
+        @if ((Role == "Admin" || Role== "Implementer") && fileFolderId.HasValue)
         {
             <div class="d-flex bd-highlight">
                 <Uploader FolderId="@fileFolderId"/>
@@ -42,6 +47,8 @@
 
 @code
 {
+    [CascadingParameter(Name = "Role")]
+    public string Role { get; set; }
     [Inject]
     ApplicationContext ApplicationContext { get; set; }
     [Inject]

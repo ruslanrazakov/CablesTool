@@ -14,11 +14,17 @@ namespace CablesTool.Services
         public UserWorkspaceEntity CurrentUserWorkspace { get; set; }
         public string UserIdentifier { get; set; }
         public long CurrentVideoId { get; set; }
+        public event Func<Task> videoUploaded;
         private ApplicationContext _context;
-
+        
         public UserWorkspaceService(ApplicationContext context)
         {
             _context = context;
+        }
+
+        public void UploadFinished()
+        {
+            videoUploaded();
         }
 
         /// <summary>

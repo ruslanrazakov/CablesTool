@@ -99,10 +99,10 @@ var CABLES = function (t) {
 	  return I
 	})),
 	i.d(r, 'smootherStep', (function () {
-	  return O
+	  return R
 	})),
 	i.d(r, 'map', (function () {
-	  return R
+	  return O
 	})),
 	i.d(r, 'cacheBust', (function () {
 	  return P
@@ -346,11 +346,11 @@ var CABLES = function (t) {
 	  const e = Math.max(0, Math.min(1, (t - 0) / 1));
 	  return t = e * e * (3 - 2 * e)
 	},
-	O = function (t) {
+	R = function (t) {
 	  const e = Math.max(0, Math.min(1, (t - 0) / 1));
 	  return t = e * e * e * (e * (6 * e - 15) + 10)
 	},
-	R = function (t, e, i, s, r, n) {
+	O = function (t, e, i, s, r, n) {
 	  if (t >= i) return r;
 	  if (t <= e) return s;
 	  let o = !1;
@@ -1940,7 +1940,8 @@ var CABLES = function (t) {
 	  e.height || (e.height = 8),
 	  this._cgl.profileData.profileTextureNew++,
 	  this._cgl.profileData.addHeavyEvent('texture created', this.name, e.width + 'x' + e.height),
-	  this.setSize(e.width, e.height)
+	  this.setSize(e.width, e.height),
+	  this.getInfoOneLine()
 	};
 	$.prototype.isFloatingPoint = function () {
 	  return this.textureType == $.TYPE_FLOAT
@@ -1966,11 +1967,10 @@ var CABLES = function (t) {
 	  if ((t != t || t <= 0 || !t) && (t = 8), (e != e || e <= 0 || !e) && (e = 8), (t > this._cgl.maxTexSize || e > this._cgl.maxTexSize) && console.error('texture size too big! ' + t + 'x' + e + ' / max: ' + this._cgl.maxTexSize), t = Math.min(t, this._cgl.maxTexSize), e = Math.min(e, this._cgl.maxTexSize), t = Math.floor(t), e = Math.floor(e), this.width == t && this.height == e) return;
 	  this.width = t,
 	  this.height = e,
-	  this.shortInfoString = t + 'x' + e,
-	  this.textureType == $.TYPE_FLOAT && (this.shortInfoString += ' Float'),
+	  this.shortInfoString = this.getInfoOneLine(),
 	  this._cgl.gl.bindTexture(this.texTarget, this.tex),
 	  this._cgl.profileData.profileTextureResize++;
-	  if (this.textureType != $.TYPE_FLOAT || this.filter != $.FILTER_LINEAR || this._cgl.gl.getExtension('OES_texture_float_linear') || (console.warn('this graphics card does not support floating point texture linear interpolation! using NEAREST'), this.filter = $.FILTER_NEAREST), this._setFilter(), this.textureType == $.TYPE_FLOAT) if (1 == this._cgl.glVersion) if (this._cgl.glUseHalfFloatTex) {
+	  if (this.textureType != $.TYPE_FLOAT || this.filter != $.FILTER_LINEAR || this._cgl.gl.getExtension('OES_texture_float_linear') || (console.warn('this graphics card does not support floating point texture linear interpolation! using NEAREST'), this.filter = $.FILTER_NEAREST), this.textureType == $.TYPE_FLOAT) if (1 == this._cgl.glVersion) if (this._cgl.glUseHalfFloatTex) {
 		const i = this._cgl.gl.getExtension('OES_texture_half_float');
 		if (1 == this._cgl.glVersion && !i) throw new Error('no half float texture extension');
 		this._cgl.gl.texImage2D(this.texTarget, 0, this._cgl.gl.RGBA, t, e, 0, this._cgl.gl.RGBA, i.HALF_FLOAT_OES, null)
@@ -1985,6 +1985,7 @@ var CABLES = function (t) {
 		const i = this._cgl.gl.DEPTH_COMPONENT32F;
 		this._cgl.gl.texImage2D(this.texTarget, 0, i, t, e, 0, this._cgl.gl.DEPTH_COMPONENT, this._cgl.gl.FLOAT, null)
 	  } else this._cgl.gl.texImage2D(this.texTarget, 0, this._cgl.gl.RGBA, t, e, 0, this._cgl.gl.RGBA, this._cgl.gl.UNSIGNED_BYTE, null);
+	  this._setFilter(),
 	  this.updateMipMap(),
 	  this._cgl.gl.bindTexture(this.texTarget, null)
 	},
@@ -2021,7 +2022,8 @@ var CABLES = function (t) {
 	  this._setFilter(),
 	  this.updateMipMap(),
 	  this._cgl.gl.bindTexture(this.texTarget, null),
-	  this._cgl.gl.pixelStorei(this._cgl.gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, !1)
+	  this._cgl.gl.pixelStorei(this._cgl.gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, !1),
+	  this.getInfoOneLine()
 	},
 	$.prototype.delete = function () {
 	  this.loading ? setTimeout(this.delete.bind(this), 50) : (this.deleted = !0, this.width = 0, this.height = 0, this._cgl.profileData.profileTextureDelete++, this._cgl.gl.deleteTexture(this.tex))
@@ -2038,6 +2040,18 @@ var CABLES = function (t) {
 	  t.name = t.name.substr(0, t.name.indexOf('?rnd='));
 	  for (const i in t) e += '* ' + i + ':  **' + t[i] + '**\n';
 	  return e
+	},
+	$.prototype.getInfoOneLine = function () {
+	  let t = this.width + 'x' + this.height;
+	  return this.textureType === CGL.Texture.TYPE_FLOAT && (t += ' HDR'),
+	  this.filter === CGL.Texture.FILTER_NEAREST && (t += ' nearest'),
+	  this.filter === CGL.Texture.FILTER_LINEAR && (t += ' linear'),
+	  this.filter === CGL.Texture.FILTER_MIPMAP && (t += ' mipmap'),
+	  this.wrap === CGL.Texture.WRAP_CLAMP_TO_EDGE && (t += ' clamp'),
+	  this.wrap === CGL.Texture.WRAP_REPEAT && (t += ' repeat'),
+	  this.wrap === CGL.Texture.WRAP_MIRRORED_REPEAT && (t += ' repeatmir'),
+	  this.shortInfoString = t,
+	  t
 	},
 	$.prototype.getInfo = function () {
 	  const t = {
@@ -2078,7 +2092,8 @@ var CABLES = function (t) {
 	  this._cgl.gl.texParameteri(this.texTarget, this._cgl.gl.TEXTURE_WRAP_S, this._cgl.gl.CLAMP_TO_EDGE),
 	  this._cgl.gl.texParameteri(this.texTarget, this._cgl.gl.TEXTURE_WRAP_T, this._cgl.gl.CLAMP_TO_EDGE),
 	  this.filter = $.FILTER_NEAREST,
-	  this.wrap = $.WRAP_CLAMP_TO_EDGE
+	  this.wrap = $.WRAP_CLAMP_TO_EDGE;
+	  this.getInfoOneLine()
 	},
 	$.load = function (t, e, i, s) {
 	  const r = t.patch.loading.start('texture', e),
@@ -3992,7 +4007,7 @@ var CABLES = function (t) {
 	  this._compileReason = t
 	},
 	xt.prototype.copyUniformValues = function (t) {
-	  for (let e = 0; e < t._uniforms.length; e++) this._uniforms[e] && this._uniforms[e].set(t._uniforms[e].getValue());
+	  for (let e = 0; e < t._uniforms.length; e++) this._uniforms[e] && this.getUniform(t._uniforms[e].getName()).set(t._uniforms[e].getValue());
 	  this.popTextures();
 	  for (let e = 0; e < t._textureStackUni.length; e++) this._textureStackUni[e] = t._textureStackUni[e],
 	  this._textureStackTex[e] = t._textureStackTex[e],
@@ -4650,7 +4665,7 @@ var CABLES = function (t) {
 		this._cgl.emitEvent('heavyEvent', s)
 	  }
 	}
-	const Ot = function (t) {
+	const Rt = function (t) {
 	  d.apply(this),
 	  this.profileData = new It(this);
 	  const e = [
@@ -4941,149 +4956,149 @@ var CABLES = function (t) {
 		}.bind(this), r)
 	  }
 	};
-	Ot.prototype.addNextFrameOnceCallback = function (t) {
+	Rt.prototype.addNextFrameOnceCallback = function (t) {
 	  t && this._onetimeCallbacks.push(t)
 	},
-	Ot.prototype.pushViewMatrix = function () {
+	Rt.prototype.pushViewMatrix = function () {
 	  this.vMatrix = this._vMatrixStack.push(this.vMatrix)
 	},
-	Ot.prototype.popViewMatrix = function () {
+	Rt.prototype.popViewMatrix = function () {
 	  this.vMatrix = this._vMatrixStack.pop()
 	},
-	Ot.prototype.getViewMatrixStateCount = function () {
+	Rt.prototype.getViewMatrixStateCount = function () {
 	  return this._vMatrixStack.stateCounter
 	},
-	Ot.prototype.pushPMatrix = function () {
+	Rt.prototype.pushPMatrix = function () {
 	  this.pMatrix = this._pMatrixStack.push(this.pMatrix)
 	},
-	Ot.prototype.popPMatrix = function () {
+	Rt.prototype.popPMatrix = function () {
 	  return this.pMatrix = this._pMatrixStack.pop(),
 	  this.pMatrix
 	},
-	Ot.prototype.getProjectionMatrixStateCount = function () {
+	Rt.prototype.getProjectionMatrixStateCount = function () {
 	  return this._pMatrixStack.stateCounter
 	},
-	Ot.prototype.pushMvMatrix = Ot.prototype.pushModelMatrix = function () {
+	Rt.prototype.pushMvMatrix = Rt.prototype.pushModelMatrix = function () {
 	  this.mMatrix = this._mMatrixStack.push(this.mMatrix)
 	},
-	Ot.prototype.popMvMatrix = Ot.prototype.popmMatrix = Ot.prototype.popModelMatrix = function () {
+	Rt.prototype.popMvMatrix = Rt.prototype.popmMatrix = Rt.prototype.popModelMatrix = function () {
 	  return this.mMatrix = this._mMatrixStack.pop(),
 	  this.mMatrix
 	},
-	Ot.prototype.modelMatrix = function () {
+	Rt.prototype.modelMatrix = function () {
 	  return this.mMatrix
 	},
-	Ot.prototype._stackDepthTest = [
+	Rt.prototype._stackDepthTest = [
 	],
-	Ot.prototype.pushDepthTest = function (t) {
+	Rt.prototype.pushDepthTest = function (t) {
 	  this._stackDepthTest.push(t),
 	  t ? this.gl.enable(this.gl.DEPTH_TEST) : this.gl.disable(this.gl.DEPTH_TEST)
 	},
-	Ot.prototype.stateDepthTest = function () {
+	Rt.prototype.stateDepthTest = function () {
 	  return this._stackDepthTest[this._stackDepthTest.length - 1]
 	},
-	Ot.prototype.popDepthTest = function () {
+	Rt.prototype.popDepthTest = function () {
 	  this._stackDepthTest.pop(),
 	  this._stackDepthTest[this._stackDepthTest.length - 1] ? this.gl.enable(this.gl.DEPTH_TEST) : this.gl.disable(this.gl.DEPTH_TEST)
 	},
-	Ot.prototype._stackDepthWrite = [
+	Rt.prototype._stackDepthWrite = [
 	],
-	Ot.prototype.pushDepthWrite = function (t) {
+	Rt.prototype.pushDepthWrite = function (t) {
 	  this._stackDepthWrite.push(t),
 	  this.gl.depthMask(t)
 	},
-	Ot.prototype.stateDepthWrite = function () {
+	Rt.prototype.stateDepthWrite = function () {
 	  return this._stackDepthWrite[this._stackDepthWrite.length - 1]
 	},
-	Ot.prototype.popDepthWrite = function () {
+	Rt.prototype.popDepthWrite = function () {
 	  this._stackDepthWrite.pop(),
 	  this.gl.depthMask(this._stackDepthWrite[this._stackDepthWrite.length - 1])
 	},
-	Ot.prototype._stackCullFace = [
+	Rt.prototype._stackCullFace = [
 	],
-	Ot.prototype.pushCullFace = function (t) {
+	Rt.prototype.pushCullFace = function (t) {
 	  this._stackCullFace.push(t),
 	  t ? this.gl.enable(this.gl.CULL_FACE) : this.gl.disable(this.gl.CULL_FACE)
 	},
-	Ot.prototype.stateCullFace = function () {
+	Rt.prototype.stateCullFace = function () {
 	  return this._stackCullFace[this._stackCullFace.length - 1]
 	},
-	Ot.prototype.popCullFace = function () {
+	Rt.prototype.popCullFace = function () {
 	  this._stackCullFace.pop(),
 	  this._stackCullFace[this._stackCullFace.length - 1] ? this.gl.enable(this.gl.CULL_FACE) : this.gl.disable(this.gl.CULL_FACE)
 	},
-	Ot.prototype._stackCullFaceFacing = [
+	Rt.prototype._stackCullFaceFacing = [
 	],
-	Ot.prototype.pushCullFaceFacing = function (t) {
+	Rt.prototype.pushCullFaceFacing = function (t) {
 	  this._stackCullFaceFacing.push(t),
 	  this.gl.cullFace(this._stackCullFaceFacing[this._stackCullFaceFacing.length - 1])
 	},
-	Ot.prototype.stateCullFaceFacing = function () {
+	Rt.prototype.stateCullFaceFacing = function () {
 	  return this._stackCullFaceFacing[this._stackCullFaceFacing.length - 1]
 	},
-	Ot.prototype.popCullFaceFacing = function () {
+	Rt.prototype.popCullFaceFacing = function () {
 	  this._stackCullFaceFacing.pop(),
 	  this._stackCullFaceFacing.length > 0 && this.gl.cullFace(this._stackCullFaceFacing[this._stackCullFaceFacing.length - 1])
 	},
-	Ot.prototype._stackDepthFunc = [
+	Rt.prototype._stackDepthFunc = [
 	],
-	Ot.prototype.pushDepthFunc = function (t) {
+	Rt.prototype.pushDepthFunc = function (t) {
 	  this._stackDepthFunc.push(t),
 	  this.gl.depthFunc(t)
 	},
-	Ot.prototype.stateDepthFunc = function () {
+	Rt.prototype.stateDepthFunc = function () {
 	  return this._stackDepthFunc.length > 0 && this._stackDepthFunc[this._stackDepthFunc.length - 1]
 	},
-	Ot.prototype.popDepthFunc = function () {
+	Rt.prototype.popDepthFunc = function () {
 	  this._stackDepthFunc.pop(),
 	  this._stackDepthFunc.length > 0 && this.gl.depthFunc(this._stackDepthFunc[this._stackDepthFunc.length - 1])
 	},
-	Ot.prototype._stackBlend = [
+	Rt.prototype._stackBlend = [
 	],
-	Ot.prototype.pushBlend = function (t) {
+	Rt.prototype.pushBlend = function (t) {
 	  this._stackBlend.push(t),
 	  t ? this.gl.enable(this.gl.BLEND) : this.gl.disable(this.gl.BLEND)
 	},
-	Ot.prototype.popBlend = function () {
+	Rt.prototype.popBlend = function () {
 	  this._stackBlend.pop(),
 	  this._stackBlend[this._stackBlend.length - 1] ? this.gl.enable(this.gl.BLEND) : this.gl.disable(this.gl.BLEND)
 	},
-	Ot.prototype.stateBlend = function () {
+	Rt.prototype.stateBlend = function () {
 	  return this._stackBlend[this._stackBlend.length - 1]
 	};
-	Ot.prototype._stackBlendMode = [
+	Rt.prototype._stackBlendMode = [
 	],
-	Ot.prototype._stackBlendModePremul = [
+	Rt.prototype._stackBlendModePremul = [
 	],
-	Ot.prototype.pushBlendMode = function (t, e) {
+	Rt.prototype.pushBlendMode = function (t, e) {
 	  this._stackBlendMode.push(t),
 	  this._stackBlendModePremul.push(e);
 	  const i = this._stackBlendMode.length - 1;
 	  this.pushBlend(this._stackBlendMode[i] !== nt.BLEND_MODES.BLEND_NONE),
 	  this._setBlendMode(this._stackBlendMode[i], this._stackBlendModePremul[i])
 	},
-	Ot.prototype.popBlendMode = function () {
+	Rt.prototype.popBlendMode = function () {
 	  this._stackBlendMode.pop(),
 	  this._stackBlendModePremul.pop();
 	  const t = this._stackBlendMode.length - 1;
 	  this.popBlend(this._stackBlendMode[t] !== nt.BLEND_MODES.BLEND_NONE),
 	  t >= 0 && this._setBlendMode(this._stackBlendMode[t], this._stackBlendModePremul[t])
 	},
-	Ot.prototype.glGetAttribLocation = function (t, e) {
+	Rt.prototype.glGetAttribLocation = function (t, e) {
 	  const i = this.gl.getAttribLocation(t, e);
 	  return i
 	},
-	Ot.prototype.shouldDrawHelpers = function (t) {
+	Rt.prototype.shouldDrawHelpers = function (t) {
 	  return !this.frameStore.shadowPass && (!!t.patch.isEditorMode() && (CABLES.UI.renderHelper || CABLES.UI.renderHelperCurrent && t.isCurrentUiOp()))
 	},
-	Ot.prototype._setBlendMode = function (t, e) {
+	Rt.prototype._setBlendMode = function (t, e) {
 	  const i = this.gl;
 	  t == nt.BLEND_MODES.BLEND_NONE || (t == nt.BLEND_MODES.BLEND_ADD ? e ? (i.blendEquationSeparate(i.FUNC_ADD, i.FUNC_ADD), i.blendFuncSeparate(i.ONE, i.ONE, i.ONE, i.ONE)) : (i.blendEquation(i.FUNC_ADD), i.blendFunc(i.SRC_ALPHA, i.ONE)) : t == nt.BLEND_MODES.BLEND_SUB ? e ? (i.blendEquationSeparate(i.FUNC_ADD, i.FUNC_ADD), i.blendFuncSeparate(i.ZERO, i.ZERO, i.ONE_MINUS_SRC_COLOR, i.ONE_MINUS_SRC_ALPHA)) : (i.blendEquation(i.FUNC_ADD), i.blendFunc(i.ZERO, i.ONE_MINUS_SRC_COLOR)) : t == nt.BLEND_MODES.BLEND_MUL ? e ? (i.blendEquationSeparate(i.FUNC_ADD, i.FUNC_ADD), i.blendFuncSeparate(i.ZERO, i.SRC_COLOR, i.ZERO, i.SRC_ALPHA)) : (i.blendEquation(i.FUNC_ADD), i.blendFunc(i.ZERO, i.SRC_COLOR)) : t == nt.BLEND_MODES.BLEND_NORMAL ? e ? (i.blendEquationSeparate(i.FUNC_ADD, i.FUNC_ADD), i.blendFuncSeparate(i.ONE, i.ONE_MINUS_SRC_ALPHA, i.ONE, i.ONE_MINUS_SRC_ALPHA)) : (i.blendEquationSeparate(i.FUNC_ADD, i.FUNC_ADD), i.blendFuncSeparate(i.SRC_ALPHA, i.ONE_MINUS_SRC_ALPHA, i.ONE, i.ONE_MINUS_SRC_ALPHA)) : _.log('setblendmode: unknown blendmode'))
 	},
-	Ot.prototype.setCursor = function (t) {
+	Rt.prototype.setCursor = function (t) {
 	  this._cursor = t
 	};
-	const Rt = Object.assign({
+	const Ot = Object.assign({
 	  Framebuffer: function (t, e, i, s) {
 		const r = t,
 		n = r.gl.getExtension('WEBGL_depth_texture') || r.gl.getExtension('WEBKIT_WEBGL_depth_texture') || r.gl.getExtension('MOZ_WEBGL_depth_texture') || r.gl.DEPTH_TEXTURE;
@@ -5305,7 +5320,7 @@ var CABLES = function (t) {
 	  Shader: xt,
 	  Uniform: st,
 	  MESHES: lt,
-	  Context: Ot,
+	  Context: Rt,
 	  Texture: $,
 	  TextureEffect: ct,
 	  isWindows: ft,
@@ -5331,7 +5346,7 @@ var CABLES = function (t) {
 		}
 	  }
 	}, nt.BLEND_MODES, nt.SHADER, nt.MATH, nt.BLEND_MODES);
-	window.CGL = Rt;
+	window.CGL = Ot;
 	const Pt = function (t) {
 	  this._loadingAssets = {
 	  },
@@ -5605,7 +5620,7 @@ var CABLES = function (t) {
 	  this.vars = {
 	  },
 	  t && t.vars && (this.vars = t.vars),
-	  this.cgl = new Ot(this),
+	  this.cgl = new Rt(this),
 	  this.cgl.setCanvas(this.config.glCanvasId || this.config.glCanvas || 'glcanvas'),
 	  !0 === this.config.glCanvasResizeToWindow && this.cgl.setAutoResize('window'),
 	  !0 === this.config.glCanvasResizeToParent && this.cgl.setAutoResize('parent'),
@@ -6394,7 +6409,7 @@ var CABLES = function (t) {
 	}) () || console.log('not in strict mode: index core')
   }
   ]).default;
-  //# sourceMappingURL=cables.min.js.mapvar CABLES = CABLES || {}; CABLES.build = {"timestamp":1627909670883,"created":"2021-08-02T13:07:50.883Z","git":{"branch":"develop","commit":"16b51a248f4c4cd8d49d9afe426b63413c4b6e32","date":"2021-08-02T13:07:28.000Z","message":"shader .needsRecompile()"}};
+  //# sourceMappingURL=cables.min.js.mapvar CABLES = CABLES || {}; CABLES.build = {"timestamp":1628910144780,"created":"2021-08-14T03:02:24.780Z","git":{"branch":"develop","commit":"a1660baa19f3a17ef2def9960928964ef5a02c40","date":"2021-08-13T13:03:14.000Z","message":"Merge branch 'develop' of github.com:pandrr/cables into develop"}};
   /*!
   @fileoverview gl-matrix - High performance matrix and vector operations
   @author Brandon Jones
@@ -10109,13 +10124,13 @@ var CABLES = function (t) {
   var CABLES = CABLES || {
   };
   CABLES.build = {
-	'timestamp': 1627909670883,
-	'created': '2021-08-02T13:07:50.883Z',
+	'timestamp': 1628910144780,
+	'created': '2021-08-14T03:02:24.780Z',
 	'git': {
 	  'branch': 'develop',
-	  'commit': '16b51a248f4c4cd8d49d9afe426b63413c4b6e32',
-	  'date': '2021-08-02T13:07:28.000Z',
-	  'message': 'shader .needsRecompile()'
+	  'commit': 'a1660baa19f3a17ef2def9960928964ef5a02c40',
+	  'date': '2021-08-13T13:03:14.000Z',
+	  'message': 'Merge branch \'develop\' of github.com:pandrr/cables into develop'
 	}
   };
   if (!CABLES.exportedPatches) CABLES.exportedPatches = {
@@ -10148,10 +10163,6 @@ var CABLES = function (t) {
 			value: false
 		  },
 		  {
-			name: 'Clear',
-			value: true
-		  },
-		  {
 			name: 'ClearAlpha',
 			value: true
 		  },
@@ -10174,11 +10185,11 @@ var CABLES = function (t) {
 		  },
 		  {
 			name: 'width',
-			value: 599
+			value: 606
 		  },
 		  {
 			name: 'height',
-			value: 360
+			value: 446
 		  }
 		]
 	  },
@@ -10206,7 +10217,7 @@ var CABLES = function (t) {
 		  },
 		  {
 			name: 'posY',
-			value: - 0.42
+			value: 0.9
 		  },
 		  {
 			name: 'posZ',
@@ -10339,7 +10350,7 @@ var CABLES = function (t) {
 		  },
 		  {
 			name: 'progress',
-			value: 0.8564014532059585
+			value: 0.48887155926165804
 		  },
 		  {
 			name: 'CurrentTime'
@@ -10466,7 +10477,7 @@ var CABLES = function (t) {
 		portsIn: [
 		  {
 			name: 'Value',
-			value: 1
+			value: 0
 		  },
 		  {
 			name: 'Variable',
@@ -10856,7 +10867,7 @@ var CABLES = function (t) {
 		  },
 		  {
 			name: 'Aspect',
-			value: 1.663888888888889
+			value: 1.358744394618834
 		  },
 		  {
 			name: 'Look At Array'
@@ -11122,7 +11133,7 @@ var CABLES = function (t) {
 		]
 	  },
 	  {
-		objName: 'Ops.Anim.AverageInterpolation_v2',
+		objName: 'Ops.Deprecated.Anim.AverageInterpolation_v2',
 		id: '18',
 		uiAttribs: {
 		  subPatch: 0
@@ -11313,7 +11324,7 @@ var CABLES = function (t) {
 		]
 	  },
 	  {
-		objName: 'Ops.Anim.AverageInterpolation_v2',
+		objName: 'Ops.Deprecated.Anim.AverageInterpolation_v2',
 		id: '20',
 		uiAttribs: {
 		  subPatch: 0
@@ -11357,7 +11368,7 @@ var CABLES = function (t) {
 		]
 	  },
 	  {
-		objName: 'Ops.Anim.AverageInterpolation_v2',
+		objName: 'Ops.Deprecated.Anim.AverageInterpolation_v2',
 		id: '21',
 		uiAttribs: {
 		  subPatch: 0
@@ -11474,7 +11485,7 @@ var CABLES = function (t) {
 	userId: '60c86610e098427302b28b21',
 	created: '2021-06-16T10:02:50.444Z',
 	cloneOf: '5f7d4c126359fb6a055ce98c',
-	updated: '2021-08-02T13:27:26.998Z',
+	updated: '2021-08-16T11:40:00.050Z',
 	log: [
 	  {
 		_id: '60c9cc4a8535707db2b4afa8',
@@ -11482,53 +11493,53 @@ var CABLES = function (t) {
 		text: 'initial list of collaborators:'
 	  }
 	],
-	__v: 34,
+	__v: 36,
 	shortId: 'ebwhkE',
 	buildInfo: {
 	  core: {
-		timestamp: 1627909670883,
-		created: '2021-08-02T13:07:50.883Z',
+		timestamp: 1628910144780,
+		created: '2021-08-14T03:02:24.780Z',
 		git: {
 		  branch: 'develop',
-		  commit: '16b51a248f4c4cd8d49d9afe426b63413c4b6e32',
-		  date: '2021-08-02T13:07:28.000Z',
-		  message: 'shader .needsRecompile()'
+		  commit: 'a1660baa19f3a17ef2def9960928964ef5a02c40',
+		  date: '2021-08-13T13:03:14.000Z',
+		  message: 'Merge branch \'develop\' of github.com:pandrr/cables into develop'
 		}
 	  },
 	  ui: {
-		timestamp: 1627909695791,
-		created: '2021-08-02T13:08:15.791Z',
+		timestamp: 1628910165589,
+		created: '2021-08-14T03:02:45.589Z',
 		git: {
 		  branch: 'develop',
-		  commit: '4845d892ba1b870724edb0da060d4eb8fe848c30',
-		  date: '2021-07-30T14:38:44.000Z',
-		  message: 'move ui webhook to github actions to only run on dev'
+		  commit: 'd2764f78df25ef451a57187c1c44a4914ea8b9d0',
+		  date: '2021-08-13T10:17:54.000Z',
+		  message: 'fix watcharray click multiple times'
 		}
 	  },
 	  host: 'dev.cables.gl'
 	},
-	opsHash: '64addee19b6f7516ca05c4866a3ff4274d55d45d',
+	opsHash: '642d9358eec5ebf1dc16d3816a914770b498e26c',
 	ui: {
 	  timeLineLength: 20,
 	  bookmarks: [
 	  ],
 	  viewBoxesGl: {
 		0: {
-		  x: - 30.03980390836483,
-		  y: 512.7090383846461,
-		  z: 705.8043658536585
+		  x: - 78.32771726306714,
+		  y: 713.8396241503399,
+		  z: 690.9609512195123
 		}
 	  },
 	  subPatchViewBoxes: [
 	  ],
 	  renderer: {
-		w: 599,
-		h: 360,
+		w: 606,
+		h: 446,
 		s: 1
 	  }
 	},
 	updatedByUser: 'koobalack',
-	exports: 18,
+	exports: 19,
 	views: 1,
 	cachedNumComments: 0,
 	cachedNumFavs: 0,
@@ -11574,7 +11585,8 @@ var CABLES = function (t) {
 	  sizeScreenshots: 2118.083984375,
 	  sizeExports: 2086.4873046875,
 	  sizeAssets: 0
-	}
+	},
+	cachedUsername: 'koobalack'
   };
   if (!CABLES.exportedPatch) {
 	CABLES.exportedPatch = CABLES.exportedPatches['ebwhkE']
@@ -11588,8 +11600,6 @@ var CABLES = function (t) {
   };
   Ops.Gl = Ops.Gl || {
   };
-  Ops.Anim = Ops.Anim || {
-  };
   Ops.Math = Ops.Math || {
   };
   Ops.Vars = Ops.Vars || {
@@ -11602,9 +11612,13 @@ var CABLES = function (t) {
   };
   Ops.Gl.Shader = Ops.Gl.Shader || {
   };
+  Ops.Deprecated = Ops.Deprecated || {
+  };
   Ops.Gl.Textures = Ops.Gl.Textures || {
   };
   Ops.Devices.Mouse = Ops.Devices.Mouse || {
+  };
+  Ops.Deprecated.Anim = Ops.Deprecated.Anim || {
   };
   Ops.Gl.TextureEffects = Ops.Gl.TextureEffects || {
   };
@@ -11619,25 +11633,24 @@ var CABLES = function (t) {
 	const i = a.outValue('height');
 	const o = a.inValueBool('Reduce FPS not focussed', true);
 	const s = a.inValueBool('Reduce FPS loading');
-	const l = a.inValueBool('Clear', true);
-	const u = a.inValueBool('ClearAlpha', true);
-	const c = a.inValueBool('Fullscreen Button', false);
-	const p = a.inValueBool('Active', true);
-	const g = a.inValueBool('Hires Displays', false);
-	a.onAnimFrame = x;
-	g.onChange = function () {
-	  if (g.get()) a.patch.cgl.pixelDensity = window.devicePixelRatio;
+	const l = a.inValueBool('ClearAlpha', true);
+	const u = a.inValueBool('Fullscreen Button', false);
+	const c = a.inValueBool('Active', true);
+	const p = a.inValueBool('Hires Displays', false);
+	a.onAnimFrame = C;
+	p.onChange = function () {
+	  if (p.get()) a.patch.cgl.pixelDensity = window.devicePixelRatio;
 	   else a.patch.cgl.pixelDensity = 1;
 	  a.patch.cgl.updateSize();
 	  if (CABLES.UI) gui.setLayout()
 	};
-	p.onChange = function () {
+	c.onChange = function () {
 	  a.patch.removeOnAnimFrame(a);
-	  if (p.get()) {
+	  if (c.get()) {
 		a.setUiAttrib({
 		  extendTitle: ''
 		});
-		a.onAnimFrame = x;
+		a.onAnimFrame = C;
 		a.patch.addOnAnimFrame(a);
 		a.log('adding again!')
 	  } else {
@@ -11646,21 +11659,21 @@ var CABLES = function (t) {
 		})
 	  }
 	};
-	const f = a.patch.cgl;
+	const g = a.patch.cgl;
+	let f = 0;
 	let m = 0;
-	let d = 0;
 	if (!a.patch.cgl) a.uiAttr({
 	  error: 'No webgl cgl context'
 	});
+	const d = vec3.create();
+	vec3.set(d, 0, 0, 0);
 	const h = vec3.create();
-	vec3.set(h, 0, 0, 0);
-	const v = vec3.create();
-	vec3.set(v, 0, 0, - 2);
-	c.onChange = C;
-	setTimeout(C, 100);
-	let b = null;
+	vec3.set(h, 0, 0, - 2);
+	u.onChange = O;
+	setTimeout(O, 100);
+	let v = null;
 	let _ = true;
-	let A = true;
+	let b = true;
 	window.addEventListener('blur', () =>{
 	  _ = false
 	});
@@ -11668,103 +11681,101 @@ var CABLES = function (t) {
 	  _ = true
 	});
 	document.addEventListener('visibilitychange', () =>{
-	  A = !document.hidden
+	  b = !document.hidden
 	});
-	function O() {
+	function A() {
 	  if (s.get() && a.patch.loading.getProgress() < 1) return 5;
 	  if (o.get()) {
-		if (!A) return 10;
+		if (!b) return 10;
 		if (!_) return 30
 	  }
 	  return t.get()
 	}
-	function C() {
+	function O() {
 	  function e() {
-		if (b) b.style.display = 'block'
+		if (v) v.style.display = 'block'
 	  }
 	  function t() {
-		if (b) b.style.display = 'none'
+		if (v) v.style.display = 'none'
 	  }
 	  a.patch.cgl.canvas.addEventListener('mouseleave', t);
 	  a.patch.cgl.canvas.addEventListener('mouseenter', e);
-	  if (c.get()) {
-		if (!b) {
-		  b = document.createElement('div');
+	  if (u.get()) {
+		if (!v) {
+		  v = document.createElement('div');
 		  const n = a.patch.cgl.canvas.parentElement;
-		  if (n) n.appendChild(b);
-		  b.addEventListener('mouseenter', e);
-		  b.addEventListener('click', function (e) {
+		  if (n) n.appendChild(v);
+		  v.addEventListener('mouseenter', e);
+		  v.addEventListener('click', function (e) {
 			if (CABLES.UI && !e.shiftKey) gui.cycleFullscreen();
-			 else f.fullScreen()
+			 else g.fullScreen()
 		  })
 		}
-		b.style.padding = '10px';
-		b.style.position = 'absolute';
-		b.style.right = '5px';
-		b.style.top = '5px';
-		b.style.width = '20px';
-		b.style.height = '20px';
-		b.style.cursor = 'pointer';
-		b.style['border-radius'] = '40px';
-		b.style.background = '#444';
-		b.style['z-index'] = '9999';
-		b.style.display = 'none';
-		b.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 490 490" style="width:20px;height:20px;" xml:space="preserve" width="512px" height="512px"><g><path d="M173.792,301.792L21.333,454.251v-80.917c0-5.891-4.776-10.667-10.667-10.667C4.776,362.667,0,367.442,0,373.333V480     c0,5.891,4.776,10.667,10.667,10.667h106.667c5.891,0,10.667-4.776,10.667-10.667s-4.776-10.667-10.667-10.667H36.416     l152.459-152.459c4.093-4.237,3.975-10.99-0.262-15.083C184.479,297.799,177.926,297.799,173.792,301.792z" fill="#FFFFFF"/><path d="M480,0H373.333c-5.891,0-10.667,4.776-10.667,10.667c0,5.891,4.776,10.667,10.667,10.667h80.917L301.792,173.792     c-4.237,4.093-4.354,10.845-0.262,15.083c4.093,4.237,10.845,4.354,15.083,0.262c0.089-0.086,0.176-0.173,0.262-0.262     L469.333,36.416v80.917c0,5.891,4.776,10.667,10.667,10.667s10.667-4.776,10.667-10.667V10.667C490.667,4.776,485.891,0,480,0z" fill="#FFFFFF"/><path d="M36.416,21.333h80.917c5.891,0,10.667-4.776,10.667-10.667C128,4.776,123.224,0,117.333,0H10.667     C4.776,0,0,4.776,0,10.667v106.667C0,123.224,4.776,128,10.667,128c5.891,0,10.667-4.776,10.667-10.667V36.416l152.459,152.459     c4.237,4.093,10.99,3.975,15.083-0.262c3.992-4.134,3.992-10.687,0-14.82L36.416,21.333z" fill="#FFFFFF"/><path d="M480,362.667c-5.891,0-10.667,4.776-10.667,10.667v80.917L316.875,301.792c-4.237-4.093-10.99-3.976-15.083,0.261     c-3.993,4.134-3.993,10.688,0,14.821l152.459,152.459h-80.917c-5.891,0-10.667,4.776-10.667,10.667s4.776,10.667,10.667,10.667     H480c5.891,0,10.667-4.776,10.667-10.667V373.333C490.667,367.442,485.891,362.667,480,362.667z" fill="#FFFFFF"/></g></svg>'
+		v.style.padding = '10px';
+		v.style.position = 'absolute';
+		v.style.right = '5px';
+		v.style.top = '5px';
+		v.style.width = '20px';
+		v.style.height = '20px';
+		v.style.cursor = 'pointer';
+		v.style['border-radius'] = '40px';
+		v.style.background = '#444';
+		v.style['z-index'] = '9999';
+		v.style.display = 'none';
+		v.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 490 490" style="width:20px;height:20px;" xml:space="preserve" width="512px" height="512px"><g><path d="M173.792,301.792L21.333,454.251v-80.917c0-5.891-4.776-10.667-10.667-10.667C4.776,362.667,0,367.442,0,373.333V480     c0,5.891,4.776,10.667,10.667,10.667h106.667c5.891,0,10.667-4.776,10.667-10.667s-4.776-10.667-10.667-10.667H36.416     l152.459-152.459c4.093-4.237,3.975-10.99-0.262-15.083C184.479,297.799,177.926,297.799,173.792,301.792z" fill="#FFFFFF"/><path d="M480,0H373.333c-5.891,0-10.667,4.776-10.667,10.667c0,5.891,4.776,10.667,10.667,10.667h80.917L301.792,173.792     c-4.237,4.093-4.354,10.845-0.262,15.083c4.093,4.237,10.845,4.354,15.083,0.262c0.089-0.086,0.176-0.173,0.262-0.262     L469.333,36.416v80.917c0,5.891,4.776,10.667,10.667,10.667s10.667-4.776,10.667-10.667V10.667C490.667,4.776,485.891,0,480,0z" fill="#FFFFFF"/><path d="M36.416,21.333h80.917c5.891,0,10.667-4.776,10.667-10.667C128,4.776,123.224,0,117.333,0H10.667     C4.776,0,0,4.776,0,10.667v106.667C0,123.224,4.776,128,10.667,128c5.891,0,10.667-4.776,10.667-10.667V36.416l152.459,152.459     c4.237,4.093,10.99,3.975,15.083-0.262c3.992-4.134,3.992-10.687,0-14.82L36.416,21.333z" fill="#FFFFFF"/><path d="M480,362.667c-5.891,0-10.667,4.776-10.667,10.667v80.917L316.875,301.792c-4.237-4.093-10.99-3.976-15.083,0.261     c-3.993,4.134-3.993,10.688,0,14.821l152.459,152.459h-80.917c-5.891,0-10.667,4.776-10.667,10.667s4.776,10.667,10.667,10.667     H480c5.891,0,10.667-4.776,10.667-10.667V373.333C490.667,367.442,485.891,362.667,480,362.667z" fill="#FFFFFF"/></g></svg>'
 	  } else {
-		if (b) {
-		  b.style.display = 'none';
-		  b.remove();
-		  b = null
+		if (v) {
+		  v.style.display = 'none';
+		  v.remove();
+		  v = null
 		}
 	  }
 	}
 	a.onDelete = function () {
-	  f.gl.clearColor(0, 0, 0, 0);
-	  f.gl.clear(f.gl.COLOR_BUFFER_BIT | f.gl.DEPTH_BUFFER_BIT)
+	  g.gl.clearColor(0, 0, 0, 0);
+	  g.gl.clear(g.gl.COLOR_BUFFER_BIT | g.gl.DEPTH_BUFFER_BIT)
 	};
-	function x(e) {
-	  if (!p.get()) return;
-	  if (f.aborted || f.canvas.clientWidth === 0 || f.canvas.clientHeight === 0) return;
+	function C(e) {
+	  if (!c.get()) return;
+	  if (g.aborted || g.canvas.clientWidth === 0 || g.canvas.clientHeight === 0) return;
 	  const t = performance.now();
-	  a.patch.config.fpsLimit = O();
-	  if (f.canvasWidth == - 1) {
-		f.setCanvas(a.patch.config.glCanvasId);
+	  a.patch.config.fpsLimit = A();
+	  if (g.canvasWidth == - 1) {
+		g.setCanvas(a.patch.config.glCanvasId);
 		return
 	  }
-	  if (f.canvasWidth != r.get() || f.canvasHeight != i.get()) {
-		r.set(f.canvasWidth);
-		i.set(f.canvasHeight)
+	  if (g.canvasWidth != r.get() || g.canvasHeight != i.get()) {
+		r.set(g.canvasWidth);
+		i.set(g.canvasHeight)
 	  }
-	  if (CABLES.now() - d > 1000) {
+	  if (CABLES.now() - m > 1000) {
 		CGL.fpsReport = CGL.fpsReport || [
 		];
-		if (a.patch.loading.getProgress() >= 1 && d !== 0) CGL.fpsReport.push(m);
-		m = 0;
-		d = CABLES.now()
+		if (a.patch.loading.getProgress() >= 1 && m !== 0) CGL.fpsReport.push(f);
+		f = 0;
+		m = CABLES.now()
 	  }
 	  CGL.MESH.lastShader = null;
 	  CGL.MESH.lastMesh = null;
-	  f.renderStart(f, h, v);
-	  if (l.get()) {
-		f.gl.clearColor(0, 0, 0, 1);
-		f.gl.clear(f.gl.COLOR_BUFFER_BIT | f.gl.DEPTH_BUFFER_BIT)
-	  }
+	  g.renderStart(g, d, h);
+	  g.gl.clearColor(0, 0, 0, 1);
+	  g.gl.clear(g.gl.COLOR_BUFFER_BIT | g.gl.DEPTH_BUFFER_BIT);
 	  n.trigger();
 	  if (CGL.MESH.lastMesh) CGL.MESH.lastMesh.unBind();
 	  if (CGL.Texture.previewTexture) {
-		if (!CGL.Texture.texturePreviewer) CGL.Texture.texturePreviewer = new CGL.Texture.texturePreview(f);
+		if (!CGL.Texture.texturePreviewer) CGL.Texture.texturePreviewer = new CGL.Texture.texturePreview(g);
 		CGL.Texture.texturePreviewer.render(CGL.Texture.previewTexture)
 	  }
-	  f.renderEnd(f);
-	  if (u.get()) {
-		f.gl.clearColor(1, 1, 1, 1);
-		f.gl.colorMask(false, false, false, true);
-		f.gl.clear(f.gl.COLOR_BUFFER_BIT);
-		f.gl.colorMask(true, true, true, true)
+	  g.renderEnd(g);
+	  if (l.get()) {
+		g.gl.clearColor(1, 1, 1, 1);
+		g.gl.colorMask(false, false, false, true);
+		g.gl.clear(g.gl.COLOR_BUFFER_BIT);
+		g.gl.colorMask(true, true, true, true)
 	  }
-	  if (!f.frameStore.phong) f.frameStore.phong = {
+	  if (!g.frameStore.phong) g.frameStore.phong = {
 	  };
-	  m++;
+	  f++;
 	  a.patch.cgl.profileData.profileMainloopMs = performance.now() - t
 	}
   };
@@ -11809,8 +11820,8 @@ var CABLES = function (t) {
 	let d = false,
 	h = false,
 	v = true,
-	b = true,
-	_ = true;
+	_ = true,
+	b = true;
 	s.onChange = l.onChange = u.onChange = E;
 	a.onChange = r.onChange = i.onChange = x;
 	o.onChange = S;
@@ -11820,11 +11831,11 @@ var CABLES = function (t) {
 		O();
 		e = true
 	  }
-	  if (b) {
+	  if (_) {
 		C();
 		e = true
 	  }
-	  if (_) e = true;
+	  if (b) e = true;
 	  if (e) A();
 	  p.pushModelMatrix();
 	  mat4.multiply(p.mMatrix, p.mMatrix, m);
@@ -11853,7 +11864,7 @@ var CABLES = function (t) {
 	  if (l.get() !== 0) mat4.rotateY(m, m, l.get() * CGL.DEG2RAD);
 	  if (u.get() !== 0) mat4.rotateZ(m, m, u.get() * CGL.DEG2RAD);
 	  if (d) mat4.scale(m, m, f);
-	  _ = false
+	  b = false
 	}
 	function O() {
 	  h = false;
@@ -11864,16 +11875,16 @@ var CABLES = function (t) {
 	function C() {
 	  d = true;
 	  vec3.set(f, o.get(), o.get(), o.get());
-	  b = false
+	  _ = false
 	}
 	function x() {
 	  v = true
 	}
 	function S() {
-	  b = true
+	  _ = true
 	}
 	function E() {
-	  _ = true
+	  b = true
 	}
 	A()
   };
@@ -11910,8 +11921,8 @@ var CABLES = function (t) {
 	d = n.inValueBool('Preload', true),
 	h = n.outTexture('texture'),
 	v = n.outValue('duration'),
-	b = n.outValue('progress'),
-	_ = n.outValue('CurrentTime'),
+	_ = n.outValue('progress'),
+	b = n.outValue('CurrentTime'),
 	A = n.outValue('Loading'),
 	O = n.outValueBool('Can Play Through', false),
 	C = n.outNumber('Width'),
@@ -11922,184 +11933,184 @@ var CABLES = function (t) {
 	let V = false;
 	let T = false;
 	const y = n.patch.cgl;
-	const P = document.createElement('video');
-	P.setAttribute('playsinline', '');
-	P.setAttribute('webkit-playsinline', '');
-	let M = 0;
-	let B = 0;
-	const I = CGL.Texture.getEmptyTexture(y);
+	const M = document.createElement('video');
+	M.setAttribute('playsinline', '');
+	M.setAttribute('webkit-playsinline', '');
+	let P = 0;
+	let I = 0;
+	const B = CGL.Texture.getEmptyTexture(y);
 	let w = null;
 	h.set(w);
-	let R = null;
-	let D = true;
+	let D = null;
+	let R = true;
 	h.set(CGL.Texture.getEmptyTexture(y));
 	function U() {
 	  if (w) w.delete();
 	  w = new CGL.Texture(y, {
-		wrap: B,
-		filter: M
+		wrap: I,
+		filter: P
 	  })
 	}
 	i.onChange = function () {
-	  if (P) {
+	  if (M) {
 		if (i.get()) {
-		  P.setAttribute('autoplay', '')
+		  M.setAttribute('autoplay', '')
 		} else {
-		  P.removeAttribute('autoplay')
+		  M.removeAttribute('autoplay')
 		}
 	  }
 	};
 	m.onTriggered = function () {
-	  P.currentTime = 0;
-	  h.set(I)
+	  M.currentTime = 0;
+	  h.set(B)
 	};
 	f.onChange = function () {
-	  P.currentTime = f.get() || 0;
+	  M.currentTime = f.get() || 0;
 	  N(true)
 	};
 	g.onChange = function () {
 	  if (g.get() < 0.1) g.set(1);
-	  clearTimeout(R);
-	  R = setTimeout(N, 1000 / g.get())
+	  clearTimeout(D);
+	  D = setTimeout(N, 1000 / g.get())
 	};
 	r.onChange = function () {
 	  if (!T) {
 		H(true)
 	  }
 	  if (r.get()) {
-		P.currentTime = f.get() || 0;
-		const e = P.play();
+		M.currentTime = f.get() || 0;
+		const e = M.play();
 		if (e) e.then(function () {
 		}).catch(function (e) {
 		  n.warn('exc', e)
 		});
 		N();
-		P.playbackRate = l.get()
-	  } else P.pause()
+		M.playbackRate = l.get()
+	  } else M.pause()
 	};
 	l.onChange = function () {
-	  P.playbackRate = l.get()
+	  M.playbackRate = l.get()
 	};
 	t.onChange = function () {
-	  P.loop = t.get()
+	  M.loop = t.get()
 	};
 	s.onChange = function () {
-	  P.muted = s.get()
+	  M.muted = s.get()
 	};
 	u.onChange = function () {
-	  if (u.get() == 'nearest') M = CGL.Texture.FILTER_NEAREST;
-	  if (u.get() == 'linear') M = CGL.Texture.FILTER_LINEAR;
+	  if (u.get() == 'nearest') P = CGL.Texture.FILTER_NEAREST;
+	  if (u.get() == 'linear') P = CGL.Texture.FILTER_LINEAR;
 	  X();
 	  w = null
 	};
 	c.onChange = function () {
-	  if (c.get() == 'repeat') B = CGL.Texture.WRAP_REPEAT;
-	  if (c.get() == 'mirrored repeat') B = CGL.Texture.WRAP_MIRRORED_REPEAT;
-	  if (c.get() == 'clamp to edge') B = CGL.Texture.WRAP_CLAMP_TO_EDGE;
+	  if (c.get() == 'repeat') I = CGL.Texture.WRAP_REPEAT;
+	  if (c.get() == 'mirrored repeat') I = CGL.Texture.WRAP_MIRRORED_REPEAT;
+	  if (c.get() == 'clamp to edge') I = CGL.Texture.WRAP_CLAMP_TO_EDGE;
 	  X();
 	  w = null
 	};
 	function N(e) {
 	  if (!a.get()) {
-		h.set(I);
+		h.set(B);
 		return
 	  }
 	  if (!e) {
 		if (r.get()) {
-		  clearTimeout(R);
-		  R = setTimeout(N, 1000 / g.get())
+		  clearTimeout(D);
+		  D = setTimeout(N, 1000 / g.get())
 		} else {
 		  return
 		}
 	  }
 	  if (!w) U();
 	  if (!V) return;
-	  w.height = P.videoHeight;
-	  w.width = P.videoWidth;
+	  w.height = M.videoHeight;
+	  w.width = M.videoWidth;
 	  C.set(w.width);
 	  x.set(w.height);
 	  S.set(w.width / w.height);
 	  if (!w) U();
 	  if (!O.get()) return;
 	  if (!V) return;
-	  if (!P) return;
-	  if (P.videoHeight <= 0) {
+	  if (!M) return;
+	  if (M.videoHeight <= 0) {
 		n.setUiError('videosize', 'video width is 0!');
-		n.log(P);
+		n.log(M);
 		return
 	  }
-	  if (P.videoWidth <= 0) {
+	  if (M.videoWidth <= 0) {
 		n.setUiError('videosize', 'video height is 0!');
-		n.log(P);
+		n.log(M);
 		return
 	  }
-	  const t = P.currentTime / P.duration;
-	  if (!isNaN(t)) b.set(t);
-	  _.set(P.currentTime);
+	  const t = M.currentTime / M.duration;
+	  if (!isNaN(t)) _.set(t);
+	  b.set(M.currentTime);
 	  y.gl.bindTexture(y.gl.TEXTURE_2D, w.tex);
-	  if (D) {
-		y.gl.texImage2D(y.gl.TEXTURE_2D, 0, y.gl.RGBA, y.gl.RGBA, y.gl.UNSIGNED_BYTE, P);
+	  if (R) {
+		y.gl.texImage2D(y.gl.TEXTURE_2D, 0, y.gl.RGBA, y.gl.RGBA, y.gl.UNSIGNED_BYTE, M);
 		y.gl.pixelStorei(y.gl.UNPACK_FLIP_Y_WEBGL, p.get());
 		w._setFilter()
 	  } else {
 		y.gl.pixelStorei(y.gl.UNPACK_FLIP_Y_WEBGL, p.get());
-		y.gl.texSubImage2D(y.gl.TEXTURE_2D, 0, 0, 0, y.gl.RGBA, y.gl.UNSIGNED_BYTE, P)
+		y.gl.texSubImage2D(y.gl.TEXTURE_2D, 0, 0, 0, y.gl.RGBA, y.gl.UNSIGNED_BYTE, M)
 	  }
-	  D = false;
+	  R = false;
 	  h.set(w);
 	  n.patch.cgl.profileData.profileVideosPlaying++;
-	  if (P.readyState == 4) A.set(false);
+	  if (M.readyState == 4) A.set(false);
 	   else A.set(false)
 	}
 	function G() {
-	  P.controls = false;
-	  P.muted = s.get();
-	  P.loop = t.get();
-	  if (r.get()) P.play();
+	  M.controls = false;
+	  M.muted = s.get();
+	  M.loop = t.get();
+	  if (r.get()) M.play();
 	  N();
 	  O.set(true)
 	}
 	function j() {
-	  P.volume = (o.get() || 0) * n.patch.config.masterVolume
+	  M.volume = (o.get() || 0) * n.patch.config.masterVolume
 	}
 	o.onChange = j;
 	n.onMasterVolumeChanged = j;
 	function F() {
-	  v.set(P.duration)
+	  v.set(M.duration)
 	}
 	let k = false;
 	function H(e) {
 	  E.set(false);
 	  L.set('');
 	  O.set(false);
-	  if (a.get() && String(a.get()).length > 1) D = true;
+	  if (a.get() && String(a.get()).length > 1) R = true;
 	  if (!a.get()) {
 		L.set(true)
 	  }
 	  if (d.get() || e) {
-		clearTimeout(R);
+		clearTimeout(D);
 		A.set(true);
-		P.preload = 'true';
+		M.preload = 'true';
 		let e = n.patch.getFilePath(a.get());
 		if (String(a.get()).indexOf('data:') == 0) e = a.get();
 		if (!e) return;
 		n.setUiError('onerror', null);
-		P.style.display = 'none';
-		P.setAttribute('src', e);
-		P.setAttribute('crossOrigin', 'anonymous');
-		P.playbackRate = l.get();
+		M.style.display = 'none';
+		M.setAttribute('src', e);
+		M.setAttribute('crossOrigin', 'anonymous');
+		M.playbackRate = l.get();
 		if (!k) {
 		  k = true;
-		  P.addEventListener('canplaythrough', G, true);
-		  P.addEventListener('loadedmetadata', F);
-		  P.addEventListener('playing', function () {
+		  M.addEventListener('canplaythrough', G, true);
+		  M.addEventListener('loadedmetadata', F);
+		  M.addEventListener('playing', function () {
 			V = true
 		  }, true);
-		  P.onerror = function () {
+		  M.onerror = function () {
 			E.set(true);
-			if (P) {
-			  L.set('Error ' + P.error.code + '/' + P.error.message);
-			  n.setUiError('onerror', 'Could not load video / ' + P.error.message, 2)
+			if (M) {
+			  L.set('Error ' + M.error.code + '/' + M.error.message);
+			  n.setUiError('onerror', 'Could not load video / ' + M.error.message, 2)
 			}
 		  }
 		}
@@ -12209,7 +12220,7 @@ var CABLES = function (t) {
 	  i.pushShader(o);
 	  o.popTextures();
 	  if (m && f.get()) o.pushTexture(m, f.get().tex);
-	  if (b && v.get()) o.pushTexture(b, v.get().tex);
+	  if (_ && v.get()) o.pushTexture(_, v.get().tex);
 	  a.trigger();
 	  i.popShader()
 	}
@@ -12276,7 +12287,7 @@ var CABLES = function (t) {
 	  h
 	]);
 	var v = e.inTexture('textureOpacity');
-	var b = null;
+	var _ = null;
 	e.alphaMaskSource = e.inSwitch('Alpha Mask Source', [
 	  'Luminance',
 	  'R',
@@ -12284,11 +12295,11 @@ var CABLES = function (t) {
 	  'B',
 	  'A'
 	], 'Luminance');
-	e.alphaMaskSource.onChange = _;
+	e.alphaMaskSource.onChange = b;
 	e.alphaMaskSource.setUiAttribs({
 	  greyout: true
 	});
-	function _() {
+	function b() {
 	  if (e.alphaMaskSource.get() == 'A') o.define('ALPHA_MASK_ALPHA');
 	   else o.removeDefine('ALPHA_MASK_ALPHA');
 	  if (e.alphaMaskSource.get() == 'Luminance') o.define('ALPHA_MASK_LUMI');
@@ -12303,10 +12314,10 @@ var CABLES = function (t) {
 	v.onChange = A;
 	function A() {
 	  if (v.get()) {
-		if (b !== null) return;
+		if (_ !== null) return;
 		o.removeUniform('texOpacity');
 		o.define('HAS_TEXTURE_OPACITY');
-		if (!b) b = new CGL.Uniform(o, 't', 'texOpacity', 1);
+		if (!_) _ = new CGL.Uniform(o, 't', 'texOpacity', 1);
 		e.alphaMaskSource.setUiAttribs({
 		  greyout: false
 		});
@@ -12319,7 +12330,7 @@ var CABLES = function (t) {
 	  } else {
 		o.removeUniform('texOpacity');
 		o.removeDefine('HAS_TEXTURE_OPACITY');
-		b = null;
+		_ = null;
 		e.alphaMaskSource.setUiAttribs({
 		  greyout: true
 		});
@@ -12330,7 +12341,7 @@ var CABLES = function (t) {
 		  greyout: true
 		})
 	  }
-	  _()
+	  b()
 	}
 	var O = e.inValueBool('Opacity TexCoords Transform', false);
 	const C = e.inValueBool('Discard Transparent Pixels');
@@ -12359,16 +12370,16 @@ var CABLES = function (t) {
 	const V = new CGL.Uniform(o, 'f', 'diffuseRepeatX', x);
 	const T = new CGL.Uniform(o, 'f', 'diffuseRepeatY', S);
 	const y = new CGL.Uniform(o, 'f', 'texOffsetX', E);
-	const P = new CGL.Uniform(o, 'f', 'texOffsetY', L);
+	const M = new CGL.Uniform(o, 'f', 'texOffsetY', L);
 	e.setPortGroup('Texture Transform', [
 	  x,
 	  S,
 	  E,
 	  L
 	]);
-	const M = e.inValueBool('billboard', false);
-	M.onChange = function () {
-	  if (M.get()) o.define('BILLBOARD');
+	const P = e.inValueBool('billboard', false);
+	P.onChange = function () {
+	  if (P.get()) o.define('BILLBOARD');
 	   else o.removeDefine('BILLBOARD')
 	};
 	A();
@@ -12412,8 +12423,8 @@ var CABLES = function (t) {
 	const h = new CABLES.Variable;
 	const v = [
 	];
-	let b = null;
 	let _ = null;
+	let b = null;
 	let A = null;
 	const O = [
 	];
@@ -12424,17 +12435,17 @@ var CABLES = function (t) {
 	let E = false;
 	r.preRender = t.onTriggered = y;
 	n.onChange = i.onChange = w;
-	l.onChange = s.onChange = a.onChange = u.onChange = P;
+	l.onChange = s.onChange = a.onChange = u.onChange = M;
 	o.onChange = u.onChange = V;
 	t.onLinkChanged = () =>{
 	  if (!t.isLinked()) g.set(null);
-	   else g.set(b)
+	   else g.set(_)
 	};
 	function L(t) {
-	  if (_ && _.meshes && _.meshes[t] && _.meshes[t].name) return _.meshes[t].name;
-	  if (_ && _.rootnode && _.rootnode.children && _.rootnode.children.length > t - 1) {
-		for (let e = 0; e < _.rootnode.children.length; e++) {
-		  if (_.rootnode.children[e].meshes && _.rootnode.children[e].meshes.length == 1 && _.rootnode.children[e].meshes[0] == t) return _.rootnode.children[e].name
+	  if (b && b.meshes && b.meshes[t] && b.meshes[t].name) return b.meshes[t].name;
+	  if (b && b.rootnode && b.rootnode.children && b.rootnode.children.length > t - 1) {
+		for (let e = 0; e < b.rootnode.children.length; e++) {
+		  if (b.rootnode.children[e].meshes && b.rootnode.children[e].meshes.length == 1 && b.rootnode.children[e].meshes[0] == t) return b.rootnode.children[e].name
 		}
 	  }
 	  return 'unknown'
@@ -12446,44 +12457,44 @@ var CABLES = function (t) {
 	  a.setUiAttribs({
 		greyout: u.get()
 	  });
-	  P()
+	  M()
 	}
 	function T() {
-	  if (!b) {
+	  if (!_) {
 		r.error('calc normals: no geom!');
 		return
 	  }
-	  if (i.get() == 'smooth') b.calculateNormals();
+	  if (i.get() == 'smooth') _.calculateNormals();
 	   else if (i.get() == 'flat') {
-		b.unIndex();
-		b.calculateNormals()
+		_.unIndex();
+		_.calculateNormals()
 	  }
 	}
 	function y() {
-	  if (S) I();
+	  if (S) B();
 	  if (p.get()) {
 		if (A) A.render(d.getShader());
 		c.trigger()
 	  }
 	}
-	function P() {
+	function M() {
 	  S = true
 	}
-	function M() {
-	  if (!b) return;
+	function P() {
+	  if (!_) return;
 	  if (o.get()) {
 		const t = s.get() / x.maxAxis;
-		for (let e = 0; e < b.vertices.length; e++) b.vertices[e] *= t;
+		for (let e = 0; e < _.vertices.length; e++) _.vertices[e] *= t;
 		f.set(t)
 	  } else {
 		f.set(1)
 	  }
 	}
-	function B(e) {
+	function I(e) {
 	  if (!CABLES.UI) return;
 	  let t = '<div class="panel">';
-	  if (_) {
-		t += 'Mesh ' + (C + 1) + ' of ' + _.meshes.length + '<br/>';
+	  if (b) {
+		t += 'Mesh ' + (C + 1) + ' of ' + b.meshes.length + '<br/>';
 		t += '<br/>'
 	  }
 	  if (e) {
@@ -12505,13 +12516,13 @@ var CABLES = function (t) {
 		info: t
 	  })
 	}
-	function I() {
+	function B() {
 	  if (A) {
 		A.dispose();
 		A = null
 	  }
 	  const e = Math.floor(a.get());
-	  if (!_ || e != e || !CABLES.UTILS.isNumeric(e) || e < 0 || e >= _.meshes.length) {
+	  if (!b || e != e || !CABLES.UTILS.isNumeric(e) || e < 0 || e >= b.meshes.length) {
 		r.uiAttr({
 		  warning: 'mesh not found - index out of range / or no file selected '
 		});
@@ -12529,18 +12540,18 @@ var CABLES = function (t) {
 		}
 	  }
 	  C = e;
-	  b = new CGL.Geometry;
+	  _ = new CGL.Geometry;
 	  if (u.get()) {
-		for (let e = 0; e < _.meshes.length; e++) {
-		  var t = _.meshes[e];
+		for (let e = 0; e < b.meshes.length; e++) {
+		  var t = b.meshes[e];
 		  if (t) {
 			const n = CGL.Geometry.json2geom(t);
-			b.merge(n)
+			_.merge(n)
 		  }
 		}
 		m.set(L(''))
 	  } else {
-		var t = _.meshes[e];
+		var t = b.meshes[e];
 		m.set(L(e));
 		if (!t) {
 		  A = null;
@@ -12549,17 +12560,17 @@ var CABLES = function (t) {
 		  });
 		  return
 		}
-		b = CGL.Geometry.json2geom(t)
+		_ = CGL.Geometry.json2geom(t)
 	  }
-	  if (l.get()) b.center();
-	  x = b.getBounds();
-	  M();
-	  B(b);
+	  if (l.get()) _.center();
+	  x = _.getBounds();
+	  P();
+	  I(_);
 	  if (i.get() != 'no') T();
 	  g.set(null);
-	  g.set(b);
+	  g.set(_);
 	  if (A) A.dispose();
-	  A = new CGL.Mesh(d, b);
+	  A = new CGL.Mesh(d, _);
 	  S = false;
 	  O[e] = A;
 	  r.uiAttr({
@@ -12587,7 +12598,7 @@ var CABLES = function (t) {
 			})
 		  }
 		  try {
-			_ = JSON.parse(t)
+			b = JSON.parse(t)
 		  } catch (e) {
 			if (CABLES.UI) r.uiAttr({
 			  error: 'could not load file...'
@@ -12638,8 +12649,8 @@ var CABLES = function (t) {
 	const d = e.inValue('center Z', 0);
 	const h = e.inValue('truck', 0);
 	const v = e.inValue('boom', 0);
-	const b = e.inValue('dolly', 0);
-	const _ = e.inValue('tilt', 0);
+	const _ = e.inValue('dolly', 0);
+	const b = e.inValue('tilt', 0);
 	const A = e.inValue('pan', 0);
 	const O = e.inValue('roll', 0);
 	const C = e.outValue('Aspect');
@@ -12651,28 +12662,28 @@ var CABLES = function (t) {
 	const T = vec3.create();
 	const y = mat4.create();
 	mat4.identity(y);
-	const P = [
+	const M = [
 	];
-	const M = vec3.create();
-	const B = mat4.create();
-	mat4.identity(B);
-	let I = true;
+	const P = vec3.create();
+	const I = mat4.create();
+	mat4.identity(I);
+	let B = true;
 	n.onTriggered = function () {
 	  if (S.frameStore.shadowPass) return a.trigger();
 	  if (!l.get()) E = u.get();
 	   else E = S.getViewPort() [2] / S.getViewPort() [3];
 	  C.set(E);
 	  S.pushViewMatrix();
-	  if (I) {
-		mat4.identity(B);
-		vec3.set(M, h.get(), v.get(), b.get());
-		if (h.get() !== 0 || v.get() !== 0 || b.get() !== 0) mat4.translate(B, B, M);
-		if (_.get() !== 0) mat4.rotateX(B, B, _.get() * CGL.DEG2RAD);
-		if (A.get() !== 0) mat4.rotateY(B, B, A.get() * CGL.DEG2RAD);
-		if (O.get() !== 0) mat4.rotateZ(B, B, O.get() * CGL.DEG2RAD);
-		I = false
+	  if (B) {
+		mat4.identity(I);
+		vec3.set(P, h.get(), v.get(), _.get());
+		if (h.get() !== 0 || v.get() !== 0 || _.get() !== 0) mat4.translate(I, I, P);
+		if (b.get() !== 0) mat4.rotateX(I, I, b.get() * CGL.DEG2RAD);
+		if (A.get() !== 0) mat4.rotateY(I, I, A.get() * CGL.DEG2RAD);
+		if (O.get() !== 0) mat4.rotateZ(I, I, O.get() * CGL.DEG2RAD);
+		B = false
 	  }
-	  mat4.multiply(S.vMatrix, S.vMatrix, B);
+	  mat4.multiply(S.vMatrix, S.vMatrix, I);
 	  S.pushPMatrix();
 	  S.pushViewMatrix();
 	  if (r.get() == 'prespective') {
@@ -12680,17 +12691,17 @@ var CABLES = function (t) {
 	  } else if (r.get() == 'ortogonal') {
 		mat4.ortho(S.pMatrix, - 1 * (s.get() / 14), 1 * (s.get() / 14), - 1 * (s.get() / 14) / E, 1 * (s.get() / 14) / E, i.get(), o.get())
 	  }
-	  P[0] = c.get();
-	  P[1] = p.get();
-	  P[2] = g.get();
-	  P[3] = f.get();
-	  P[4] = m.get();
-	  P[5] = d.get();
-	  P[6] = 0;
-	  P[7] = 1;
-	  P[8] = 0;
+	  M[0] = c.get();
+	  M[1] = p.get();
+	  M[2] = g.get();
+	  M[3] = f.get();
+	  M[4] = m.get();
+	  M[5] = d.get();
+	  M[6] = 0;
+	  M[7] = 1;
+	  M[8] = 0;
 	  x.set(null);
-	  x.set(P);
+	  x.set(M);
 	  vec3.set(L, 0, 1, 0);
 	  vec3.set(V, c.get(), p.get(), g.get());
 	  vec3.set(T, f.get(), m.get(), d.get());
@@ -12703,7 +12714,7 @@ var CABLES = function (t) {
 	  if (e.isCurrentUiOp()) gui.setTransformGizmo({
 		posX: h,
 		posY: v,
-		posZ: b
+		posZ: _
 	  })
 	};
 	const w = function () {
@@ -12719,15 +12730,15 @@ var CABLES = function (t) {
 		})
 	  }
 	};
-	const R = function () {
-	  I = true
+	const D = function () {
+	  B = true
 	};
-	h.onChange = R;
-	v.onChange = R;
-	b.onChange = R;
-	_.onChange = R;
-	A.onChange = R;
-	O.onChange = R;
+	h.onChange = D;
+	v.onChange = D;
+	_.onChange = D;
+	b.onChange = D;
+	A.onChange = D;
+	O.onChange = D;
 	l.onChange = w;
 	w()
   };
@@ -12762,8 +12773,8 @@ var CABLES = function (t) {
 	let f = 0;
 	let m = 0;
 	let d = true;
-	i.onChange = _;
-	_();
+	i.onChange = b;
+	b();
 	function h(e) {
 	  if (e.touches) e = e.touches[0];
 	  if (g && e) {
@@ -12788,7 +12799,7 @@ var CABLES = function (t) {
 	  }
 	  g = true
 	}
-	function b(e) {
+	function _(e) {
 	  try {
 		u.releasePointerCapture(e.pointerId)
 	  } catch (e) {
@@ -12799,24 +12810,24 @@ var CABLES = function (t) {
 	  m = 0;
 	  d = true
 	}
-	function _() {
+	function b() {
 	  O();
 	  if (i.get() == 'Document') u = document;
 	   else u = e.patch.cgl.canvas;
 	  if (n.get()) A()
 	}
 	function A() {
-	  if (!u) _();
+	  if (!u) b();
 	  if (r.get() == 'All' || r.get() == 'Mouse') {
 		u.addEventListener('mousemove', h);
 		u.addEventListener('mousedown', v);
-		u.addEventListener('mouseup', b);
-		u.addEventListener('mouseenter', b);
-		u.addEventListener('mouseleave', b)
+		u.addEventListener('mouseup', _);
+		u.addEventListener('mouseenter', _);
+		u.addEventListener('mouseleave', _)
 	  }
 	  if (r.get() == 'All' || r.get() == 'Touch') {
 		u.addEventListener('touchmove', h);
-		u.addEventListener('touchend', b);
+		u.addEventListener('touchend', _);
 		u.addEventListener('touchstart', v)
 	  }
 	}
@@ -12824,11 +12835,11 @@ var CABLES = function (t) {
 	  if (!u) return;
 	  u.removeEventListener('mousemove', h);
 	  u.removeEventListener('mousedown', v);
-	  u.removeEventListener('mouseup', b);
-	  u.removeEventListener('mouseenter', b);
-	  u.removeEventListener('mouseleave', b);
+	  u.removeEventListener('mouseup', _);
+	  u.removeEventListener('mouseenter', _);
+	  u.removeEventListener('mouseleave', _);
 	  u.removeEventListener('touchmove', h);
-	  u.removeEventListener('touchend', b);
+	  u.removeEventListener('touchend', _);
 	  u.removeEventListener('touchstart', v)
 	}
 	n.onChange = function () {
@@ -12869,9 +12880,9 @@ var CABLES = function (t) {
 	let h = 1;
 	let v = null;
 	o.onChange = w;
-	const b = 0;
-	R();
-	const _ = window.chrome,
+	const _ = 0;
+	D();
+	const b = window.chrome,
 	A = window.navigator,
 	O = A.vendor,
 	C = A.userAgent.indexOf('OPR') > - 1,
@@ -12880,13 +12891,13 @@ var CABLES = function (t) {
 	const E = window.navigator.userAgent.indexOf('Windows') != - 1;
 	const L = window.navigator.userAgent.indexOf('Linux') != - 1;
 	const V = window.navigator.userAgent.indexOf('Mac') != - 1;
-	const T = _ !== null && _ !== undefined && O === 'Google Inc.' && C === false && x === false;
+	const T = b !== null && b !== undefined && O === 'Google Inc.' && C === false && x === false;
 	const y = navigator.userAgent.search('Firefox') > 1;
 	r.onChange = function () {
 	  if (r.get()) h = - 1;
 	   else h = 1
 	};
-	function P(e) {
+	function M(e) {
 	  let t = 0;
 	  if ('detail' in e) {
 		t = e.detail
@@ -12898,7 +12909,7 @@ var CABLES = function (t) {
 	  }
 	  return t * h
 	}
-	function M(e) {
+	function P(e) {
 	  let t = 0;
 	  if ('deltaX' in e) {
 		t = e.deltaX;
@@ -12907,13 +12918,13 @@ var CABLES = function (t) {
 	  }
 	  return t
 	}
-	let B = 0;
-	function I(t) {
-	  if (Date.now() - B < 10) return;
-	  B = Date.now();
+	let I = 0;
+	function B(t) {
+	  if (Date.now() - I < 10) return;
+	  I = Date.now();
 	  c.set(t.wheelDelta || t.deltaY);
 	  if (t.deltaY) {
-		let e = P(t);
+		let e = M(t);
 		if (i.get()) {
 		  if (e > 0) e = n.get();
 		   else e = - n.get()
@@ -12922,7 +12933,7 @@ var CABLES = function (t) {
 		l.set(e)
 	  }
 	  if (t.deltaX) {
-		let e = M(t);
+		let e = P(t);
 		e *= 0.01 * n.get();
 		u.set(0);
 		u.set(e)
@@ -12931,19 +12942,19 @@ var CABLES = function (t) {
 	  p.trigger()
 	}
 	function w() {
-	  D();
+	  R();
 	  if (o.get() == 'Document') v = document;
 	   else v = g.canvas;
-	  if (s.get()) R()
+	  if (s.get()) D()
 	}
-	function R() {
+	function D() {
 	  if (!v) w();
-	  v.addEventListener('wheel', I, {
+	  v.addEventListener('wheel', B, {
 		passive: false
 	  })
 	}
-	function D() {
-	  if (v) v.removeEventListener('wheel', I)
+	function R() {
+	  if (v) v.removeEventListener('wheel', B)
 	}
 	s.onChange = function () {
 	  w()
@@ -13053,7 +13064,7 @@ var CABLES = function (t) {
 	f: Ops.Math.DeltaSum,
 	objName: 'Ops.Math.DeltaSum'
   };
-  Ops.Anim.AverageInterpolation_v2 = function () {
+  Ops.Deprecated.Anim.AverageInterpolation_v2 = function () {
 	CABLES.Op.apply(this, arguments);
 	const e = this;
 	const t = {
@@ -13093,10 +13104,10 @@ var CABLES = function (t) {
 	  i.trigger()
 	}
   };
-  Ops.Anim.AverageInterpolation_v2.prototype = new CABLES.Op;
+  Ops.Deprecated.Anim.AverageInterpolation_v2.prototype = new CABLES.Op;
   CABLES.OPS['8def22f1-c618-485d-b36b-4b7579cb079f'] = {
-	f: Ops.Anim.AverageInterpolation_v2,
-	objName: 'Ops.Anim.AverageInterpolation_v2'
+	f: Ops.Deprecated.Anim.AverageInterpolation_v2,
+	objName: 'Ops.Deprecated.Anim.AverageInterpolation_v2'
   };
   Ops.Sequence = function () {
 	CABLES.Op.apply(this, arguments);
@@ -13207,13 +13218,13 @@ var CABLES = function (t) {
 	let d = null;
 	let h = 8,
 	v = 8;
-	const b = [
+	const _ = [
 	  0,
 	  0,
 	  0,
 	  0
 	];
-	let _ = true;
+	let b = true;
 	let A = CGL.Texture.FILTER_LINEAR;
 	let O = CGL.Texture.WRAP_CLAMP_TO_EDGE;
 	const C = 0;
@@ -13242,10 +13253,10 @@ var CABLES = function (t) {
 	  });
 	  m.setSourceTexture(d);
 	  p.set(CGL.Texture.getEmptyTexture(f));
-	  _ = false
+	  b = false
 	}
 	l.onChange = function () {
-	  _ = true
+	  b = true
 	};
 	function E() {
 	  if (!m) S();
@@ -13285,12 +13296,12 @@ var CABLES = function (t) {
 	  V()
 	};
 	function V() {
-	  if (!m || _) S();
+	  if (!m || b) S();
 	  const e = f.getViewPort();
-	  b[0] = e[0];
-	  b[1] = e[1];
-	  b[2] = e[2];
-	  b[3] = e[3];
+	  _[0] = e[0];
+	  _[1] = e[1];
+	  _[2] = e[2];
+	  _[3] = e[3];
 	  f.pushBlend(false);
 	  E();
 	  f.currentTextureEffect = m;
@@ -13301,7 +13312,7 @@ var CABLES = function (t) {
 	  c.trigger();
 	  p.set(m.getCurrentSourceTexture());
 	  m.endEffect();
-	  f.setViewPort(b[0], b[1], b[2], b[3]);
+	  f.setViewPort(_[0], _[1], _[2], _[3]);
 	  f.popBlend(false);
 	  f.currentTextureEffect = null
 	}
@@ -13309,13 +13320,13 @@ var CABLES = function (t) {
 	  if (s.get() == 'repeat') O = CGL.Texture.WRAP_REPEAT;
 	  if (s.get() == 'mirrored repeat') O = CGL.Texture.WRAP_MIRRORED_REPEAT;
 	  if (s.get() == 'clamp to edge') O = CGL.Texture.WRAP_CLAMP_TO_EDGE;
-	  _ = true
+	  b = true
 	}
 	function y() {
 	  if (o.get() == 'nearest') A = CGL.Texture.FILTER_NEAREST;
 	  if (o.get() == 'linear') A = CGL.Texture.FILTER_LINEAR;
 	  if (o.get() == 'mipmap') A = CGL.Texture.FILTER_MIPMAP;
-	  _ = true
+	  b = true
 	}
   };
   Ops.Gl.TextureEffects.ImageCompose_v2.prototype = new CABLES.Op;

@@ -15,7 +15,3 @@ function downloadFile(path) {
     location.href = '/api/downloads/' + filename;
     console.log(path);
 }
-
-function getScreenShot() {
-    document.getElementById('patchFrame').contentDocument.getElementsByTagName('iframe')[0].contentWindow.print()
-}

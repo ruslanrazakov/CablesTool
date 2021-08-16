@@ -14,6 +14,8 @@ namespace CablesTool.Pages
 {
     partial class Player
     {
+        [CascadingParameter(Name = "Role")]
+        public string Role { get; set; }
         [CascadingParameter(Name = "NameIdentifier")] 
         public string NameIdentifier { get; set; }
         [CascadingParameter(Name = "UserName")]
@@ -52,10 +54,12 @@ namespace CablesTool.Pages
         private async Task UpdatePlayer()
         {
             var fileId = Convert.ToInt32(VideoId);
+
             VideoName = UserWorkspaceService.GetVideoName(fileId).Split("wwwroot").Last();
-            
             VideoLength = UserWorkspaceService.GetVideoLength(fileId);
             StateHasChanged();
+            await Task.Delay(1000); // !important for successfull uploading /Project/Path.html in Iframe!
+            UserWorkspaceService.UploadFinished();
         }
 
         /// <summary>

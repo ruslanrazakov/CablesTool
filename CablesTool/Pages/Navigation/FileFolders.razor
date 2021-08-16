@@ -15,7 +15,7 @@
             </div>
         }
     </div>
-    <div class="d-flex bd-highlight" >
+    <div class="d-flex bd-highlight">
         @if (folderNameTextAreaEnabled)
         {
             <input class="list-group-item list-group-item-action" type="text" @bind="@folderName" @bind:event="oninput" style="height: 33px;">
@@ -27,18 +27,34 @@
         }
         else
         {
-            <button  disabled="@(rootParams.rootName == String.Empty)" class="btn btn-secondary" type="button" @onclick="@(() => CreateFileVersionsFolder())">
+            <button disabled="@(rootParams.rootName == String.Empty)" 
+                    class="btn btn-secondary" 
+                    type="button"
+                    @onclick="@(() => CreateFileVersionsFolder())">
                 <span class="oi oi-plus"></span>
             </button>
         }
-        <PopConfirm Disabled="@(rootParams.rootName == String.Empty)" Class="btn btn-secondary" ConfirmedChanged="@RemoveFileVersionsFolder">
-            <span class="oi oi-minus"></span>
-        </PopConfirm>
+
+        @if (Role == "Admin")
+        {
+            <PopConfirm Disabled="@(rootParams.rootName == String.Empty)" Class="btn btn-secondary" ConfirmedChanged="@RemoveFileVersionsFolder">
+                <span class="oi oi-minus"></span>
+            </PopConfirm>
+            <button disabled="@(rootParams.rootName == String.Empty)" 
+                    class="btn btn-secondary" 
+                    type="button" 
+                    @onclick="@(() => EditRights())"
+                    style="margin-left: 5px">
+                <span class="oi oi-pencil"></span>
+            </button>
+        }
     </div>
 </div>
 
 @code 
 {
+    [CascadingParameter(Name = "Role")]
+    public string Role { get; set; }
     [Inject]
     ApplicationContext ApplicationContext { get; set; }
     [Inject]
@@ -66,13 +82,6 @@
             rootParams.rootId = rootId;
             rootParams.rootName = ApplicationContext.RootFolders.FirstOrDefault(rf => rf.Id == rootId && rf.Status == FolderStatus.Active).Name;
             filesFolders = ApplicationContext.FileFolders.Where(vf => vf.Status == FolderStatus.Active && vf.RootFolderId == rootId).ToList();
-            /*if (filesFolders != null && filesFolders.Any())
-            {
-                currentFileFolderId = filesFolders.First().Id;
-                await NavigationEvents.ChangeFileFolder(currentFileFolderId);
-            }
-            else
-                await NavigationEvents.ChangeFileFolder(null);*/
         }
         else
         {
@@ -139,6 +148,10 @@
         {
             file.Status = FolderStatus.Archived;
         }
+    }
+
+    private void EditRights()
+    {
     }
 
     string GetActive(long id) => id == currentFileFolderId ? "list-group-item-warning" : String.Empty;
